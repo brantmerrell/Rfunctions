@@ -1,7 +1,292 @@
+
+
+AKframe[n,c(1,3)]
+ALframe[n,c(1,3)]
+ARframe[n,c(1,3)]
+AZframe[n,c(1,3)]
+CAframe[n,c(1,3)]
+##AKframe<-data.frame(rankedsplit[1])
+##ALframe<-data.frame(rankedsplit[2])
+##ARframe<-data.frame(rankedsplit[3])
+##AZframe<-data.frame(rankedsplit[4])
+##CAframe<-data.frame(rankedsplit[5])
+##COframe<-data.frame(rankedsplit[6])
+##CTframe<-data.frame(rankedsplit[7])
+##DEframe<-data.frame(rankedsplit[8])
+##DCframe<-data.frame(rankedsplit[9])
+##FLframe<-data.frame(rankedsplit[10])
+##GAframe<-data.frame(rankedsplit[11])
+##HIframe<-data.frame(rankedsplit[12])
+##IDframe<-data.frame(rankedsplit[13])
+##ILframe<-data.frame(rankedsplit[14])
+##INframe<-data.frame(rankedsplit[15])
+##IAframe<-data.frame(rankedsplit[16])
+##KSframe<-data.frame(rankedsplit[17])
+##KYframe<-data.frame(rankedsplit[18])
+##LAframe<-data.frame(rankedsplit[19])
+##MEframe<-data.frame(rankedsplit[20])
+##MDframe<-data.frame(rankedsplit[21])
+##MAframe<-data.frame(rankedsplit[22])
+##MIframe<-data.frame(rankedsplit[23])
+##MNframe<-data.frame(rankedsplit[24])
+##MSframe<-data.frame(rankedsplit[25])
+##MOframe<-data.frame(rankedsplit[26])
+##MTframe<-data.frame(rankedsplit[27])
+##NEframe<-data.frame(rankedsplit[28])
+##NVframe<-data.frame(rankedsplit[29])
+##NHframe<-data.frame(rankedsplit[30])
+##NJframe<-data.frame(rankedsplit[31])
+##NMframe<-data.frame(rankedsplit[32])
+##NYframe<-data.frame(rankedsplit[33])
+##NCframe<-data.frame(rankedsplit[34])
+##NDframe<-data.frame(rankedsplit[35])
+##OHframe<-data.frame(rankedsplit[36])
+##OKframe<-data.frame(rankedsplit[37])
+##ORframe<-data.frame(rankedsplit[38])
+##PAframe<-data.frame(rankedsplit[39])
+##PRframe<-data.frame(rankedsplit[40])
+##RIframe<-data.frame(rankedsplit[41])
+##SCframe<-data.frame(rankedsplit[42])
+##SDframe<-data.frame(rankedsplit[43])
+##TNframe<-data.frame(rankedsplit[44])
+##TXframe<-data.frame(rankedsplit[45])
+##UTframe<-data.frame(rankedsplit[46])
+##VTframe<-data.frame(rankedsplit[47])
+##VIframe<-data.frame(rankedsplit[48])
+##VAframe<-data.frame(rankedsplit[49])
+##WAframe<-data.frame(rankedsplit[50])
+##WVframe<-data.frame(rankedsplit[51])
+##WIframe<-data.frame(rankedsplit[52])
+##WYframe<-data.frame(rankedsplit[53])
+##GUframe<-data.frame(rankedsplit[54])
+
+AKframe[n,c(1,3)]
+ALframe[n,c(1,3)]
+ARframe[n,c(1,3)]
+AZframe[n,c(1,3)]
+CAframe[n,c(1,3)]
+##AKframe<-data.frame(rankedsplit[1])
+##ALframe<-data.frame(rankedsplit[2])
+##ARframe<-data.frame(rankedsplit[3])
+##AZframe<-data.frame(rankedsplit[4])
+##CAframe<-data.frame(rankedsplit[5])
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##n<-1 returns 3 columns (hospital, state, outcome) of the nth row of the specified state
+
+
+AKframe<-data.frame(rankedsplit[1])
+ALframe<-data.frame(rankedsplit[2])
+ARframe<-data.frame(rankedsplit[3])
+AZframe<-data.frame(rankedsplit[4])
+CAframe<-data.frame(rankedsplit[5])
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns specific state's hospitals in outcome order
+##  alphabetic order *might* work for numerically defined ties,
+##  does not work for "Not Available" ties
+
+ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns 4706x3 data frame ranked by 1) outcome and 2) alphabet
+
+ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 4706x3 data frame ranked by outcome
+
+data.frame(as.matrix(trimmed_outcome[order(trimmed_outcome[,3]),],c(1:4706)))
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 4706x3 data frame with 2 warnings
+
+trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns 4706x3 with columns named State, Hospital.Name, and coltouse
+
+data.frame(orderedsplit$AK[1:5],splitcoltouse$AK[1:5])
+##orderedsplit <- split (testsorter$Hospital.Name, testsorter$State)
+##splitcoltouse <-split(rankcoltouse,care_outcome$State)
+##testsorter<-dataframetest[order(dataframetest[,47]),]
+##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
+  ##see coltouse in control.R
+  ##see care_outcome in data_input.R)
+##returns 5x2: first five Alaska hospitals with their rankings
+
+data.frame(orderedsplit$AK[1],splitcoltouse$AK[1])
+##orderedsplit <- split (testsorter$Hospital.Name, testsorter$State)
+##splitcoltouse <-split(rankcoltouse,care_outcome$State)
+##testsorter<-dataframetest[order(dataframetest[,47]),]
+##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
+  ##see coltouse in control.R
+  ##see care_outcome in data_input.R)
+##returns PROVIDENCE ALASKA MEDICAL CENTER                 205
+
+data.frame(
+  orderedsplit$AL
+  orderedsplit$AK
+  orderedsplit$AZ
+  orderedsplit$AR
+  orderedsplit$CA
+  orderedsplit$CO
+  orderedsplit$CT
+  orderedsplit$DE
+  orderedsplit$DC
+  orderedsplit$FL
+  orderedsplit$GA
+  orderedsplit$HI
+  orderedsplit$ID
+  orderedsplit$IL
+  orderedsplit$IN
+  orderedsplit$IA
+  orderedsplit$KS
+  orderedsplit$KY
+  orderedsplit$LA
+  orderedsplit$ME
+  orderedsplit$MD
+  orderedsplit$MA
+  orderedsplit$MI
+  orderedsplit$MN
+  orderedsplit$MS
+  orderedsplit$MO
+  orderedsplit$MT
+  orderedsplit$NE
+  orderedsplit$NV
+  orderedsplit$NH
+  orderedsplit$NJ
+  orderedsplit$NM
+  orderedsplit$NY
+  orderedsplit$NC
+  orderedsplit$ND
+  orderedsplit$OH
+  orderedsplit$OK
+  orderedsplit$OR
+  orderedsplit$PA
+  orderedsplit$PR
+  orderedsplit$RI
+  orderedsplit$SC
+  orderedsplit$SD
+  orderedsplit$TN
+  orderedsplit$TX
+  orderedsplit$UT
+  orderedsplit$VT
+  orderedsplit$VI
+  orderedsplit$VA
+  orderedsplit$WA
+  orderedsplit$WV
+  orderedsplit$WI
+  orderedsplit$WY
+  orderedsplit$GU)
+  ##orderedsplit <- split (testsorter$Hospital.Name, testsorter$State)
+    ##alphebatized this time, not in care_outcome order
+  ##testsorter<-dataframetest[order(dataframetest[,47]),]
+  ##dataframetest<-data.frame(care_outcome,rankcoltouse)
+  ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
+    ##see coltouse in control.R
+    ##see care_outcome in data_input.R
+## returns errorr: unexpected ')'
+## also returns only hospital names, no ranks or rates
+
+data.frame(
+  splitcoltouse$AL
+  splitcoltouse$AK
+  splitcoltouse$AZ
+  splitcoltouse$AR
+  splitcoltouse$CA
+  splitcoltouse$CO
+  splitcoltouse$CT
+  splitcoltouse$DE
+  splitcoltouse$DC
+  splitcoltouse$FL
+  splitcoltouse$GA
+  splitcoltouse$HI
+  splitcoltouse$ID
+  splitcoltouse$IL
+  splitcoltouse$IN
+  splitcoltouse$IA
+  splitcoltouse$KS
+  splitcoltouse$KY
+  splitcoltouse$LA
+  splitcoltouse$ME
+  splitcoltouse$MD
+  splitcoltouse$MA
+  splitcoltouse$MI
+  splitcoltouse$MN
+  splitcoltouse$MS
+  splitcoltouse$MO
+  splitcoltouse$MT
+  splitcoltouse$NE
+  splitcoltouse$NV
+  splitcoltouse$NH
+  splitcoltouse$NJ
+  splitcoltouse$NM
+  splitcoltouse$NY
+  splitcoltouse$NC
+  splitcoltouse$ND
+  splitcoltouse$OH
+  splitcoltouse$OK
+  splitcoltouse$OR
+  splitcoltouse$PA
+  splitcoltouse$PR
+  splitcoltouse$RI
+  splitcoltouse$SC
+  splitcoltouse$SD
+  splitcoltouse$TN
+  splitcoltouse$TX
+  splitcoltouse$UT
+  splitcoltouse$VT
+  splitcoltouse$VI
+  splitcoltouse$VA
+  splitcoltouse$WA
+  splitcoltouse$WV
+  splitcoltouse$WI
+  splitcoltouse$WY
+  splitcoltouse$GU
+)
+## returns error: unexpected ')'
+## also returns only numbers, no state names
+
+ordered_outcome<-trimmed_outcome[with(trimmed_outcome, order(Outcome,-State)),]
+##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(-statevector,ordered=true)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns 4706 x 3 ordered by ascending outcome and tie-broken by alphabetic state
+## Warning: In Ops.factor(State): - not meaningful for factors
+
+trimmed_outcome[with(trimmed_outcome, order(trimmed_outcome$Outcome,trimmed_outcome$State)),]
+##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns 4706 x 3 ordered by ascending outcome and tie-broken by reverse-alphabetic state
+
+trimmed_outcome[with(trimmed_outcome, order(trimmed_outcome$Outcome,trimmed_outcome$State))]
+##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## err: undefined columns
+
+trimmed_outcome[with(trimmed_outcome, order(Outcome,State))]
+##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## err: undefined columns
+
+
 dd[with(dd, order(-z, b)), ]
 ##see   http://stackoverflow.com/questions/
 ##      1296646/how-to-sort-a-dataframe-by-columns-in-r
-#returns 
+## returns data frame ordered both as descending z and ascending a
 
 dd<-data.frame(b = factor(c("Hi", "Med", "Hi", "Low"), 
                       levels = c("Low", "Med", "Hi"), ordered = TRUE),
@@ -14,10 +299,6 @@ data.frame(
   State=(care_outcome[,2],),
            Hospital.Name=care_outcome[,7],
            Outcome=coltouse),
-
-##see coltouse in control.R
-##see care_outcome in data_input.R
-
 
 data.frame(State=care_outcome[,2],
            Hospital.Name=care_outcome[,7],

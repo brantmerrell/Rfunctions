@@ -1,11 +1,98 @@
 
+AKmatrix[n]
+ALmatrix[n]
+ARmatrix[n]
+AZmatrix[n]
+CAmatrix[n]
+##AKmatrix<-as.matrix(AKframe)
+##ALmatrix<-as.matrix(ALframe)
+##ARmatrix<-as.matrix(ARframe)
+##AZmatrix<-as.matrix(AZframe)
+##CAmatrix<-as.matrix(AKframe)
+##AKframe<-data.frame(rankedsplit[1])
+##ALframe<-data.frame(rankedsplit[2])
+##ARframe<-data.frame(rankedsplit[3])
+##AZframe<-data.frame(rankedsplit[4])
+##CAframe<-data.frame(rankedsplit[5])
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns 3-column matrix of specified state's hospitals in outcome order
+##n<-1 returns 1st listed hospital name. No outcome column, dimensions null,class "character"
+
+AKmatrix<-as.matrix(AKframe)
+ALmatrix<-as.matrix(ALframe)
+ARmatrix<-as.matrix(ARframe)
+AZmatrix<-as.matrix(AZframe)
+CAmatrix<-as.matrix(CAframe)
+##AKframe<-data.frame(rankedsplit[1])
+##ALframe<-data.frame(rankedsplit[2])
+##ARframe<-data.frame(rankedsplit[3])
+##AZframe<-data.frame(rankedsplit[4])
+##CAframe<-data.frame(rankedsplit[5])
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns 3-column matrix of specified state's hospitals in outcome order
+
+
+as.matrix(trimmed_outcome[order(trimmed_outcome[,3]),],c(1:4706))
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 4706x3 matrix with no "c[1:4706] and with 2 warnings
+
+as.matrix(trimmed_outcome[order(trimmed_outcome[,3]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 4706x3 matrix in Outcome order, but with reassigned row numbers 
+
+as.matrix(trimmed_outcome[order(trimmed_outcome[,3]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 3 columns ranked by Outcome, but with reassigned row numbers 
+
+as.matrix(sort(coltouse))
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns coltouse numbers in rank order, with matrix rownumbers
+
+as.matrix(coltouse)
+
+as.matrix(trimmed_outcome)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 3 columns of hospital name, state, outcome
+
+as.matrix(orderedsplit$AK[1],splitcoltouse$AK[1])
+  ##orderedsplit <- split (testsorter$Hospital.Name, testsorter$State)
+  ##splitcoltouse <-split(rankcoltouse,care_outcome$State)
+  ##testsorter<-dataframetest[order(dataframetest[,47]),]
+  ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
+    ##see coltouse in control.R
+    ##see care_outcome in data_input.R
+## returns unranked Providence Alaska Medical Center
+
+as.matrix(orderedsplit$AK,splitcoltouse$AK)
+  ##orderedsplit <- split (testsorter$Hospital.Name, testsorter$State)
+  ##splitcoltouse <-split(rankcoltouse,care_outcome$State)
+  ##testsorter<-dataframetest[order(dataframetest[,47]),]
+  ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
+    ##see coltouse in control.R
+    ##see care_outcome in data_input.R
+##returns only hospital names
 
 as.matrix(orderedsplit$ AK )
   ##orderedsplit <- split (testsorter$Hospital.Name, testsorter$State)
     ##alphebatized this time, not in care_outcome order
   ##testsorter<-dataframetest[order(dataframetest[,47]),]
   ##dataframetest<-data.frame(care_outcome,rankcoltouse)
-  ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
     ##see coltouse in control.R
     ##see care_outcome in data_input.R
 ## valid return - space between "$" and "AK" does not change function

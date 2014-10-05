@@ -1,4 +1,59 @@
-order(coltouse,)
+
+
+trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),]
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns outcome first by outcome then by alphabet
+
+order(coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns numbers corresponding to coltouse, but not in rank order
+
+trimmed_outcome[order(trimmed_outcome[,3]),]
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns listing by Outcome rate
+
+trimmed_outcome[order(trimmed_outcome[,2]),]
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns alphabetic listing by state
+
+trimmed_outcome[order(trimmed_outcome[,1]),]
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns alphabetic listing by hospital name
+
+trimmed_outcome[order(trimmed_outcome$outcome),]
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns error: outcome not a vector
+
+trimmed_outcome[order(Outcome)]
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns err outcome not found
+
+order(-z)
+## z<-c(1,5,3,9)
+## returns 4 2 3 1
+## same as order(-z, b)
+## -1 is 4th, -5 is 2nd, -3 is 3rd, -9 is 1st
+
+order(-z, b)
+## z<-c(1,5,3,9)
+##  returns 
+## b<-c("Hi","Med","Hi","Low")
+## returns 4 2 3 1
+## so [Hi, -1, 4th] [Med, -5, 2nd] [Hi, -3, 3rd] [Low, -9, 1st]
+## is b even an active argument to order?
 
 order(z, -b)
 ## z<-c(1,1,1,2)
@@ -21,9 +76,7 @@ order(-z, b)
 ## b<-c("Hi","Med","Hi","Low")
 ##see   http://stackoverflow.com/questions/
 ##      1296646/how-to-sort-a-dataframe-by-columns-in-r
-## returns 4 1 3 2 . . . so Hi=-1 & 4th, Med=-1 & , Hi=-1, Low=-2?
-
-##  
+## returns 4 1 3 2 . . . so Hi=-1 & 4th, Med=-1 & 3rd, Hi=-1 2nd, Low=-2 & 1st?
 
 testsorter<-dataframetest[order(dataframetest[,47]),]
   ##dataframetest<-data.frame(care_outcome,rankcoltouse)

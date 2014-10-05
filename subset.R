@@ -1,3 +1,31 @@
+
+
+subset(rankedsplit, rankedsplit[1])
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns err subset must be logical
+
+
+subset(rankedsplit$AK)
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns 17x3 data frame of AK hospitals ranked by 1) Outcome and 2) care_outcome.csv
+
+subset(rankedsplit, State=="AK")
+##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
+##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3]),])
+##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+## returns error: object 'State' not found
+## note: dimensions null after spliting ordered_outcome
+
 subset(data.frame(a,b), data.frame(a,b)[1])
 ##b<-as.matrix(split(care_outcome[,11], care_outcome$State))[1]
 ##a<-as.matrix(split(care_outcome$Hospital.Name, care_outcome$State))[1]

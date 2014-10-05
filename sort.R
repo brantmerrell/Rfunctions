@@ -1,3 +1,9 @@
+sort(coltouse)
+##see coltouse in control.R
+##see care_outcome in data_input.R
+##returns coltouse numbers in rank order, but not ranked.
+
+
 sort(care_outcome$State)
 ##rearranges states in alphabetical order
 

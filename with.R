@@ -1,3 +1,11 @@
+
+
+dd[with(dd, order(-z, b)), ]
+## returns 4x4 with z descending as [2,1,1,1] and b ascending as Low Med Hi Hi
+
+with(-z, b)
+## error: numeric 'envir' arg not of length 1
+
 with(dd, order(-z, b))
 ##see   http://stackoverflow.com/questions/
 ##      1296646/how-to-sort-a-dataframe-by-columns-in-r

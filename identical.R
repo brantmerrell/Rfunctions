@@ -1,4 +1,5 @@
-
+identical(trimmed_outcome[,3],trimmed_outcome$Outcome)
+##true
 
 ##subset.R
 identical (subset(care_outcome$Hospital.Name, care_outcome$State=="TX"),
