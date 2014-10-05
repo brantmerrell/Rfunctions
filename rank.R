@@ -2,6 +2,8 @@
 
 rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
 ##coltouse<-care_outcome[,11]
+##see coltouse in control.R
+##see care_outcome in data_input.R
 
 
 ##rankhospital.R Return hospital list in that state based on lowest 30-day mortality rate  

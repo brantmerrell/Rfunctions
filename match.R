@@ -2,7 +2,7 @@
 
 match(sixstates, care_outcome[,7], nomatch=0)
 ##sixstates<-c("AL","TX","VA","OK","UT","CA")
-##returns 1, 3894, 3244, 4220, 270
+##returns 1, 3894, 4279, 3244, 4220, 270
 
 match("AR", care_outcome[,7], nomatch=0)
 ##returns 193
@@ -75,7 +75,8 @@ match(care_outcome, numeric13_14, nomatch=NA, incomparable=NULL)
 
 ##best.R, rankhospital.R check that state argument exists in file
 vstt<-state %in% care_outcome[,7]
-
+##state<-"TX"
+##returns TRUE
 
 match(x, table, nomatch = NA_integer_, incomparables = NULL)
 

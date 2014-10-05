@@ -21,12 +21,18 @@ subset(care_outcome, care_outcome[,7]=='TX')
 ## best.R Subset all hospitals (in specified state) 
 ## that match the lowest 30-day mortality rate
 besthospitals <- subset(care_outcome, coltouse==bestscore)
-TXsubset <- subset(care_outcome$Hospital.Name, care_outcome$State=="TX")
-TXsubset <- subset(care_outcome, care_outcome$State=="TX", Hospital.Name)
+##bestscore<-min(coltouse,na.rm=TRUE)
+##returns all columns and 1 row of lowest coltouse score
 
+TXsubset <- subset(care_outcome$Hospital.Name, care_outcome$State=="TX")
+##returns 370 TX hospitals
+
+TXsubset <- subset(care_outcome, care_outcome$State=="TX", Hospital.Name)
+##returns 4706-3894 TX hospitals
 
 ##best.R Subset file based on state
 care_outcome<-subset(care_outcome, care_outcome[,7]==state)
+##head() returns 3899-3894 rows, 27 columns of TX hospitals
 
 subset(x, ...)
 
