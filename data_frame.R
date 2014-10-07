@@ -1,6 +1,19 @@
 ##see coltouse in control.R
 ##see care_outcome in data_input.R
 
+## Oct 7 - what is a good way to generate chessboard coordinates?
+boardframe<-data.frame(a=c(rows[1:8]), b=c(rows[1:8]),
+                       c=c(rows[1:8]), d=c(rows[1:8]),
+                       e=c(rows[1:8]), f=c(rows[1:8]),
+                       g=c(rows[1:8]), h=c(rows[1:8]))
+## see  PGN_97721646 and concatenate.R
+## on rows see vector.R and concatenate.R
+## only returns colrow as row within a column. 
+
+## can "row.names" attach a character vector as the row names of a data frame?
+##        Can "row.names" attach statevector
+
+
 AKframe[n,c(1,3)]
 ALframe[n,c(1,3)]
 ARframe[n,c(1,3)]
@@ -397,6 +410,5 @@ dataframetest<-data.frame(care_outcome,rankcoltouse)
 data.frame(..., row.names = NULL, check.rows = FALSE,
            check.names = TRUE,
            stringsAsFactors = default.stringsAsFactors())
-## can the argument "row.names = unique(care_outcome$State)" be passed?
 
 default.stringsAsFactors()

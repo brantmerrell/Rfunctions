@@ -1,3 +1,11 @@
+## Oct 7 - what is a good way to represent chessboard pgn?
+rows<-c("1","2","3","4","5","6","7","8")
+columns<-c("a","b","c","d","e","f","g","h")
+pieces<-c("King","Queen","Rook","Bishop","Knight","Pawn")
+## see PGN_97721646.R and concatenate.R
+## algebraically, building a data frame or matrix is innefficient. 
+## just use these vectors to generate coordinates and match them with equations.
+
 as.vector(
   AKframe[n,c(1,3)]
   ALframe[n,c(1,3)]

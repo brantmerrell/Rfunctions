@@ -1,3 +1,8 @@
+## Oct 7 - what is a good way to generate chessboard coordinates?
+as.matrix(boardframe)
+## see data_frame.R and PGN_97721646.R
+## only returns row numbers with end-of-column labels
+## purpose of matrix is questionable - see concatenate.R, Oct 7
 
 as.matrix(AKframe[n,c(1,3)],
 ALframe[n,c(1,3)],ARframe[n,c(1,3)],
