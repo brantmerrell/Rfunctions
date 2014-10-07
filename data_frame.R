@@ -1,4 +1,5 @@
-
+##see coltouse in control.R
+##see care_outcome in data_input.R
 
 AKframe[n,c(1,3)]
 ALframe[n,c(1,3)]
@@ -122,8 +123,6 @@ CAframe[n,c(1,3)]
 ##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
 ##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
 ##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##n<-1 returns 3 columns (hospital, state, outcome) of the nth row of the specified state
 
 
@@ -135,33 +134,23 @@ CAframe<-data.frame(rankedsplit[5])
 ##rankedsplit<-split(ordered_outcome, ordered_outcome$State)
 ##ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
 ##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##returns specific state's hospitals in outcome order
 ##  alphabetic order *might* work for numerically defined ties,
 ##  does not work for "Not Available" ties
 
 ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3],-trimmed_outcome[,1]),])
 ##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##returns 4706x3 data frame ranked by 1) outcome and 2) alphabet
 
 ordered_outcome<-data.frame(trimmed_outcome[order(trimmed_outcome[,3]),])
 ##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ## returns 4706x3 data frame ranked by outcome
 
 data.frame(as.matrix(trimmed_outcome[order(trimmed_outcome[,3]),],c(1:4706)))
 ##trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ## returns 4706x3 data frame with 2 warnings
 
 trimmed_outcome<-data.frame(Hospital.Name=care_outcome[,2],State=care_outcome[,7],Outcome=coltouse)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##returns 4706x3 with columns named State, Hospital.Name, and coltouse
 
 data.frame(orderedsplit$AK[1:5],splitcoltouse$AK[1:5])
@@ -169,8 +158,6 @@ data.frame(orderedsplit$AK[1:5],splitcoltouse$AK[1:5])
 ##splitcoltouse <-split(rankcoltouse,care_outcome$State)
 ##testsorter<-dataframetest[order(dataframetest[,47]),]
 ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
-  ##see coltouse in control.R
-  ##see care_outcome in data_input.R)
 ##returns 5x2: first five Alaska hospitals with their rankings
 
 data.frame(orderedsplit$AK[1],splitcoltouse$AK[1])
@@ -178,8 +165,6 @@ data.frame(orderedsplit$AK[1],splitcoltouse$AK[1])
 ##splitcoltouse <-split(rankcoltouse,care_outcome$State)
 ##testsorter<-dataframetest[order(dataframetest[,47]),]
 ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
-  ##see coltouse in control.R
-  ##see care_outcome in data_input.R)
 ##returns PROVIDENCE ALASKA MEDICAL CENTER                 205
 
 data.frame(
@@ -242,8 +227,6 @@ data.frame(
   ##testsorter<-dataframetest[order(dataframetest[,47]),]
   ##dataframetest<-data.frame(care_outcome,rankcoltouse)
   ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
-    ##see coltouse in control.R
-    ##see care_outcome in data_input.R
 ## returns errorr: unexpected ')'
 ## also returns only hospital names, no ranks or rates
 
@@ -308,27 +291,19 @@ data.frame(
 
 ordered_outcome<-trimmed_outcome[with(trimmed_outcome, order(Outcome,-State)),]
 ##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(-statevector,ordered=true)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##returns 4706 x 3 ordered by ascending outcome and tie-broken by alphabetic state
 ## Warning: In Ops.factor(State): - not meaningful for factors
 
 trimmed_outcome[with(trimmed_outcome, order(trimmed_outcome$Outcome,trimmed_outcome$State)),]
 ##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##returns 4706 x 3 ordered by ascending outcome and tie-broken by reverse-alphabetic state
 
 trimmed_outcome[with(trimmed_outcome, order(trimmed_outcome$Outcome,trimmed_outcome$State))]
 ##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ## err: undefined columns
 
 trimmed_outcome[with(trimmed_outcome, order(Outcome,State))]
 ##trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ## err: undefined columns
 
 
@@ -353,24 +328,16 @@ data.frame(State=care_outcome[,2],
            Hospital.Name=care_outcome[,7],
            Outcome=coltouse),
 levels=(statevector,ordered=true)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##Error: unexpected ',' 
 
 trimmed_outcome<-data.frame(State=care_outcome[,2],Hospital.Name=care_outcome[,7],Outcome=coltouse),levels=(statevector,ordered=true)
-##see coltouse in control.R
-##see care_outcome in data_input.R
 ##returns 4706x3 with columns named State, Hospital.Name, and coltouse
 
 data.frame(care_outcome[,2], care_outcome[,7],coltouse,rankcoltouse)
 ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
-##see coltouse in control.R
-##see care_outcome in data_input.R
 
 trimmed_outcome<-data.frame(care_outcome[,2], care_outcome[,7],coltouse)
 ##returns 4706x3 of H.Name, State, coltouse
-##see care_outcome in data_input.R
-##see coltouse in control.R
 
 trimmed_outcome<-data.frame(care_outcome[,2], care_outcome[,7], care_outcome[,11],care_outcome[,17],care_outcome[,23])
 ##head(trimmed_outcome) returns 6x5 of H.Name, State, and (H.A. + H.F. + P.) mortality
@@ -394,8 +361,6 @@ data.frame(care_outcome[,2,7,11,17,23])
 
 dataframetest<-data.frame(care_outcome,rankcoltouse)
 ##rankcoltouse<-rank(coltouse,na.last=TRUE,ties.method=c("first"))
-  ##see coltouse in control.R
-  ##see care_outcome in data_input.R
 ##head() returns six rows, 47 columns of unranked hospital data
 
 data.frame(b,a)
