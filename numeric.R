@@ -1,4 +1,5 @@
-
+as.numeric("A","B","C","D")
+## NA
 
 as.numeric(care_outcome[, 11])
 ##returns 4706 results, with "Not Available" changed to NA

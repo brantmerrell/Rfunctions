@@ -413,28 +413,25 @@ data.frame(split(care_outcome$Hospital.Name, care_outcome$State),
 ##error: arguments imply differing number of rows
 
 dataframestate<-data.frame(care_outcome[,7],rankcoltouse)
-##rankcoltouse<-care_outcome[,11]
+##rankcoltouse <-care_outcome[,11]
 ##head() returns 6X2 State and rankcoltouse
 
 numeric13_14<-data.frame(numeric13,numeric14)
 ##numeric13<-care_outcome[,13]
 ##numeric14<-care_outcome[,14]
 ##returns two columns, mostly of NA.
+## care_outcome[,c(13:14)] is far more efficient
 
-## rankall.R combine splitcoltouse with 
-
-## rankhospital.R combine ranked column with data frame
 dataframetest<-data.frame(care_outcomesubset,rankcoltouse)
+## arguments from (data_input.R, subset.R)
 
-
-
+dataframetest<-data.frame(care_outcome,rankcoltouse)
+## arguments from (data_input.R, rank.R)
+## returns 4706x47 dataframe
 
 data.frame(..., row.names = NULL, check.rows = FALSE,
            check.names = TRUE,
            stringsAsFactors = default.stringsAsFactors())
+## can the argument "row.names = unique(care_outcome$State)" be passed?
 
 default.stringsAsFactors()
-
-##rankall.R: assign task to "numbest"
-dataframetest<-data.frame(care_outcome,rankcoltouse)
-
