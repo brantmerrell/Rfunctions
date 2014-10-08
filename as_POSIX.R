@@ -1,3 +1,26 @@
+## objective: generate a *minute of day* vector from the start vector in schedule.R
+#   input from concatenate.R
+as.POSIXlt(start)$min
+## successful @"2014-10-08 15:16:15 CDT"
+
+## objective: generate an *hour of day* vector from the start vector in schedule.R
+#   input from concatenate.R
+as.POSIXlt(start)$hour
+#   [1] 13 11 11 10  9  9  7  7  6  0 23 22 22 21 21
+## successful
+
+## objective: generate an *hour of day* vector from the start vector in schedule.R
+#   input from concatenate.R
+as.POSIXct(start)$hour
+#   err '$' invalid for 'atomic vectors'
+## unsuccessful @"2014-10-08 15:14:01 CDT", try POSIXlt?
+
+## objective: create function of a time which can be unclassed into sec, min, hour,
+## mday, mon, year, wday, yday, isdst, zone, and gmtoff.
+as.POSIXlt("2014-10-08 14:58:29 CDT")
+## successful. Continued in class.R
+
+
 as.POSIXct(2014-10-08)
 #   Err 'origin' must be supplied
 

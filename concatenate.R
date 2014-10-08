@@ -1,5 +1,13 @@
-## objective: construct vector of names to test rownames.force in matrix.R
+## objective: concatenate hour and minute vectors from as_POSIX.R into %H:%M format
+c(as.POSIXlt(start)$hour,as.POSIXlt(start)$min)
+#   [1] 13 11 11 10  9  9  7  7  6  0 23 22 22 21 21 52 52 30 53 47 19 45 34 59 20 37 46
+#   [28]  2 50 38
+## unsuccessful
 
+## objective: construct vector of names to test rownames.force in matrix.R
+names<-c("name1","name2","name3","name4","name5","name6","name7","name8",
+         "name9","name10","name11","name12","name13","name14")
+## concatenation successful
 
 ## objective: create 14x4 grid of activity, start, end, range, and location for schedule.R
 grid<-c(activity,start,end,range,location)
@@ -33,7 +41,7 @@ range<-difftime(end,start)
 ## successful
 
 ## objective: label and create vector for the schedule.R *end time* column
-end<-c("2014-10-08 12:13:25 CDT",
+end<-c("2014-10-08 13:49:59 CDT",
        "2014-10-08 11:52:54 CDT",
        "2014-10-08 11:30:00 CDT",
        "2014-10-08 10:53:46 CDT",
@@ -68,6 +76,7 @@ start<-c("2014-10-08 11:52:54 CDT",
          )
 ## successful
 
+## objective: efficiently construct and label vectors for schedule.R
 description<-c("R programming", "getting out the door")
 start<-c("2014-10-08 07:34:04 CDT","2014-10-08 06:59:22 CDT")
 end<-c("2014-10-08 09:15:49 CDT","2014-10-08 07:34:04 CDT")
@@ -81,7 +90,7 @@ range<- c(
     )
   )
 )
-## see also schedule.R
+## innefficient
 
 c(Date="2014-10-08",time_start="07:45:43",Time_end="08:15:16",Description="R Programming")
 #   returns 1x4 character

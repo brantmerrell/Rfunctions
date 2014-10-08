@@ -1,3 +1,15 @@
+## objective: automate row names for a matrix
+#   from http://stackoverflow.com/questions/11187306/r-heatmap-on-imported-matlab-table
+as.matrix(c(1:5),rownames.force=TRUE)
+#   same output as "rownames.force=NULL"
+##  unsuccessful @"2014-10-08 13:35:34 CDT"
+
+## objective: automate row names for any matrix
+#   inputs from concatenate.R @"2014-10-08 13:18:33 CDT"
+as.matrix(data.frame(start), rownames.force=TRUE)
+#   same output as "rownames.force=NULL"
+## unsuccessful
+
 ## objective: automate row names for the schedule.R matrix
 #   inputs from concatenate.R @"2014-10-08 13:11:24 CDT"
 as.matrix(data.frame(activity,start,end,range,location), rownames.force=TRUE)
@@ -7,12 +19,13 @@ as.matrix(data.frame(activity,start,end,range,location), rownames.force=TRUE)
 ## objective: automate row names from a vector for the schedule.R matrix
 #   inputs from concatenate.R @"2014-10-08 13:10:06 CDT"
 as.matrix(data.frame(activity,start,end,range,location), rownames.force=names)
-# 
+#   same output as "rownames.force=NULL"
+## unsuccessful
 
 ## objective: automate row names from a vector for the schedule.R matrix
 #   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
 as.matrix(data.frame(activity,start,end,range,location), rownames.force=activity)
-#   identical to "rownames.force=NULL"
+#   same output as "rownames.force=NULL"
 ## unsuccessful
 
 ## objective: convert the data frame for schedule.R to a matrix

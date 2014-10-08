@@ -1,3 +1,11 @@
+## objective: simulate "i = read.table("file.txt",header=TRUE)"
+## from http://stackoverflow.com/questions/11187306/r-heatmap-on-imported-matlab-table
+## for experiment in matrix.R @"2014-10-08 13:25:59 CDT"
+i<-read.table("hospital-data.csv",header=TRUE)
+#   Err more columns than column names
+## unsuccessful
+
+
 ##rankall.R Read outcome data
 care_outcome<-read.csv("outcome-of-care-measures.csv", colClasses = "character")
 

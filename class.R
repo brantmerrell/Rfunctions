@@ -1,3 +1,12 @@
+## objective: unclass into sec, min, hour, mday, 
+## mon, year, wday, yday, isdst, zone, and gmtoff.
+unclass(as.POSIXlt("2014-10-08 14:58:29 CDT"))
+## successful
+
+
+## objective: reformat a time to "%Y-%m-%d %H:%M"
+unclass("2014-10-08 14:54:18 CDT")
+
 class(as.matrix(data.frame(activity,start,end,range,location)))
 #   inputs from concatenate.R @"2014-10-08 13:01:16 CDT"
 #   [1] "matrix"
