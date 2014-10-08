@@ -1,6 +1,16 @@
 ##see coltouse in control.R
 ##see care_outcome in data_input.R
 
+## objective: create 14*5 grid of activity, start, end, range, and location for schedule.R
+#   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
+data.frame(activity,start,end,range,location)
+## successful
+
+data.frame(description,start,end,range)
+## inputs from "schedule.R" and "concatenate.R"
+## returns 2x4 data frame with columns labeled date, description, start, end.
+
+
 ## Oct 7 - what is a good way to generate chessboard coordinates?
 boardframe<-data.frame(a=c(rows[1:8]), b=c(rows[1:8]),
                        c=c(rows[1:8]), d=c(rows[1:8]),

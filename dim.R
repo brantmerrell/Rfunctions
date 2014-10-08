@@ -1,3 +1,16 @@
+dim(as.matrix(data.frame(activity,start,end,range,location)))
+#   inputs from concatenate.R @"2014-10-08 13:02:22 CDT"
+#   [1] 14  5
+
+dim(as.matrix(c(activity,start,end,range,location)))
+#   inputs from concatenate.R @"2014-10-08 12:43:00 CDT"
+#   [1] 70 1
+
+
+dim(data.frame(date,start_time,end_time,description))
+## inputs from data_frame.R, concatenate.R, and schedule.R
+#   [1] 2 4
+
 dim(as.matrix(coltouse))
 ##see coltouse in control.R
 ##see care_outcome in data_input.R

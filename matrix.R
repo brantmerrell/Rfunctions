@@ -1,3 +1,49 @@
+## objective: automate row names for the schedule.R matrix
+#   inputs from concatenate.R @"2014-10-08 13:11:24 CDT"
+as.matrix(data.frame(activity,start,end,range,location), rownames.force=TRUE)
+#   same output as "rownames.force=NULL"
+## unsuccessful
+
+## objective: automate row names from a vector for the schedule.R matrix
+#   inputs from concatenate.R @"2014-10-08 13:10:06 CDT"
+as.matrix(data.frame(activity,start,end,range,location), rownames.force=names)
+# 
+
+## objective: automate row names from a vector for the schedule.R matrix
+#   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
+as.matrix(data.frame(activity,start,end,range,location), rownames.force=activity)
+#   identical to "rownames.force=NULL"
+## unsuccessful
+
+## objective: convert the data frame for schedule.R to a matrix
+#   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
+as.matrix(data.frame(activity,start,end,range,location))
+#   returns 14*5 matrix
+
+
+## objective: create 14*5 grid of activity, start, end, range, and location for schedule.R
+#   as.matrix(x, rownames.force = NA, ...) recognizes only argument 1 as x
+## Sol add parentheses to compress vectors into argument X, add argument to define X
+#   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
+as.matrix((activity,start,end,range,location), rownames.force = NA)
+#   Err unexpected ','
+## Sol data.frame()
+
+
+## objective: create 14*5 grid of activity, start, end, range, and location for schedule.R
+## Sol remove c() function from within matrix
+#   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
+as.matrix(activity,start,end,range,location)
+#   returns 14*1 matrix
+#   unsuccessful, looking for 14*5 matrix.
+
+## objective: create 14*5 grid of activity, start, end, range, and location for schedule.R
+#   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
+as.matrix(c(activity,start,end,range,location))
+#   returns 70*1 matrix
+## unsuccessful, looking for 14*5 matrix
+
+
 ## Oct 7 - what is a good way to generate chessboard coordinates?
 as.matrix(boardframe)
 ## see data_frame.R and PGN_97721646.R
