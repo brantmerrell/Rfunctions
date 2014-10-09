@@ -1,4 +1,5 @@
-
+colMeans(replicate(100, rpois(5,10)))
+#   returns list of 100 numbers near the number 10
 
 colMeans(numeric13_14, na.rm = TRUE, dims = 1)
 ##returns means of both columns of numeric13_14

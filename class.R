@@ -1,3 +1,8 @@
+class(colMeans(replicate(100, rpois(5,10))))
+
+class(replicate(100, rpois(5,10)))
+#   [1] "matrix"
+
 ## objective: unclass into sec, min, hour, mday, 
 ## mon, year, wday, yday, isdst, zone, and gmtoff.
 unclass(as.POSIXlt("2014-10-08 14:58:29 CDT"))
