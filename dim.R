@@ -1,3 +1,14 @@
+dim(schedule)
+#   [1] 51 5
+
+dim(data.frame(read.csv("activity.txt")$activity,read.csv("start.txt")$start,read.csv("end.txt")$end,read.csv("location.txt")$location))
+#   [1] 51 4
+
+dim(data.frame(read.csv("activity.txt"),read.csv("start.txt"),read.csv("end.txt"),read.csv("location.txt")))
+#   [1] 51 8
+
+dim(read.csv("location.txt"))
+
 dim(as.matrix(data.frame(activity,start,end,range,location)))
 #   inputs from concatenate.R @"2014-10-08 13:02:22 CDT"
 #   [1] 14  5

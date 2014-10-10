@@ -1,3 +1,11 @@
+read.csv("location.txt")
+read.csv("end.txt")
+read.csv("start.txt")
+read.csv("activity.txt")
+## Automatically makes first element the label
+## Automatically labels a column X full of NA's.
+## class: "data.frame" dim: 51 2
+
 ## objective: simulate "i = read.table("file.txt",header=TRUE)"
 ## from http://stackoverflow.com/questions/11187306/r-heatmap-on-imported-matlab-table
 ## for experiment in matrix.R @"2014-10-08 13:25:59 CDT"

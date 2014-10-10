@@ -1,3 +1,11 @@
+class(as.POSIXct(schedule$start))
+
+class(as.POSIXct("2014-10-08 21:11:33 CDT"))
+#   [1] "POSIXct" "POSIXt"
+
+class(read.csv("location.txt"))
+#   [1] "data.frame"
+
 ## convert start times in schedule R to seconds since 1970
 unclass(as.POSIXlt(start))$sec
 # unsuccessful returns seconds from the __:__:__ format.

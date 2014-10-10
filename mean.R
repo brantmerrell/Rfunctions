@@ -1,4 +1,5 @@
-
+mean(workschedule$minutes)
+#   Time difference of 53.79127 mins
 
 mean(c(1,1,2,3,5,8,13), trim=0, na.rm=TRUE)
 ##returns 4.714286

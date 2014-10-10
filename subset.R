@@ -1,12 +1,25 @@
-## subset "R Programming rows from schedule dataframe
-subset(schedule,schedule$activity=="R Programming")
-# successful
+subset(schedule,subset = (schedule$start > input1 & schedule$start < input2))
 
-## subset "R Programming rows from schedule dataframe
+## subset "R Programming rows from schedule.R dataframe
+subset(schedule,activity=="R_Programming")
+
+## subset "R Programming rows from schedule.R dataframe
+subset(schedule,activity=="R Programming")
+#   [1] activity start    end      location minutes 
+#   <0 rows> (or 0-length row.names)
+
+## subset "R Programming" rows from schedule dataframe
+subset(schedule2,schedule$activity=="R Programming")
+
+## subset "R Programming" rows from schedule.R dataframe
+subset(schedule,schedule$activity=="R Programming")
+# successful - but quit working when schedule.R data was converted to CSV
+
+## subset "R Programming" rows from schedule dataframe
 subset(schedule,subset=="R Programming", select=schedule$activity)
 #   Err comparison (1) possible only for attomic and list types
 
-## subset "R Programming rows from schedule dataframe
+## subset "R Programming" rows from schedule dataframe
 subset(schedule,subset=="R Programming")
 #   Err comparison (1) possible only for attomic and list types
 

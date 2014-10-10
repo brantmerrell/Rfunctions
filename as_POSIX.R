@@ -1,4 +1,6 @@
+as.POSIXct(schedule$start)
 
+as.POSIXct("2014-10-08 21:11:33 CDT")
 
 ## objective: generate a *minute of day* vector from the start vector in schedule.R
 #   input from concatenate.R

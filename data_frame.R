@@ -1,6 +1,13 @@
 ##see coltouse in control.R
 ##see care_outcome in data_input.R
 
+## merge CSV files into nrow*4 data frame for schedule.$
+data.frame(read.csv("activity.txt")$activity,read.csv("start.txt")$start,read.csv("end.txt")$end,read.csv("location.txt")$location)
+
+## merge CSV files into nrow*4 data frame for schedule.R
+data.frame(read.csv("activity.txt"),read.csv("start.txt"),read.csv("end.txt"),read.csv("location.txt"))
+## unsuccuessful - returns nrow*8 data frame, with 4 columns of NA.
+
 ## select a row from the schedule dataframe
 schedule[2,]
 schedule[5,]

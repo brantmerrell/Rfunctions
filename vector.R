@@ -1,3 +1,8 @@
+
+## remove NA column that was added by read.csv
+as.vector(read.csv("location.txt"))
+## unsuccessful
+
 ## Oct 7 - what is a good way to represent chessboard pgn?
 rows<-c("1","2","3","4","5","6","7","8")
 columns<-c("a","b","c","d","e","f","g","h")

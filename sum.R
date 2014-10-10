@@ -1,3 +1,9 @@
+sum(workschedule2$minutes)
+#   Time difference of 910.9333 mins
+
+sum(workschedule2)
+# Err
+
 # find out whether the 6 means returned by this tapply add up to 1.
 sum(tapply(flags$animate, flags$landmass, mean))
 # [1] 1.298573
