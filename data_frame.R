@@ -1,6 +1,11 @@
 ##see coltouse in control.R
 ##see care_outcome in data_input.R
 
+## select a row from the schedule dataframe
+schedule[2,]
+schedule[5,]
+#   successful
+
 ## objective: create data frame of schedule2.R objects
 schedule2<-data.frame(minutes,hours)
 

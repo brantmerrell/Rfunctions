@@ -1,4 +1,26 @@
+## subset "R Programming rows from schedule dataframe
+subset(schedule,schedule$activity=="R Programming")
+# successful
 
+## subset "R Programming rows from schedule dataframe
+subset(schedule,subset=="R Programming", select=schedule$activity)
+#   Err comparison (1) possible only for attomic and list types
+
+## subset "R Programming rows from schedule dataframe
+subset(schedule,subset=="R Programming")
+#   Err comparison (1) possible only for attomic and list types
+
+## subset "R Programming" rows from schedule dataframe
+subset(schedule$activity,subset="R Programming")
+#   Err subset must be logical
+
+## subset "R Programming" rows from schedule dataframe
+subset(schedule$activity,"R Programming")
+#   Err subset must be logical
+
+## subset "R Programming" rows from schedule dataframe
+subset(schedule,"R Programming" %in% schedule$activity)
+# unsuccessful - returns entire schedule dataframe.
 
 subset(rankedsplit, rankedsplit[1])
 ##rankedsplit<-split(ordered_outcome, ordered_outcome$State)

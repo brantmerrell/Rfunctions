@@ -1,3 +1,5 @@
+
+
 ## objective: generate a *minute of day* vector from the start vector in schedule.R
 #   input from concatenate.R
 as.POSIXlt(start)$min

@@ -1,4 +1,6 @@
 ## experiment with tapply, FUN length.
+
+## experiment with tapply, FUN length.
 tapply(schedule$activity, schedule$end, length)
 #   returns endtimes paired with 1s.
 
