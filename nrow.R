@@ -1,3 +1,5 @@
+ncol(flags)
+
 ncol(schedule)
 #   [1] 5
 

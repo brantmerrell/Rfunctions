@@ -1,3 +1,17 @@
+length(schedule$activity)
+#   [1] 47
+
+length(schedule$end)
+#   [1] 47
+
+#inputs from schedule.R
+length(end)
+#   [1]
+
+#inputs from schedule.R
+length(activity)
+#   [1] 47
+
 length(location)
 #   input from concatenate.R @"2014-10-08 12:28:37 CDT"
 #   [1] 14

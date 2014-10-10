@@ -1,3 +1,11 @@
+# objective: generate timespans in minutes from s schedule.R for schedule2.R
+difftime(end,start,units="mins")
+# successful
+
+# objective: generate timespans in hours from s schedule.R for schedule2.R
+difftime(end,start,units="hours")
+# successful
+
 ## objective: neatly & efficiently vector from 2 input vectors
 ## Sol change most recent "end" element from "null" to current time.
 #   input from concatenate.R @"2014-10-08 12:14:30 CDT"

@@ -1,3 +1,21 @@
+## convert start times in schedule R to seconds since 1970
+unclass(as.POSIXlt(start))$sec
+# unsuccessful returns seconds from the __:__:__ format.
+
+class(tapply(schedule$end, schedule$activity, mean))
+#   [1] "array"
+
+class(as.factor(schedule$start))
+# [1] "factor"
+
+class(as.factor(schedule$start))
+
+class(tapply(schedule$activity, schedule$start, mean))
+
+class(tapply(flags$animate, flags$landmass, mean))
+
+class(tapply(flags$population, flags$landmass, summary))
+
 class(colMeans(replicate(100, rpois(5,10))))
 
 class(replicate(100, rpois(5,10)))

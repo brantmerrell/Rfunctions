@@ -1,5 +1,13 @@
 
 
+as.factor(schedule$start)
+#   returns list of 47 start times with "47 Levels:..."
+
+## experiment with as.factor to help understand tapply
+as.factor(schedule$activities)
+# factor(0)
+# Levels: 
+
 factor(statevector)
 ##statevector<-unique(care_outcome[,7])
 ##see care_outcome in data_input.R

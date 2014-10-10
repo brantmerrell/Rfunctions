@@ -1,6 +1,9 @@
 ##see coltouse in control.R
 ##see care_outcome in data_input.R
 
+## objective: create data frame of schedule2.R objects
+schedule2<-data.frame(minutes,hours)
+
 ## objective: create 14*5 grid of activity, start, end, range, and location for schedule.R
 #   inputs from concatenate.R @"2014-10-08 12:36:51 CDT"
 data.frame(activity,start,end,range,location)
