@@ -1,3 +1,21 @@
+# How do dollar signs affect the class of a number?
+class(5.00)
+#   [1] "numeric"
+class($5.00)
+#   Error: unexpected '$' in "class($"
+class("$5.00")
+#   [1] "character"
+## dollar signs invalidate the numeric class
+
+# How do quotes affect the class of a variable?
+class(read.csv("testbudget.txt")$Balance)
+# without quotes:
+#   [1] "factor"
+# with quotes:
+#   [1] "factor
+## no effect
+
+
 class(as.POSIXct(schedule$start))
 
 class(as.POSIXct("2014-10-08 21:11:33 CDT"))

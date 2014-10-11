@@ -1,3 +1,5 @@
+setwd('C:\\Users\\Josh\\Documents\\Budget')
+
 setwd('C:\\Users\\Josh\\Documents\\schedule')
 
 ## objective: simulate "i = read.table("file.txt",header=TRUE)"

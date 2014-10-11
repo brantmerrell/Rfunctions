@@ -1,3 +1,20 @@
+
+
+# How does R express a negative sign?
+sum(5.00,-6.00)
+#   [1] -1
+## minus sign
+
+# Does R recognize parenthesis as equivalents to negative signs in finance?
+sum($5.00,$6.00)
+#   Error: unexpected '$' in "sum($"
+sum(5.00,6.00)
+#   [1] 11
+sum((5.00),(6.00))
+#   [1] 11
+## parentheses are not recognized as negatives
+## dollar signs render numbers non-numeric
+
 sum(workschedule2$minutes)
 #   Time difference of 910.9333 mins
 

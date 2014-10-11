@@ -1,3 +1,71 @@
+
+
+# smooth transition from testbudget to budget? @"2014-10-10 22:57:17 CDT"
+read.csv("Budget.txt")
+# affrm
+
+# @"2014-10-10 22:29:09 CDT"
+# Hyp: if $Description is comma-separated from $Amount, read.csv will run smoothly.
+read.csv("testbudget2.txt")
+# correct 
+read.csv("testbudget.txt")
+# correct
+
+# Hyp: if "Description" duplicates of "Category" are renamed to N/A, read.csv will run smoothly
+read.csv("testbudget2.txt")
+#   Err duplicate row.names not allowed
+## incorrect
+
+# http://stackoverflow.com/questions/15285089/
+# r-duplicate-row-names-are-not-allowed
+# Hyp: if all seven columns are provided inputs for all rows, 
+# read.csv("testbudget.txt") will return 7 columns with no errors or warnings.
+## testbudget is trimmed to testbudget2 (5x7)
+read.csv("testbudget2.txt")
+#   Err duplicate row.names not allowed
+
+# @"2014-10-10 22:06:57 CDT"
+read.csv("testbudget.txt")
+#   Err duplicate row.names not allowed
+#   previous read.csv("testbudget.txt") allows several replications in $Date and $Category
+#   Possibility: new column $ReCategory has observations in rows 1-5, 9, and 26.
+#   Hyp: if $Recategory is filled in from rows 1 to 26, 
+#   read.csv("testbudget.txt") will return 7 columns with no errors or warnings.
+#   incorrect
+
+# Do CSV files need quotes for dollar values?
+# with quotes:
+read.csv("testbudget.txt")
+#   Err more columns than column names
+## used 'enter' to separate columns
+# with quotes:
+read.csv("testbudget.txt")
+#   returns seven columns with no warnings
+# no quotes on $Balance columns:
+read.csv("testbudget.txt")
+#   returns the same thing
+
+## implement answer from link:
+## http://stackoverflow.com/questions/22171858/
+## in-read-table-incomplete-final-line-found-by-readtableheader
+read.csv("Budget.txt")
+## operational and returns no warning
+## successful
+
+# CSV file in which commas are placed between all objects
+read.csv("Budget.txt")
+#   Warning: read.table(file = file, header = header, sep = sep, quote = quote,  : 
+#   incomplete final line found by readTableHeader on 'Budget.txt'
+## operational
+## http://stackoverflow.com/questions/22171858/
+## in-read-table-incomplete-final-line-found-by-readtableheader
+
+# CSV file in which colnames and data are separated by a non-comma
+read.csv("Budget.txt")
+#   Warning: read.table(file = file, header = header, sep = sep, quote = quote,  : 
+#   incomplete final line found by readTableHeader on 'Budget.txt'
+## operational. Comma inconsistency not origin of warning, but not helpful.
+
 read.csv("location.txt")
 read.csv("end.txt")
 read.csv("start.txt")
