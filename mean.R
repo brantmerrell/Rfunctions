@@ -1,3 +1,9 @@
+# schedule.R @"2014-10-11 12:29:47 CDT"
+mean(Rschedule$hours)
+#   0.9036237
+mean(Rschedule$minutes)
+#   54.21742
+
 mean(workschedule$minutes)
 #   Time difference of 53.79127 mins
 

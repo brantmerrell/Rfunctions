@@ -1,4 +1,6 @@
-
+# from schedule.R @"2014-10-11 12:28:23 CDT"
+sum(Rschedule$hours)
+# 19.87972
 
 # How does R express a negative sign?
 sum(5.00,-6.00)
