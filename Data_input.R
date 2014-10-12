@@ -1,4 +1,51 @@
+## test for subset.R"2014-10-11 16:40:54 CDT"
+activity<-read.csv("testschedule.txt")$activity
+start<-read.csv("testschedule.txt")$start
+end<-read.csv("testschedule.txt")$end
+location<-read.csv("testschedule.txt")$location
 
+## test for subset.R"2014-10-11 16:37:49 CDT"
+activity<-read.csv("activity.txt")$activity
+start<-read.csv("start.txt")$start
+end<-read.csv("end.txt")$end
+location<-read.csv("location.txt")$location
+## successful
+
+@"2014-10-11 15:19:38 CDT"
+read.csv("testschedule.txt")
+# 5*85
+
+@"2014-10-11 15:18:38 CDT"
+read.csv("schedule.txt")
+# 5*85
+
+@"2014-10-11 15:08:53 CDT"
+read.csv("testschedule.txt")
+# 5*75
+
+@"2014-10-11 14:51:21 CDT"
+read.csv("testschedule.txt")
+# 5*75
+
+@"2014-10-11 14:38:54 CDT"
+read.csv("testschedule.txt")
+# 5*70
+
+@"2014-10-11 14:20:59 CDT"
+read.csv("testschedule.txt")
+# 5*69
+
+@"2014-10-11 14:09:20 CDT"
+read.csv("testschedule.txt")
+# 4*69
+
+@"2014-10-11 13:57:41 CDT"
+read.csv("testschedule.txt")
+# 3*69
+
+@"2014-10-11 13:56:07 CDT"
+read.csv("testschedule.txt")
+#   Err No such file
 
 # smooth transition from testbudget to budget? @"2014-10-10 22:57:17 CDT"
 read.csv("Budget.txt")

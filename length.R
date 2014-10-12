@@ -1,3 +1,7 @@
+#@"2014-10-11 15:31:51 CDT"
+length(subschedule2("2014-10-07 21:38:00 CDT","2014-10-08 21:11:33 CDT"))
+#   [6]
+
 length(schedule$activity)
 #   [1] 47
 

@@ -1,5 +1,7 @@
-##see coltouse in control.R
-##see care_outcome in data_input.R
+# #@"2014-10-11 16:46:15 CDT"
+## test for Subset.R"2014-10-11 16:43:22 CDT"
+data.frame(read.csv("testschedule.txt"))
+data.frame(read.csv("testschedule.txt"))$location
 
 ## merge CSV files into nrow*4 data frame for schedule.$
 data.frame(read.csv("activity.txt")$activity,read.csv("start.txt")$start,read.csv("end.txt")$end,read.csv("location.txt")$location)

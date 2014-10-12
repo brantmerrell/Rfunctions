@@ -1,3 +1,25 @@
+#@"2014-10-11 17:07:37 CDT"
+## test for matrix.R"2014-10-11 17:06:50 CDT"
+class(as.matrix(schedule))
+#   [1] "matrix"
+class(as.matrix(data.frame(activity, start, end, location)))
+#   [1] "matrix"
+
+#@"2014-10-11 16:47:29 CDT"
+class(data.frame(read.csv("testschedule.txt"))$location)
+#   "factor"
+
+#@"2014-10-11 16:15:15 CDT"
+class(as.vector(activity))
+#   "character"
+
+#@"2014-10-11 16:11:33 CDT"
+class(activity)
+# "factor"
+
+#@"2014-10-11 15:32:57 CDT"
+class(subschedule2("2014-10-07 21:38:00 CDT","2014-10-08 21:11:33 CDT"))
+
 # How do dollar signs affect the class of a number?
 class(5.00)
 #   [1] "numeric"

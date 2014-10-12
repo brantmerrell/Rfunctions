@@ -1,3 +1,14 @@
+#@"2014-10-11 18:19:44 CDT"
+## NOTE: do not attempt the '$' selector for matrices
+
+#@"2014-10-11 17:06:50 CDT"
+## test for subset.R"2014-10-11 17:05:48 CDT"
+as.matrix(schedule)
+# generates proper matrix
+schedule<-as.matrix(data.frame(activity, start, end, location, minutes, hours))
+# generates proper matrix
+## schedule reverted to data frame @"2014-10-11 17:21:21 CDT"
+
 ## objective: automate row names for a matrix
 #   from http://stackoverflow.com/questions/11187306/r-heatmap-on-imported-matlab-table
 as.matrix(c(1:5),rownames.force=TRUE)

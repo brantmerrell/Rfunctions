@@ -1,4 +1,33 @@
 
+#@"2014-10-11 17:55:06 CDT"
+## test list.R"2014-10-11 17:49:52 CDT" for vector()
+as.vector(activity)
+#   "X" preserved as "X"
+as.vector(start)
+#   "X" changed to " X"
+as.vector(end)
+#   "X" changed to " X"
+as.vector(location)
+#   "X" changed to " X"
+## discovery on list.R# consistent for vector()
+
+#@"2014-10-11 17:17:32 CDT"
+## test for subset.R"2014-10-11 17:15:40 CDT"
+activity<-as.vector(read.csv("testschedule.txt")$activity)
+#   [6]
+start<-as.vector(read.csv("testschedule.txt")$start)
+#   [6]
+end<-as.vector(read.csv("testschedule.txt")$end)
+#   [6]
+location<-as.vector(read.csv("testschedule.txt")$location)
+#   [6]
+## reassigned object "schedule" @"2014-10-11 17:23:39 CDT"
+
+#@"2014-10-11 16:13:05 CDT"
+## change class of object from factor to vector
+as.vector(activity)
+# class changed to "character"
+
 ## remove NA column that was added by read.csv
 as.vector(read.csv("location.txt"))
 ## unsuccessful
