@@ -1,3 +1,9 @@
+#@"2014-10-11 22:19:22 CDT"
+mean(RStudio$minutes)
+#   54.88512
+mean(CSV$minutes)
+#   51.8125
+
 # schedule.R @"2014-10-11 12:29:47 CDT"
 mean(Rschedule$hours)
 #   0.9036237

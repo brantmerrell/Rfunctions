@@ -40,3 +40,8 @@ length(end)
 length(start)
 #   concatenate.R, schedule.R
 #   [1] 11
+
+length(read.csv("schedule.txt")$activity)
+length(read.csv("schedule.txt")$start)
+length(read.csv("schedule.txt")$end)
+length(read.csv("schedule.txt")$location)

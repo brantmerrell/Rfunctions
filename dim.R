@@ -1,3 +1,9 @@
+#@"2014-10-14 14:35:33 CDT"
+## swirl, Getting and Cleaning Data, Manipulating Data with dplyr
+dim(mydf)
+#   [1] 225468     11
+## successful
+
 #@"2014-10-11 15:32:35 CDT"
 dim("2014-10-11 15:31:51 CDT")
 #   NULL

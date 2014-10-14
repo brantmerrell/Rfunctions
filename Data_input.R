@@ -1,3 +1,17 @@
+#@"2014-10-14 14:41:41 CDT"
+## Swirl, Getting and Cleaning Data, Manipulating Data with dplyr
+mydf<-read.csv(path2csv, stringsAsFactors = FALSE)
+## successful
+
+#@"2014-10-13 13:14:14 CDT"
+read.csv("jtleek_datascientist_test.txt")
+
+#@"2014-10-13 09:25:00 CDT"
+DST_v1<-read.csv("DST_video1.txt")
+#   119 columns
+#   <0 rows> (or 0-length row.names)
+## replaces spaces with dots
+
 ## test for subset.R"2014-10-11 16:40:54 CDT"
 activity<-read.csv("testschedule.txt")$activity
 start<-read.csv("testschedule.txt")$start

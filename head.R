@@ -1,3 +1,7 @@
+#@"2014-10-14 14:38:03 CDT"
+## swirl, Getting and Cleaning Data, Manipulating Data with dplyr
+head(mydf)
+## successful
 
 ##rankhospital.R 
 head(testsorter,n)$Hospital.Name

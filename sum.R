@@ -1,3 +1,10 @@
+#@"2014-10-11 22:15:51 CDT"
+## input from function.R
+sum(RStudio$hours)
+#   25.61306
+sum(CSV$hours)
+#   3.454167
+
 # from schedule.R @"2014-10-11 12:28:23 CDT"
 sum(Rschedule$hours)
 # 19.87972

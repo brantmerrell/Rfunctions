@@ -1,3 +1,10 @@
+#@"2014-10-14 12:12:31 CDT"
+
+
+#@"2014-10-13 17:16:07 CDT"
+read.csv("001.csv")
+## successful
+
 #@"2014-10-11 19:07:40 CDT"
 subschedule1<-function(input){subset(schedule,schedule$activity==c(" ", "input"))}
 subschedule1("RStudio")
@@ -22,7 +29,8 @@ subschedule1(" RStudio")
 
 #@"2014-10-11 18:49:57 CDT"
 subschedule1<-function(input){subset(schedule,schedule$activity==input)}
-subschedule1(" RStudio")
+RStudio<-subschedule1(" RStudio")
+CSV<-subschedule1(" CSV")
 ## successful
 
 #@"2014-10-11 15:38:21 CDT"

@@ -1,3 +1,6 @@
+#@"2014-10-13 13:20:06 CDT"
+c(DST_v1[3],DST_v1[6],DST_v1[8],DST_v1[9])
+
 ## objective: concatenate hour and minute vectors from as_POSIX.R into %H:%M format
 c(as.POSIXlt(start)$hour,as.POSIXlt(start)$min)
 #   [1] 13 11 11 10  9  9  7  7  6  0 23 22 22 21 21 52 52 30 53 47 19 45 34 59 20 37 46
