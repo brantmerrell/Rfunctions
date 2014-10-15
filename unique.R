@@ -1,3 +1,8 @@
+#@"2014-10-15 10:15:42 CDT"
+unique(read.csv(getElement(list.files(), 1))$sulfate)
+# [1] <NA>    7.21    5.99    4.68    3.47    2.42    1.43    2.76    3.41    1.3 
+# [601] 3.96    4.66
+
 
 #@"2014-10-14 23:30:47 CDT"
 unique(read.csv("200.csv")$ID)

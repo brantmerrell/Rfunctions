@@ -1,3 +1,27 @@
+
+
+#@"2014-10-15 10:12:28 CDT"
+nrow(read.csv(getElement(list.files(), 1))$sulfate)
+# NULL
+
+#@"2014-10-15 10:10:28 CDT"
+nrow(subset(read.csv(getElement(list.files(), 1)), sulfate !="NA"))
+# [1] 15747
+# Why does NA + !NA of sulfate not equal total?
+
+#@"2014-10-15 10:00:44 CDT"
+nrow(subset(read.csv(getElement(list.files(), 1)), sulfate =="NA"))
+# [1] 0
+
+#@"2014-10-15 09:59:19 CDT"
+nrow(read.csv(getElement(list.files(), 1)))
+#   [1] 56256
+
+#@"2014-10-15 09:56:29 CDT"
+
+#   [1] 15747
+## should be 117
+
 #@"2014-10-15 08:46:44 CDT"
 nrow(subset(read.csv(getElement(list.files(), id)), sulfate !="NA"))
 #   Err object ID not found

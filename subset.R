@@ -1,4 +1,29 @@
-"2014-10-15 08:17:30 CDT"
+#@"2014-10-15 10:49:01 CDT"
+# response to dim.R"2014-10-15 10:24:19 CDT" 
+subset(read.csv("002.csv"), is.na(read.csv("002.csv")$sulfate))
+## subset=="NA" doesn't appear to work while class(subset) is numeric.
+## is.na(subset) works.
+
+#@"2014-10-15 10:36:41 CDT"
+subset(read.csv("002.csv"), read.csv("002.csv")$sulfate==7.21)
+# <0 rows> (or 0-length row.names)
+## why can I not subset anything?
+
+#@"2014-10-15 10:32:46 CDT"
+subset(read.csv("002.csv"), read.csv("002.csv")$sulfate=="NA")
+# <0 rows> (or 0-length row.names)
+## why can I not subset NAs?
+
+#@"2014-10-15 10:31:20 CDT"
+subset(read.csv("001.csv"), sulfate=="NA")
+# <0 rows> (or 0-length row.names)
+
+#@"2014-10-15 10:28:49 CDT"
+# response to dim.R"2014-10-15 10:24:19 CDT" 
+subset(data.frame(read.csv("002.csv")), sulfate == "NA")
+# <0 rows> (or 0-length row.names)
+
+#@"2014-10-15 08:17:30 CDT"
 subset(data.frame(read.csv("002.csv")), sulfate != "NA")
 #   3418 2010-05-11  3.5700  0.5240  2
 

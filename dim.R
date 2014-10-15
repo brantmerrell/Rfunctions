@@ -1,5 +1,13 @@
 
 
+#@"2014-10-15 10:24:19 CDT"
+## response to nrow.R"2014-10-15 10:10:28 CDT"
+dim(subset(data.frame(read.csv("002.csv")), sulfate != "NA"))
+# [1] 1041  4
+dim(subset(data.frame(read.csv("002.csv")), sulfate == "NA"))
+# [1] 0   4
+# There are NAs in 002, why are they not subsetted? See subset.R"2014-10-15 10:49:01 CDT"
+
 #@"2014-10-15 08:06:31 CDT"
 dim("002.csv")
 #   NULL
