@@ -1,3 +1,18 @@
+#@"2014-10-15 07:24:00 CDT"
+getwd()
+#   [1] "C:/Users/Josh/Documents/Coursera/rprog-data-specdata/specdata"
+
+#@"2014-10-15 07:22:50 CDT"
+getwd("C:\\Users\\Josh\\Documents\\specdata")
+#   Err unused argument
+
+#@"2014-10-14 23:00:47 CDT"
+setwd("C:\\Users\\Josh\\Documents")
+setwd("specdata")
+
+#@"2014-10-14 22:37:16 CDT"
+setwd(directory)
+
 #@"2014-10-13 17:17:31 CDT"
 setwd("C:\\Users\\Josh\\Documents\\Coursera\\rprog-data-specdata\\specdata")
 

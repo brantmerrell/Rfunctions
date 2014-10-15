@@ -1,4 +1,10 @@
-# #@"2014-10-11 16:46:15 CDT"
+#@"2014-10-15 08:11:27 CDT"
+data.frame(read.csv("002.csv"), na.rm=TRUE)
+
+#@"2014-10-14 23:18:38 CDT"
+data.frame(read.csv("001.csv"))
+
+#@"2014-10-11 16:46:15 CDT"
 ## test for Subset.R"2014-10-11 16:43:22 CDT"
 data.frame(read.csv("testschedule.txt"))
 data.frame(read.csv("testschedule.txt"))$location

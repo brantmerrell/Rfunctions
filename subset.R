@@ -1,3 +1,23 @@
+"2014-10-15 08:17:30 CDT"
+subset(data.frame(read.csv("002.csv")), sulfate != "NA")
+#   3418 2010-05-11  3.5700  0.5240  2
+
+#@"2014-10-15 08:16:29 CDT"
+subset(data.frame(read.csv("002.csv")), sulfate == "NA")
+#   <0 rows> (or 0-length row.names)
+
+#@"2014-10-15 08:15:35 CDT"
+subset(data.frame(read.csv("002.csv")), sulfate == NA)
+#   <0 rows> (or 0-length row.names)
+
+#@"2014-10-15 08:14:46 CDT"
+subset(data.frame(read.csv("002.csv")), sulfate != NA)
+#   <0 rows> (or 0-length row.names)
+
+#@"2014-10-15 08:13:26 CDT"
+subset(data.frame(read.csv("002.csv"), sulfate != NA))
+#   Err sulfate not found
+
 #@"2014-10-11 18:53:08 CDT"
 subset(schedule, (schedule$activity=="CSV") | (schedule$activity==" CSV"))
 successful

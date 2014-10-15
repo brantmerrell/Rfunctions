@@ -1,3 +1,9 @@
+
+
+#@"2014-10-15 08:06:31 CDT"
+dim("002.csv")
+#   NULL
+
 #@"2014-10-14 14:35:33 CDT"
 ## swirl, Getting and Cleaning Data, Manipulating Data with dplyr
 dim(mydf)

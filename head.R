@@ -1,3 +1,18 @@
+
+
+#@"2014-10-14 23:45:11 CDT"
+head(read.csv("001.csv")[1])
+## returns date column
+
+#@"2014-10-14 23:23:44 CDT"
+head(data.frame(read.csv("001.csv")))$sulfate
+head(data.frame(read.csv("001.csv")))$nitrate
+## successful
+
+#@"2014-10-14 23:19:47 CDT"
+head(data.frame(read.csv("001.csv")))
+## successful
+
 #@"2014-10-14 14:38:03 CDT"
 ## swirl, Getting and Cleaning Data, Manipulating Data with dplyr
 head(mydf)

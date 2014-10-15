@@ -1,3 +1,19 @@
+#@"2014-10-15 07:48:33 CDT"
+read.csv(getElement(list.files(), 1))
+## successful
+
+#@"2014-10-14 23:35:42 CDT"
+read.csv("001.csv")$sulfate
+## successful
+
+#@"2014-10-14 23:27:06 CDT"
+read.csv("001.csv")$ID
+## successful
+
+#@"2014-10-14 23:16:59 CDT"
+read.csv("001.csv")
+## successful
+
 #@"2014-10-14 14:41:41 CDT"
 ## Swirl, Getting and Cleaning Data, Manipulating Data with dplyr
 mydf<-read.csv(path2csv, stringsAsFactors = FALSE)
