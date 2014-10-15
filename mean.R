@@ -1,3 +1,10 @@
+#@"2014-10-15 15:10:33 CDT"
+avg_bytes = mean(size)
+
+#@"2014-10-15 14:31:22 CDT"
+mean(size)
+# Err size not found 
+
 #@"2014-10-11 22:19:22 CDT"
 mean(RStudio$minutes)
 #   54.88512

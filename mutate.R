@@ -1,5 +1,7 @@
-
-
+#@ "2014-10-15 15:35:54 CDT"
+cran %>%
+  select(ip_id, country, package, size) %>%
+  mutate(size_mb = size / 2^20)
 
 #@"2014-10-14 16:19:50 CDT"
 ## swirl, Getting and Cleaning Data, Manipulating Data with dplyr

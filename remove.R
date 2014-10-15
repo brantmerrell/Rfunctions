@@ -2,3 +2,4 @@
 ## swirl, Getting and Cleaning Data, Manipulating Data with dplyr
 rm("mydf")
 ## successful
+# repeat @"2014-10-15 14:05:19 CDT"

@@ -1,3 +1,9 @@
+#@"2014-10-15 14:02:07 CDT"
+library(dplyr)
+
+#@"2014-10-15 14:00:00 CDT"
+library(swirl)
+
 #@"2014-10-15 08:04:47 CDT"
 library(stats)
 

@@ -1,3 +1,6 @@
+#@"2014-10-15 14:21:44 CDT"
+unique(by_package)
+
 #@"2014-10-15 10:15:42 CDT"
 unique(read.csv(getElement(list.files(), 1))$sulfate)
 # [1] <NA>    7.21    5.99    4.68    3.47    2.42    1.43    2.76    3.41    1.3 

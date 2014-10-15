@@ -1,3 +1,40 @@
+#@"2014-10-15 15:39:04 CDT"
+cran %>%
+  select(ip_id, country, package, size) %>%
+  mutate(size_mb = size / 2^20) %>%
+  filter(size_mb <= 0.5) %>%
+  arrange(desc(size_mb))
+  
+
+#@"2014-10-15 15:06:19 CDT"
+result2 <-
+  arrange(
+    filter(
+      summarize(
+        group_by(cran,
+                 package
+        ),
+        count = n(),
+        unique = n_distinct(ip_id),
+        countries = n_distinct(country),
+        avg_bytes = mean(size)
+      ),
+      countries > 60
+    ),
+    desc(countries),
+    avg_bytes
+  )
+
+
+#@"2014-10-15 15:03:29 CDT"
+result1 <- arrange(top_countries, desc(countries), avg_bytes)
+
+"2014-10-15 14:58:55 CDT"
+arrange(top_unique, desc(unique))
+
+#@"2014-10-15 14:53:52 CDT"
+arrange(top_counts, desc(count))
+
 #@"2014-10-14 16:15:21 CDT"
 ## swirl, Getting and Cleaning Data, Manipulating Data with dplyr
 arrange(cran2, country, desc(r_version), ip_id)
