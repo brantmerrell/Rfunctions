@@ -1,4 +1,13 @@
+#@"2014-10-15 21:07:28 CDT"
+nobs<-nrow(subset(read.csv(getElement(list.files(), id)), !is.na(read.csv(getElement(list.files(), id))$sulfate) & !is.na(read.csv(getElement(list.files(), id))$nitrate)))
 
+#@"2014-10-15 18:42:13 CDT"
+nrow(subset(
+  read.csv(getElement(list.files(), 1)), 
+  !is.na(read.csv(getElement(list.files(), 1))$sulfate ) &
+    !is.na(read.csv(getElement(list.files(), 1))$nitrate)))
+# [1] 15747
+# same as subset of sulfate alone
 
 #@"2014-10-15 10:12:28 CDT"
 nrow(read.csv(getElement(list.files(), 1))$sulfate)

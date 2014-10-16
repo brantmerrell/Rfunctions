@@ -1,3 +1,26 @@
+#@"2014-10-15 20:45:18 CDT"
+nrow(subset(
+  read.csv(getElement(list.files(), id)), 
+  !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+    !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+## successful
+
+#@"2014-10-15 20:42:09 CDT"
+nrow(subset(read.csv("001.csv"), !is.na(read.csv("001.csv")$sulfate) & !is.na(read.csv("001.csv")$nitrate)))
+## successful
+
+#@"2014-10-15 18:41:57 CDT"
+nrow(subset(
+  read.csv(getElement(list.files(), 1)), 
+  !is.na(read.csv(getElement(list.files(), 1))$sulfate ) &
+    !is.na(read.csv(getElement(list.files(), 1))$nitrate)))
+
+subset(
+  read.csv(getElement(list.files(), id)), 
+  !is.na(read.csv(getElement(list.files(), id))$sulfate ) &
+    !is.na(read.csv(getElement(list.files(), id))$nitrate))
+#   Err ID not found
+
 #@"2014-10-15 10:49:01 CDT"
 # response to dim.R"2014-10-15 10:24:19 CDT" 
 subset(read.csv("002.csv"), is.na(read.csv("002.csv")$sulfate))

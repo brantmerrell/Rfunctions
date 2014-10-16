@@ -1,3 +1,68 @@
+nobs
+for (n in id) {
+  subset(
+    read.csv(getElement(list.files(), n)), 
+    !is.na(read.csv(getElement(list.files(), n))$sulfate) & 
+      !is.na(read.csv(getElement(list.files(), n))$nitrate))
+}
+
+#@"2014-10-15 21:11:03 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nobs<-nrow(subset(
+    read.csv(getElement(list.files(), id)), 
+    !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+      !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  data.frame(id, nobs)
+}
+complete("specdata", 1)
+## correct
+complete("specdata", c(2, 4, 8, 10, 12))
+## Err selects more than 1 element
+
+#@"2014-10-15 20:52:33 CDT"
+nobs<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nrow(subset(
+    read.csv(getElement(list.files(), id)), 
+    !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+      !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+}
+# passes id = 1, 2, 4, 8, 10, 12, 30, 29, 28, 27, 26, 25, 3
+# still needs to print data frame
+
+#@"2014-10-15 18:36:41 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nrow(
+    subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate)
+    )
+  )
+}
+complete("specdata", 1)
+# [1] 15747
+# should be 117
+
+#@"2014-10-15 18:09:35 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nrow(
+    subset(
+      read.csv(getElement(list.files(), id)), 
+      is.na(read.csv(getElement(list.files(), id))$sulfate)
+      )
+    )
+}
+complete("specdata", 1)
+# [1] 40509
+# should be 117
+
 #@"2014-10-15 08:48:45 CDT"
 complete<-function(directory, id){
   setwd("C:\\Users\\Josh\\Documents")
@@ -19,8 +84,12 @@ complete("specdata", 1)
 
 #@"2014-10-15 08:34:33 CDT"
 nobs<-function(id){nrow(subset(read.csv(getElement(list.files(), id)), sulfate!="NA"))}
+nobs(1)
+#   [1] 15747
+## incorrect
 nobs(2)
 #   [1] 1041
+## correct
 
 #@"2014-10-15 08:26:50 CDT"
 nobs<-function(id){

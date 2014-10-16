@@ -1,4 +1,20 @@
-for ()
+#@"2014-10-15 21:52:12 CDT"
+for (n in id) {
+  tempsubset<-subset(
+    read.csv(getElement(list.files(), n)), 
+    !is.na(read.csv(getElement(list.files(), n))$sulfate) & 
+      !is.na(read.csv(getElement(list.files(), n))$nitrate))
+  rbind(nobs, tempsubset)
+}
+
+#@"2014-10-15 21:18:20 CDT"
+for (n in id) {
+  nobs<-nrow(subset(
+    read.csv(getElement(list.files(), n)), 
+    !is.na(read.csv(getElement(list.files(), n))$sulfate) & 
+      !is.na(read.csv(getElement(list.files(), n))$nitrate)))
+}
+id<-c(1,2)
 
 w<-while(care_outcome[,11]==(levels(data.frame(a,b)[,2])[2])){
   print (care_outcome[,11])

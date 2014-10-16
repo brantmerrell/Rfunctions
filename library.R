@@ -6,6 +6,7 @@ library(swirl)
 
 #@"2014-10-15 08:04:47 CDT"
 library(stats)
+# repeat @"2014-10-15 18:47:53 CDT"
 
 #@"2014-10-15 07:34:37 CDT"
 library(tcltk)

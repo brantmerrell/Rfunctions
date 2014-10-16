@@ -1,3 +1,7 @@
+#@"2014-10-15 18:55:07 CDT"
+apply(read.csv("001.csv"), 1, nobs)
+# Err attempt to select more than one element 
+
 apply(as.vector(coltouse), 2, rank)
 ##see coltouse in control.R
 ##see care_outcome in data_input.R

@@ -1,3 +1,6 @@
+#@"2014-10-15 21:07:28 CDT"
+frm<-data.frame(id, nobs)
+
 #@"2014-10-15 08:11:27 CDT"
 data.frame(read.csv("002.csv"), na.rm=TRUE)
 

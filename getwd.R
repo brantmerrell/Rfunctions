@@ -1,3 +1,5 @@
+setwd("C:\\Users\\Josh\\Documents\\CSV")
+
 #@"2014-10-15 07:24:00 CDT"
 getwd()
 #   [1] "C:/Users/Josh/Documents/Coursera/rprog-data-specdata/specdata"
