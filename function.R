@@ -1,10 +1,20 @@
-nobs
-for (n in id) {
-  subset(
-    read.csv(getElement(list.files(), n)), 
-    !is.na(read.csv(getElement(list.files(), n))$sulfate) & 
-      !is.na(read.csv(getElement(list.files(), n))$nitrate))
+#@"2014-10-15 22:15:09 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nob<-function(directory, id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+      !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  for (n in id) {
+   rslt <-  nob(directory, n)
+   print(nob (directory, n))
+  }
+#  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
 }
+complete("specdata", c(1,2))
 
 #@"2014-10-15 21:11:03 CDT"
 complete<-function(directory, id){

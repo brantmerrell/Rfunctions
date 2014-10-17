@@ -1,3 +1,16 @@
+# #@Sys.time()
+# line of code
+
+#@"2014-10-17 10:58:31 CDT"
+library(XML)
+
+"2014-10-16 09:33:56 CDT"
+library(XML)
+
+#@"2014-10-16 09:30:17 CDT"
+library(XML)
+# Err no such package
+
 #@"2014-10-15 14:02:07 CDT"
 library(dplyr)
 

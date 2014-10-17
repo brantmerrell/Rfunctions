@@ -1,3 +1,19 @@
+# #@Sys.time()
+# line of code
+
+#@"2014-10-17 11:32:25 CDT"
+setwd("C:\\Users\\Josh\\Documents\\HTML")
+
+#@"2014-10-17 11:28:13 CDT"
+setwd("C:\\Users\\Josh\\Documents\\HTML\\The_Library_of_Babel_files")
+
+#@Sys.time()
+setwd("C:\\Users\\Josh\\Documents\\HTML")
+
+#@"2014-10-17 10:52:50 CDT"
+setwd("C:\\Users\\Josh\\Documents\\HTML")
+
+#@"2014-10-17 10:51:02 CDT"
 setwd("C:\\Users\\Josh\\Documents\\CSV")
 
 #@"2014-10-15 07:24:00 CDT"

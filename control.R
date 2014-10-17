@@ -1,3 +1,9 @@
+#@"2014-10-15 22:15:09 CDT"
+for (n in id) {
+  rslt <-  nob(directory, n)
+  print(nob (directory, n))
+}
+
 #@"2014-10-15 21:52:12 CDT"
 for (n in id) {
   tempsubset<-subset(
