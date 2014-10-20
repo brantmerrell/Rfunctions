@@ -1,3 +1,186 @@
+## nob needs to take input "id.csv" 
+## or files needs to take form id
+## or read needs an integer output.
+## Thus list.files needs to be compiled into grid with id numbers so id can be 
+## retrieved from id.csv
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  read<-function(id){getElement(list.files(), id)}
+  files<-lapply(id, read)
+  nob<-function(id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  lapply(files, nob)
+}
+complete("specdata", 2)
+
+
+#@"2014-10-19 18:48:15 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  read<-function(id){getElement(list.files(), id)}
+  files<-lapply(id, read)
+  nob<-function(id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  lapply(files, nob)
+}
+complete("specdata", 2)
+# Err subscript out of bounds
+
+#@"2014-10-19 17:57:50 CDT"
+read<-function(id){read.csv(getElement(list.files(), id))}
+
+#@"2014-10-19 17:38:08 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nobs<-function(directory, id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)),
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) &
+         !is.na(read.csv(getElement(list.files(), id))$nitrate))) 
+  }
+  for (n in id) {
+    rslt <-  nob(directory, n)
+    print(nob (directory, n))
+  }
+  data.frame(id, nobs=as.matrix(lapply(id, nobs)))
+}
+complete("specdata", 1) # [1] 117 WARNING
+complete("specdata", 1:2) # Err 
+complete("specdata", c(1,2))
+
+#@"2014-10-19 17:12:18 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nobs<-function(directory, id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  for (n in id) {
+    rslt <-  nob(directory, n)
+    print(nob (directory, n))
+  }
+  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
+}
+complete("specdata", c(1,2))
+
+  cbind(id, nobs)
+}
+nobs(2)
+complete(2)
+id<-2
+
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nob<-function(directory, id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  for (n in id) {
+    rslt <-  nob(directory, n)
+    print(nob (directory, n))
+  }
+  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
+}
+complete("specdata", c(1,2))
+
+#@"2014-10-18 23:56:04 CDT"
+multiples<-function(id, n){
+  data.frame(id,n)
+}
+multiples(c(1,3,5), c(2,4,6))
+## successful
+
+#@"2014-10-18 23:44:52 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nob<-function(directory, id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  for (n in id) {
+    nobs <-  nob(directory, n)
+    print(c(id,nobs (directory, n)))
+  }
+  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
+}
+complete("specdata", c(1,2))
+# Err subscript out of bounds
+
+#@"2014-10-18 23:23:15 CDT"
+complete<-function(id){
+  nobs<-nrow(subset(read.csv(getElement(list.files(),id)),
+              !is.na(read.csv(getElement(list.files(),id))$sulfate) &
+                !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  frame<-data.frame(id,nobs)
+  for (n in id) {
+    rslt <- nrow(subset(read.csv(getElement(list.files(),n)),
+                        !is.na(read.csv(getElement(list.files(),n))$sulfate) &
+                          !is.na(read.csv(getElement(list.files(),n))$nitrate)))
+    frame<-data.frame(n,rslt)
+  }
+  print(frame)
+}
+## complete(integer) works, complete(vector) doesn't
+
+
+#@"2014-10-18 23:15:51 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  for (n in id) {
+    rslt <- nrow(subset(read.csv(getElement(list.files(),n)),
+                        !is.na(read.csv(getElement(list.files(),n))$sulfate) & 
+                          !is.na(read.csv(getElement(list.files(), n))$nitrate)))
+    
+  }
+  data.frame(id,rslt)
+}
+complete("specdata", c(1,2))
+#  1 1041
+#  2 1041
+## unsuccessful
+
+#@"2014-10-18 23:07:37 CDT"
+complete<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  nob<-function(id){
+    nrow(subset(
+      read.csv(getElement(list.files(), id)), 
+      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
+        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  }
+  for (n in id) {
+    rslt <-  nob(n)
+    
+#     print(nob (directory, n))
+    data.frame(nob,id)
+  }
+  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
+}
+complete("specdata", c(1,2))
+# Err cannot coerce class function to data frame
+
 #@"2014-10-15 22:15:09 CDT"
 complete<-function(directory, id){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
@@ -97,6 +280,7 @@ nobs<-function(id){nrow(subset(read.csv(getElement(list.files(), id)), sulfate!=
 nobs(1)
 #   [1] 15747
 ## incorrect
+# [1] 117 after correcting CSV, thus correct
 nobs(2)
 #   [1] 1041
 ## correct

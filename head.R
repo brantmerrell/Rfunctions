@@ -1,3 +1,7 @@
+head(lapply(as.vector(sulfate1), sort))
+# [[6]]
+# numeric(0)
+
 #@"2014-10-15 14:52:23 CDT"
 head(top_counts, 20)
 

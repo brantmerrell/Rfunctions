@@ -1,3 +1,9 @@
+#@"2014-10-19 17:05:01 CDT"
+as.matrix(lapply(id, nobs))
+# [,1]
+# [1,] 117 
+# [2,] 1041
+
 #@"2014-10-11 18:19:44 CDT"
 ## NOTE: do not attempt the '$' selector for matrices
 

@@ -1,3 +1,18 @@
+"2014-10-19 18:52:12 CDT"
+class(as.integer(lapply(id, read)))
+
+#@"2014-10-19 18:44:30 CDT"
+class(lapply(id, read))
+# [1] "list"
+
+#@"2014-10-18 23:51:23 CDT"
+class(nob (directory, c(1,2)))
+# Err attempt to select more than 1 element
+
+#@"2014-10-18 23:49:27 CDT"
+class(nob (directory, 1))
+# [1] "integer"
+
 #@"2014-10-11 17:07:37 CDT"
 ## test for matrix.R"2014-10-11 17:06:50 CDT"
 class(as.matrix(schedule))

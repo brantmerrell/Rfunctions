@@ -1,3 +1,21 @@
+#@"2014-10-19 17:10:59 CDT"
+data.frame(id, nobs=as.matrix(lapply(id, nobs)))
+# id nobs
+# 1  1  117
+# 2  2 1041
+
+data.frame(as.matrix(lapply(id, nobs)))
+# as.matrix.lapply.id..nobs..
+# 1                         117
+# 2                        1041
+
+#@"2014-10-19 17:07:47 CDT"
+data.frame(lapply(id, nobs))
+data.frame(as.vector(lapply(id, nobs)))
+data.frame(as.list(lapply(id, nobs)))
+# X117L X1041L
+# 1   117   1041
+
 #@"2014-10-15 21:07:28 CDT"
 frm<-data.frame(id, nobs)
 

@@ -1,3 +1,24 @@
+#@"2014-10-19 17:41:06 CDT"
+apply(as.matrix(id), 2, getElement(list.files(), id))
+# object '001.csv' of mode 'function' was not found
+
+"2014-10-19 16:59:55 CDT"
+apply(as.matrix(sulfate1), 2, sort)
+
+#@"2014-10-19 16:35:52 CDT"
+apply(read.csv("001.csv")$sulfate, 1, min)
+# Err dim(X) must have a positive length
+# http://cran.r-project.org/doc/FAQ/R-FAQ.html#Why-do-my-matrices-lose-dimensions_003f
+apply(sulfate1, 1, min) ## sulfate1<-read.csv("001.csv")$sulfate
+## same Err
+# http://stackoverflow.com/questions/16682576/r-error-dimx-must-have-a-positive-length
+apply(as.vector(sulfate1), 2, min) ## sulfate1<-read.csv("001.csv")$sulfate
+## same Err
+apply(as.matrix(sulfate1), 1, min) ## sulfate1<-read.csv("001.csv")$sulfate
+# [1453]     NA     NA     NA     NA     NA     NA     NA     NA     NA
+apply(as.matrix(read.csv("001.csv")$sulfate), 1, min)
+# [1453]     NA     NA     NA     NA     NA     NA     NA     NA     NA
+
 #@"2014-10-15 18:55:07 CDT"
 apply(read.csv("001.csv"), 1, nobs)
 # Err attempt to select more than one element 

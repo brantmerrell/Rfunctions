@@ -1,3 +1,6 @@
+#@"2014-10-19 16:58:37 CDT"
+sort(sulfate1) ## sulfate1<-read.csv("001.csv")$sulfate
+
 sort(coltouse)
 ##see coltouse in control.R
 ##see care_outcome in data_input.R

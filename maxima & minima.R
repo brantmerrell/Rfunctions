@@ -1,4 +1,5 @@
-
+#@"2014-10-19 15:53:16 CDT"
+min(read.csv("001.csv")$sulfate, na.rm=TRUE)
 
 pmin.int(data.frame(a,b)[,2], na.rm=TRUE)
 ##b<-as.matrix(split(care_outcome[,11], care_outcome$State))[1]
