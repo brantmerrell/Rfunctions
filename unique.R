@@ -1,3 +1,6 @@
+## Swirl R Programming lapply and sapply
+unique(c(3, 4, 5, 5, 5, 6, 6)) #@"2014-10-21 23:42:56 CDT"
+
 #@"2014-10-15 14:21:44 CDT"
 unique(by_package)
 

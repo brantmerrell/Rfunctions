@@ -2,6 +2,10 @@
 # line of code
 # #output
 
+## Swirl R Programming lapply and sapply
+flag_shapes<-flags[,19:23] #@"2014-10-21 23:37:06 CDT"
+flag_colors<-flags[,11:17] #@"2014-10-21 23:29:15 CDT"
+
 #@"2014-10-17 11:36:18 CDT"
 getElement(list.files(), 3)
 # [1] "The_Library_of_Babel.htm"

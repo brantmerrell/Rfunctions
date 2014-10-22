@@ -1,4 +1,12 @@
-"2014-10-19 18:52:12 CDT"
+
+## Swirl R Programming lapply and sapply
+class(shape_mat) #@"2014-10-21 23:40:51 CDT" #"matrix" shape_mat<-sapply(flag_shapes, range) 
+class(cls_vect) #@"2014-10-21 20:12:43 CDT" #"character" ##cls_vect<-sapply(flags, class) 
+class(cls_list) #@"2014-10-21 19:57:15 CDT" #"list" ##cls_list<-lapply(flags, class)
+class(flags) #@"2014-10-21 18:49:06 CDT" #
+
+
+#@"2014-10-19 18:52:12 CDT"
 class(as.integer(lapply(id, read)))
 
 #@"2014-10-19 18:44:30 CDT"

@@ -1,4 +1,6 @@
-
+#@"2014-10-21 18:46:28 CDT"
+## Swirl R Programming lapply and sapply
+dim(flags)
 
 #@"2014-10-15 10:24:19 CDT"
 ## response to nrow.R"2014-10-15 10:10:28 CDT"

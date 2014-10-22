@@ -1,3 +1,7 @@
+
+sum(flags$orange) #@"2014-10-21 23:12:30 CDT"
+
+
 #@"2014-10-11 22:15:51 CDT"
 ## input from function.R
 sum(RStudio$hours)

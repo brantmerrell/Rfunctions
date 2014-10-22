@@ -1,12 +1,8 @@
-## nob needs to take input "id.csv" 
-## or files needs to take form id
-## or read needs an integer output.
-## Thus list.files needs to be compiled into grid with id numbers so id can be 
-## retrieved from id.csv
+#@"2014-10-20 12:16:20 CDT"
 complete<-function(directory, id){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
   setwd(directory)
-  read<-function(id){getElement(list.files(), id)}
+  read<-function(id){getElement(list.files(), id)} 
   files<-lapply(id, read)
   nob<-function(id){
     nrow(subset(
@@ -14,10 +10,8 @@ complete<-function(directory, id){
       !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
         !is.na(read.csv(getElement(list.files(), id))$nitrate)))
   }
-  lapply(files, nob)
+  data.frame(id, nobs=as.matrix(lapply(id, nob)))
 }
-complete("specdata", 2)
-
 
 #@"2014-10-19 18:48:15 CDT"
 complete<-function(directory, id){

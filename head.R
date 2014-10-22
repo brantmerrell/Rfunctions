@@ -1,3 +1,8 @@
+#@"2014-10-21 18:45:14 CDT"
+## Swirl R Programming lapply and sapply
+head(flag_colors) 
+head(flags)
+
 head(lapply(as.vector(sulfate1), sort))
 # [[6]]
 # numeric(0)

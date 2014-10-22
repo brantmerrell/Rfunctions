@@ -1,0 +1,1 @@
+as.character(cls_list) #@"2014-10-21 20:03:32 CDT" #"list" ##cls_list<-lapply(flags, class)

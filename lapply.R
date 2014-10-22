@@ -1,7 +1,13 @@
-lapply(files, read.csv)
+## Swirl R Programming lapply and sapply
+lapply(unique_vals, function(elem) elem[2]) #@"2014-10-21 23:53:05 CDT"
+unique_vals<-lapply(flags, unique) #@"2014-10-21 23:49:05 CDT"
+lapply(flag_shapes, range) #@"2014-10-21 23:38:47 CDT"
+lapply(flag_colors, sum) #@"2014-10-21 23:31:18 CDT"
+cls_list<-lapply(flags, class) #@"2014-10-21 19:53:36 CDT"
 
 lapply(files, as.integer)
 ## returns NA
+as.integer(files)
 
 "2014-10-19 18:47:40 CDT"
 lapply(list.files()[1], nob)
