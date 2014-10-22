@@ -1,3 +1,8 @@
+## Swirl R Building Blocks
+c(z,555,z)
+z<-c(1.1, 9, 3.14) #@"2014-10-22 11:50:33 CDT"
+Sys.time()
+
 #@"2014-10-13 13:20:06 CDT"
 c(DST_v1[3],DST_v1[6],DST_v1[8],DST_v1[9])
 
