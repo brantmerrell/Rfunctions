@@ -1,9 +1,24 @@
+
+## 'threshold' is a numeric vector of length 1 indicating the
+## number of completely observed observations (on all
+## variables) required to compute the correlation between
+## nitrate and sulfate; the default is 0
+atleast<-function(directory, threshold){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  id<-function(input){}
+  lapply(list.files(), )
+}
+
+
 testcsv<-function(document){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
   tail(read.csv(document),6)
 }
 testcsv("subset.txt")
 testcsv("subseterrors.txt")
+testcsv("articles.txt")
+testcsv("coursera tasks.txt")
 
 #@"2014-10-20 12:16:20 CDT"
 complete<-function(directory, id){
