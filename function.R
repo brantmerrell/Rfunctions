@@ -1,3 +1,10 @@
+testcsv<-function(document){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  tail(read.csv(document),6)
+}
+testcsv("subset.txt")
+testcsv("subseterrors.txt")
+
 #@"2014-10-20 12:16:20 CDT"
 complete<-function(directory, id){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
