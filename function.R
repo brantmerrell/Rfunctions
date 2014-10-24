@@ -3,17 +3,44 @@
 ## number of completely observed observations (on all
 ## variables) required to compute the correlation between
 ## nitrate and sulfate; the default is 0
-atleast<-function(directory, threshold){
+threshsubset<-function(directory, threshold){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
   setwd(directory)
-  id<-function(input){}
-  lapply(list.files(), )
+  complete<-function(file){nrow(subset(
+    file, 
+    !is.na(getElement(file, 2)) & 
+      !is.na(getElement(file,3))))}
+  completes<-lapply(list.files(),complete)
+  subset(data.frame(list.files(), completes), completes>=threshold)
 }
+threshsubset("specdata", 400)
+# Error in object[[name, exact = TRUE]] : subscript out of bounds 
+#@"2014-10-23 23:02:18 CDT"
 
+corrsingle<-function(directory, id){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  setwd(directory)
+  file<-read.csv(getElement(list.files(), id))
+  complete<-subset(
+    file, 
+    !is.na(getElement(file, 2)) & 
+      !is.na(getElement(file,3)))
+  cor(complete[,2], complete[,3])
+}
+corrsingle("specdata", 1) # -0.2225526
+corrsingle("specdata", 2) # -0.01895754
+corrsingle("specdata", 3) # -0.1405125
+#@"2014-10-23 22:20:05 CDT"
+
+testquotes<-function(document){
+  setwd("C:\\Users\\Josh\\Documents\\CSV")
+  tail(read.csv(document, quote="",row.names=NULL, stringsAsFactors=FALSE))
+}
+testquotes("quotes.txt")
 
 testcsv<-function(document){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
-  tail(read.csv(document),6)
+  tail(read.csv(document, row.names=NULL),3)
 }
 testcsv("subset.txt")
 testcsv("subseterrors.txt")
