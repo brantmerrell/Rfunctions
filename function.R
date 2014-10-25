@@ -1,24 +1,44 @@
 
+corr<-function(directory, threshold){
+  setwd(directory)
+  complete<-function(file){nrow(subset(
+    read.csv(file),
+    is.na(getElement(read.csv(file), 2)) &
+    is.na(getElement(read.csv(file), 3))))}
+  corrsingle<-function(n){
+    file<-read.csv(getElement(list.files(), n))
+    complete<-subset(
+      file, 
+      !is.na(getElement(file, 2)) & 
+        !is.na(getElement(file,3)))
+    cor(complete[,2], complete[,3])
+  }
+  completes<-as.matrix(lapply(list.files(), complete))
+  thresh<-as.matrix(subset(data.frame(list.files(), completes), completes>=threshold))
+  lapply(thresh, corrsingle)
+}
+threshold<-1000
+setwd("C:\\Users\\Josh\\Documents\\CSV\\Specdata")
 ## 'threshold' is a numeric vector of length 1 indicating the
 ## number of completely observed observations (on all
 ## variables) required to compute the correlation between
 ## nitrate and sulfate; the default is 0
 threshsubset<-function(directory, threshold){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
   setwd(directory)
   complete<-function(file){nrow(subset(
-    file, 
-    !is.na(getElement(file, 2)) & 
-      !is.na(getElement(file,3))))}
-  completes<-lapply(list.files(),complete)
+    read.csv(file), 
+    !is.na(getElement(read.csv(file), 2)) & 
+      !is.na(getElement(read.csv(file), 3))))}
+  completes<-as.matrix(lapply(list.files(),complete))
   subset(data.frame(list.files(), completes), completes>=threshold)
 }
+threshold<-1000
 threshsubset("specdata", 400)
 # Error in object[[name, exact = TRUE]] : subscript out of bounds 
 #@"2014-10-23 23:02:18 CDT"
 
-corrsingle<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
+setwd("C:\\Users\\Josh\\Documents\\CSV")
+corrsingle<-function(directory, id){  
   setwd(directory)
   file<-read.csv(getElement(list.files(), id))
   complete<-subset(
@@ -27,7 +47,8 @@ corrsingle<-function(directory, id){
       !is.na(getElement(file,3)))
   cor(complete[,2], complete[,3])
 }
-corrsingle("specdata", 1) # -0.2225526
+id<-2
+corrsingle("C:\\Users\\Josh\\Documents\\CSV\\specdata", 1) # -0.2225526
 corrsingle("specdata", 2) # -0.01895754
 corrsingle("specdata", 3) # -0.1405125
 #@"2014-10-23 22:20:05 CDT"
@@ -38,14 +59,14 @@ testquotes<-function(document){
 }
 testquotes("quotes.txt")
 
-testcsv<-function(document){
+testcsv<-function(document,n){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
-  tail(read.csv(document, row.names=NULL),3)
+  tail(read.csv(document, row.names=NULL), n)
 }
 testcsv("subset.txt")
 testcsv("subseterrors.txt")
-testcsv("articles.txt")
-testcsv("coursera tasks.txt")
+testcsv("articles.txt", 35)
+testcsv("coursera tasks.txt", 34)
 
 #@"2014-10-20 12:16:20 CDT"
 complete<-function(directory, id){
