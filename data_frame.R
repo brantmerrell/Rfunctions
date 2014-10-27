@@ -1,3 +1,6 @@
+
+data.frame(Hospital.Name,State,H.A.Mortality,H.F.Mortality,P.Mortality)
+
 #@"2014-10-19 17:10:59 CDT"
 data.frame(id, nobs=as.matrix(lapply(id, nobs)))
 # id nobs

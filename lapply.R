@@ -1,3 +1,7 @@
+lapply(c(2,7,11,17,23),medvariables) # "2014-10-27 16:31:10 CDT"
+
+lapply(1:length(colnames(read.csv("outcome-of-care-measures.csv"))),medvariables)
+
 lapply(1:length(unique(From)),effectivesplit)
 
 ## Swirl R Programming lapply and sapply

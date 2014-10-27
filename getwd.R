@@ -1,6 +1,10 @@
 # #@Sys.time()
 # line of code
 
+setwd("C:\\Users\\Josh\\Documents\\Coursera\\medicalrank")#"2014-10-27 16:19:59 CDT"
+getwd()#"2014-10-27 16:14:12 CDT"
+
+
 #@"2014-10-17 11:32:25 CDT"
 setwd("C:\\Users\\Josh\\Documents\\HTML")
 

@@ -1,3 +1,8 @@
+
+dim(medgrid<-as.matrix(data.frame(Hospital.Name,State,H.A.Mortality,H.F.Mortality,P.Mortality)))#"2014-10-27 16:46:40 CDT"
+
+dim(as.matrix(getElement(read.csv("outcome-of-care-measures.csv"), 2))) #"2014-10-27 16:40:56 CDT"
+
 #@"2014-10-21 18:46:28 CDT"
 ## Swirl R Programming lapply and sapply
 dim(flags)

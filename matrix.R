@@ -1,3 +1,17 @@
+
+
+medgrid<-as.matrix(data.frame(Hospital.Name,State,H.A.Mortality,H.F.Mortality,P.Mortality))
+
+P.Mortality<-as.matrix(getElement(read.csv("outcome-of-care-measures.csv"), 23))#"2014-10-27 16:43:49 CDT"
+H.F.Mortality<-as.matrix(getElement(read.csv("outcome-of-care-measures.csv"), 17))
+H.A.Mortality<-as.matrix(getElement(read.csv("outcome-of-care-measures.csv"), 11))
+State<-as.matrix(getElement(read.csv("outcome-of-care-measures.csv"), 7))
+Hospital.Name<-as.matrix(getElement(read.csv("outcome-of-care-measures.csv"), 2))
+
+as.matrix(lapply(c(2,7,11,17,23),medvariables))
+
+as.matrix(lapply(1:length(colnames(read.csv("outcome-of-care-measures.csv"))),medvariables)) #"2014-10-27 16:27:03 CDT"
+
 #@"2014-10-19 17:05:01 CDT"
 as.matrix(lapply(id, nobs))
 # [,1]

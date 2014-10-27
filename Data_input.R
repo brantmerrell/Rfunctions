@@ -1,4 +1,6 @@
 
+read.csv("outcome-of-care-measures.csv")#"2014-10-27 16:16:20 CDT"
+
 read.csv("quotes.txt") # warning: EOF within quoted string
 ## http://stackoverflow.com/questions/17414776/read-csv-warning-eof-within-quoted-string-prevents-complete-reading-of-file
 read.csv("quotes.txt", quote="",row.names=NULL, stringsAsFactors=FALSE)

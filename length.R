@@ -1,4 +1,4 @@
-
+length(colnames(read.csv("outcome-of-care-measures.csv")))
 
 #@"2014-10-15 08:09:27 CDT"
 length(read.csv("002.csv"))

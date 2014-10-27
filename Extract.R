@@ -2,6 +2,12 @@
 # line of code
 # #output
 
+getElement(unique(State),54)
+
+getElement(read.csv("outcome-of-care-measures.csv"), 2)
+
+getElement(colnames(read.csv("outcome-of-care-measures.csv")), n)
+
 ## Swirl R Programming lapply and sapply
 flag_shapes<-flags[,19:23] #@"2014-10-21 23:37:06 CDT"
 flag_colors<-flags[,11:17] #@"2014-10-21 23:29:15 CDT"

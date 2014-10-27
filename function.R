@@ -1,8 +1,46 @@
+
+stateset<-function(State){subset(medgrid,medgrid[,2]==State)}#"2014-10-27 16:53:22 CDT"
+
+medvariables<-function(n){getElement(colnames(read.csv("outcome-of-care-measures.csv")), n)}
+
+alllinks<-function(){
+  setwd("C:/Users/Josh/Documents/CSV")
+  Author<-as.matrix(read.csv("articles.txt")$Author)
+  Date<-as.matrix(read.csv("articles.txt")$Date)
+  Organization<-as.matrix(read.csv("articles.txt")$Organization)
+  From<-as.matrix(read.csv("articles.txt")$From)
+  articlegrid<-data.frame(Author, Date, Organization, From)
+  as.matrix(
+    lapply(
+      unique(
+        articlegrid$From), 
+      manylinks)
+  )
+  print()
+}
+
+manylinksnum<-function(){getElement(manylinks(1),2)}
+
+manylinks<-function(n){
+  setwd("C:/Users/Josh/Documents/CSV")
+  Author<-as.matrix(read.csv("articles.txt")$Author)
+  Date<-as.matrix(read.csv("articles.txt")$Date)
+  Organization<-as.matrix(read.csv("articles.txt")$Organization)
+  From<-as.matrix(read.csv("articles.txt")$From)
+  articlegrid<-data.frame(Author, Date, Organization, From)
+  data.frame(From=unique(From)[n],
+             Links=sum(
+               articlegrid$From==unique(
+                 articlegrid$From)[n]
+               )
+             )
+}
+
 splitandframe<-function(m,n){
-  data.frame(Author=subset(Author, column==unique(column)[n]), 
-             Organization=subset(Organization, column==unique(column)[n]), 
-             Date=subset(Date, column==unique(column)[n]), 
-             From=subset(From, column==unique(column)[n]))}
+  data.frame(Au=subset(Author, m==unique(m)[n]), 
+             Org=subset(Organization, m==unique(m)[n]), 
+             Dt=subset(Date, m==unique(m)[n]), 
+             Frm=subset(From, m==unique(m)[n]))}
 
 splitandframe<-function(column,n){
   data.frame(Author=subset(Author, column==unique(column)[n]), 
