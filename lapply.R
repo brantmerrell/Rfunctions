@@ -1,3 +1,5 @@
+lapply(1:length(unique(From)),effectivesplit)
+
 ## Swirl R Programming lapply and sapply
 lapply(unique_vals, function(elem) elem[2]) #@"2014-10-21 23:53:05 CDT"
 unique_vals<-lapply(flags, unique) #@"2014-10-21 23:49:05 CDT"

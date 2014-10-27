@@ -1,3 +1,20 @@
+splitandframe<-function(m,n){
+  data.frame(Author=subset(Author, column==unique(column)[n]), 
+             Organization=subset(Organization, column==unique(column)[n]), 
+             Date=subset(Date, column==unique(column)[n]), 
+             From=subset(From, column==unique(column)[n]))}
+
+splitandframe<-function(column,n){
+  data.frame(Author=subset(Author, column==unique(column)[n]), 
+             Organization=subset(Organization, column==unique(column)[n]), 
+             Date=subset(Date, column==unique(column)[n]), 
+             From=subset(From, column==unique(column)[n]))}
+
+effectivesplit<-function(n){
+  data.frame(Author=subset(Author, From==unique(From)[n]), 
+             Organization=subset(Organization, From==unique(From)[n]), 
+             Date=subset(Date, From==unique(From)[n]), 
+             From=subset(From, From==unique(From)[n]))}
 
 corr<-function(directory, threshold){
   setwd(directory)
@@ -5,6 +22,7 @@ corr<-function(directory, threshold){
     read.csv(file),
     is.na(getElement(read.csv(file), 2)) &
     is.na(getElement(read.csv(file), 3))))}
+  complete("001.csv")
   corrsingle<-function(n){
     file<-read.csv(getElement(list.files(), n))
     complete<-subset(
@@ -65,7 +83,7 @@ testcsv<-function(document,n){
 }
 testcsv("subset.txt")
 testcsv("subseterrors.txt")
-testcsv("articles.txt", 35)
+testcsv("articles.txt", 3)
 testcsv("coursera tasks.txt", 34)
 
 #@"2014-10-20 12:16:20 CDT"
