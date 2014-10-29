@@ -1,3 +1,4 @@
+countfrom<-function(n){sum(From==unique(From)[n])}
 
 stateset<-function(State){subset(medgrid,medgrid[,2]==State)}#"2014-10-27 16:53:22 CDT"
 
@@ -37,6 +38,11 @@ manylinks<-function(n){
 }
 
 splitandframe<-function(m,n){
+  setwd("C:/Users/Josh/Documents/CSV")
+  Author<-as.matrix(read.csv("articles.txt")$Author)
+  Date<-as.matrix(read.csv("articles.txt")$Date)
+  Organization<-as.matrix(read.csv("articles.txt")$Organization)
+  From<-as.matrix(read.csv("articles.txt")$From)
   data.frame(Au=subset(Author, m==unique(m)[n]), 
              Org=subset(Organization, m==unique(m)[n]), 
              Dt=subset(Date, m==unique(m)[n]), 
@@ -49,6 +55,10 @@ splitandframe<-function(column,n){
              From=subset(From, column==unique(column)[n]))}
 
 effectivesplit<-function(n){
+  Author<-as.matrix(read.csv("articles.txt")$Author)
+  Date<-as.matrix(read.csv("articles.txt")$Date)
+  Organization<-as.matrix(read.csv("articles.txt")$Organization)
+  From<-as.matrix(read.csv("articles.txt")$From)
   data.frame(Author=subset(Author, From==unique(From)[n]), 
              Organization=subset(Organization, From==unique(From)[n]), 
              Date=subset(Date, From==unique(From)[n]), 
@@ -121,7 +131,7 @@ testcsv<-function(document,n){
 }
 testcsv("subset.txt")
 testcsv("subseterrors.txt")
-testcsv("articles.txt", 3)
+testcsv("articles.txt", 20)
 testcsv("coursera tasks.txt", 34)
 
 #@"2014-10-20 12:16:20 CDT"

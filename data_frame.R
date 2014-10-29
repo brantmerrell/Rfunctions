@@ -1,3 +1,4 @@
+fromcount<-data.frame(From=unique(From), Articles=as.matrix(lapply(1:length(unique(From)), countfrom)))
 
 data.frame(Hospital.Name,State,H.A.Mortality,H.F.Mortality,P.Mortality)
 
