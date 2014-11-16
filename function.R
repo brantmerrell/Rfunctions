@@ -1,3 +1,5 @@
+
+
 countfrom<-function(n){sum(From==unique(From)[n])}
 
 stateset<-function(State){subset(medgrid,medgrid[,2]==State)}#"2014-10-27 16:53:22 CDT"
