@@ -1,4 +1,11 @@
-
+read.pollutant<-function(n){
+  if (pollutant=="sulfate"){
+    read.csv(getElement(Sys.glob("*csv"),id))$sulfate
+  }
+  if (pollutant=="nitrate"){
+    read.csv(getElement(Sys.glob("*csv"),id))$nitrate
+  }
+}
 
 countfrom<-function(n){sum(From==unique(From)[n])}
 
