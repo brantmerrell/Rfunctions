@@ -1,10 +1,126 @@
+pollutantmean<-function(directory, pollutant, id){
+  setwd("C:/Users/Josh/Documents/CSV")
+  setwd(directory)
+  count.nitrate<-function(n){
+    length(subset(read.csv(getElement(Sys.glob("*csv"),n))$nitrate,
+                  !is.na(read.csv(getElement(Sys.glob("*csv"),n))$nitrate)))
+  }
+  count.sulfate<-function(n){
+    length(subset(read.csv(getElement(Sys.glob("*csv"),n))$sulfate,
+                  !is.na(read.csv(getElement(Sys.glob("*csv"),n))$sulfate)))
+  }
+  sum.nitrate<-function(n){
+    sum(read.csv(getElement(Sys.glob("*csv"),n))$nitrate,na.rm=TRUE)
+  }
+  sum.sulfate<-function(n){
+    sum(read.csv(getElement(Sys.glob("*csv"),n))$sulfate,na.rm=TRUE)
+  }
+  extraction<-data.frame(count_N=as.matrix(lapply(id, count.nitrate)),
+                         count_S=as.matrix(lapply(id, count.sulfate)),
+                         sum_N=as.matrix(lapply(id, sum.nitrate)),
+                         sum_S=as.matrix(lapply(id, sum.sulfate)))
+  mean.nitrate<-(sum(as.numeric(extraction$sum_N))/
+                   sum(as.numeric(extraction$count_N)))
+  mean.sulfate<-(sum(as.numeric(extraction$sum_S))/
+                   sum(as.numeric(extraction$count_S)))
+  if (toupper(pollutant)=="NITRATE"){
+    print(mean.nitrate)
+  }
+  if (toupper(pollutant)=="SULFATE"){
+    print(mean.sulfate)
+  }
+}
+
+sums.nitrate<-function(id){
+  sum.nitrate<-function(n){
+    sum(read.csv(
+      getElement(Sys.glob("*csv"),n))$nitrate, na.rm=TRUE)
+  }
+  lapply(id, sum.nitrate)
+}
+
+sums.sulfate<-function(id){
+  for(n in id){
+    print(sum(read.csv(getElement(Sys.glob("*csv"),n))$sulfate, na.rm=TRUE))
+  }
+}
+
+sums.nitrate<-function(id){
+  for(n in id){
+    print(sum(read.csv(getElement(Sys.glob("*csv"),n))$nitrate, na.rm=TRUE))
+  }
+}
+
+
+sum.sulfate<-function(id){
+  sum(read.csv(getElement(Sys.glob("*csv"),id))$sulfate, na.rm=TRUE)
+}
+
+sum.nitrate<-function(id){
+  sum(read.csv(getElement(Sys.glob("*csv"),id))$nitrate, na.rm=TRUE)
+}
+
+sum.sulfate<-function(id){
+  sulfate<-read.csv(getElement(Sys.glob("*csv"),id))$sulfate
+  sum(subset(sulfate,
+             !is.na(sulfate)))
+}
+
+sum.nitrate<-function(id){
+  nitrate<-read.csv(getElement(Sys.glob("*csv"),id))$nitrate
+  sum(subset(nitrate,
+             !is.na(nitrate)))
+}
+
+count.sulfate<-function(id){
+  sulfate<-read.csv(getElement(Sys.glob("*csv"),id))$sulfate
+  length(subset(sulfate,
+                !is.na(sulfate)))
+}
+
+count.nitrate<-function(id){
+  nitrate<-read.csv(getElement(Sys.glob("*csv"),id))$nitrate
+  length(subset(nitrate,
+         !is.na(nitrate)))
+}
+
+length(subset(read.csv("001.csv")$sulfate, !is.na(read.csv("001.csv")$sulfate)))
+
 read.pollutant<-function(n){
   if (pollutant=="sulfate"){
-    read.csv(getElement(Sys.glob("*csv"),id))$sulfate
+    selection<-subset(read.csv(getElement(Sys.glob("*csv"),n))$sulfate,
+                      !is.na(read.csv(getElement(Sys.glob("*csv"),n))$sulfate))
   }
   if (pollutant=="nitrate"){
-    read.csv(getElement(Sys.glob("*csv"),id))$nitrate
+    selection<-subset(read.csv(getElement(Sys.glob("*csv"),n))$nitrate,
+                      !is.na(read.csv(getElement(Sys.glob("*csv"),n))))
   }
+  return(selection)
+}
+
+
+list.pollutant<-function(n){
+  if (pollutant=="sulfate"){
+    selection<-as.numeric(
+      as.character(
+        read.csv(
+          getElement(Sys.glob("*csv"),n))$sulfate)
+    subset.pollutant<-subset(selection, !is.na(selection))
+  }
+}
+
+read.pollutants<-function(id){
+  lapply(id, read.pollutant)
+}
+
+read.pollutant<-function(n){
+  if (pollutant=="sulfate"){
+    selection<-read.csv(getElement(Sys.glob("*csv"),n))$sulfate
+  }
+  if (pollutant=="nitrate"){
+    selection<-read.csv(getElement(Sys.glob("*csv"),n))$nitrate
+  }
+  print(selection)
 }
 
 countfrom<-function(n){sum(From==unique(From)[n])}
