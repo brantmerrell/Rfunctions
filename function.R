@@ -1,3 +1,20 @@
+getline<-function(m,n){
+  setwd("C:/Users/Josh/Documents/CSV")
+  readLines(getElement(list.files(),m))[n]
+}
+
+readcsv<-function(n){
+  setwd("C:/Users/Josh/Documents/CSV")
+  if(class(n)=="numeric"){
+    read.csv(getElement(list.files(),n))
+  }
+  else{
+    read.csv(n)
+  }
+}
+m<-2
+n<-1
+
 pollutantmean<-function(directory, pollutant, id){
   setwd("C:/Users/Josh/Documents/CSV")
   setwd(directory)
