@@ -4,6 +4,7 @@ add.article<-function(Author,
                       Site,
                       Date,
                       From){
+  resetwd<-getwd()
   setwd("C:/Users/Josh/Documents/CSV")
   X<-read.csv("Articles.txt")
   Y<-data.frame(Author=as.matrix(append(as.vector(X$Author),Author)),
@@ -13,6 +14,7 @@ add.article<-function(Author,
                 Date=as.matrix(append(as.vector(X$Date),Date)),
                 From=as.matrix(append(as.vector(X$From),From)))
   write.csv(Y,"Articles.txt")
+  setwd(resetwd)
 }
 
 setjm<-function(directory){
