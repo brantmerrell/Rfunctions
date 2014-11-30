@@ -1,35 +1,36 @@
 best<-function(state, outcome){
-  
-  ## Read outcome data
   setwd("C:/Users/Josh/Documents/Coursera/Medicalrank")
-  data.outcome <- data.frame(read.csv("outcome-of-care-measures.csv", colClasses = "character")[,c(2,7,11,17,23)])
-  names(data.outcome)<-c("Hospital.Name", "State", "Heart.Attack", "Heart.Failure", "Pneumonia")
-  
-  ## Check that state and outcome are valid
-  if(!(state %in% unique(data.outcome$State))){
-    stop("invalid state")
+  ##read outcome data
+  metric<-outcome
+  outcome <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+  setwd("C:/Users/Josh/Documents/Functions")
+  Hospital.Name<-as.matrix(outcome$Hospital.Name)
+  State<-as.matrix(outcome$State)
+  if(tolower(metric)=="heart attack"){
+    m<-as.matrix(as.numeric(outcome[,11]))
   }
-  if(!(tolower(outcome) %in% 
-        c("heart attack", "heart failure", "pneumonia")
-      )){
+  if(tolower(metric)=="heart failure"){
+    m<-as.matrix(as.numeric(outcome[,17]))
+  }
+  if(tolower(metric)=="pneumonia"){
+    m<-as.matrix(as.numeric(outcome[,23]))
+  }
+  ##check that state and outcome are valid
+  if(!(tolower(metric) %in% c("heart attack","heart failure","pneumonia"))){
     stop("invalid outcome")
   }
-  
+  if(!(toupper(state) %in% State)){
+    stop("invalid state")
+  }
   ## Return hospital name in that state with lowest 30-day mortality rate
-  ST<-subset(data.outcome, data.outcome$State==state)
-  if(tolower(outcome)=="heart attack"){
-    workfactor<-as.matrix(as.numeric(as.character(ST$Heart.Attack)))
-  }
-  if(tolower(outcome)=="heart failure"){
-    workfactor<-as.matrix(as.numeric(as.character(ST$Heart.Failure)))
-  }
-  if(tolower(outcome)=="pneumonia"){
-    workfactor<-as.matrix(as.numeric(as.character(ST$Pneumonia)))
-  }
-  workframe<-data.frame(Hospital.Name=as.matrix(ST$Hospital.Name),
-                        State=as.matrix(ST$State),
-                        workfactor=workfactor
-  )
-  stop("this is a test")
-  return(as.vector(subset(workframe$Hospital.Name, workframe$workfactor==min(workfactor,na.rm=TRUE))))
+  workframe<-data.frame(Hospital.Name,State,m)
+  ST<-subset(workframe, workframe$State==state & !is.na(m))
+  sortframe<-as.vector(ST[
+    with(ST,
+         order(
+           ST$m,
+           ST$Hospital.Name)
+         ),1])
+  sortframe[1]
 }
+
