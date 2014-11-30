@@ -2,7 +2,7 @@ best<-function(state, outcome){
   
   ## Read outcome data
   setwd("C:/Users/Josh/Documents/Coursera/Medicalrank")
-  data.outcome <- data.frame(read.csv("outcome-of-care-measures.csv", colClass="character")[,c(2,7,11,17,23)])
+  data.outcome <- data.frame(read.csv("outcome-of-care-measures.csv", colClasses = "character")[,c(2,7,11,17,23)])
   names(data.outcome)<-c("Hospital.Name", "State", "Heart.Attack", "Heart.Failure", "Pneumonia")
   
   ## Check that state and outcome are valid
@@ -30,5 +30,6 @@ best<-function(state, outcome){
                         State=as.matrix(ST$State),
                         workfactor=workfactor
   )
-  return(subset(workframe$Hospital.Name, workframe$workfactor==min(workfactor,na.rm=TRUE)))
+  stop("this is a test")
+  return(as.vector(subset(workframe$Hospital.Name, workframe$workfactor==min(workfactor,na.rm=TRUE))))
 }

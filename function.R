@@ -1,3 +1,26 @@
+add.article<-function(Author,
+                      Title,
+                      Organization,
+                      Site,
+                      Date,
+                      From){
+  setwd("C:/Users/Josh/Documents/CSV")
+  X<-read.csv("Articles.txt")
+  Y<-data.frame(Author=as.matrix(append(as.vector(X$Author),Author)),
+                Title=as.matrix(append(as.vector(X$Title),Title)),
+                Organization=as.matrix(append(as.vector(X$Organization),Organization)),
+                Site=as.matrix(append(as.vector(X$Site),Site)),
+                Date=as.matrix(append(as.vector(X$Date),Date)),
+                From=as.matrix(append(as.vector(X$From),From)))
+  write.csv(Y,"Articles.txt")
+}
+
+setjm<-function(directory){
+  apd<-c("C:/Users/Josh/Documents",directory)
+  gsub(apd)
+}
+directory<-"Functions"
+
 getline<-function(m,n){
   setwd("C:/Users/Josh/Documents/CSV")
   readLines(getElement(list.files(),m))[n]
