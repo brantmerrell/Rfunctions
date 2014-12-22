@@ -1,3 +1,75 @@
+path<-"C:/Users/Josh/Documents/All_Reports_20140930"
+file.variables<-function(path){
+  resetwd<-getwd()
+  setwd(path)
+  varnames<-function(n){
+    as.matrix(colnames(read.csv(list.files()[n],row.names = NULL)))
+  }
+  X<-lapply(1:length(list.files()),varnames)
+  Y<-sort(unique(unlist(X)))
+  setwd(resetwd)
+  print(Y)
+}
+
+list.files("C:/Users/Josh/Documents/All_Reports_20140930")[1]
+         var<-sort(colnames(read.csv("C:/Users/Josh/Documents/All_Reports_20140930/All_Reports_20140930_- Past Due and Nonaccrual Loans Wholly or Partially US Gvmt Guaranteed.csv")))
+
+add.paper<-function(Aut,Yr,Ttl,Jrnl,Vol,Num,Pgs){
+  resetwd<-getwd()
+  setwd("C:/users/Josh/Documents/CSV")
+  X<-read.csv("Papers.csv",colClasses="character")
+  Y<-rbind(X,c(Aut,Yr,Ttl,Jrnl,Vol,Num,Pgs))
+  write.csv(Y,"Papers.csv",row.names=FALSE)
+  print(tail(read.csv("Papers.csv"),3))
+  setwd(resetwd)
+}
+
+add.text<-function(From,To,Time,Text){
+  resetwd<-getwd()
+  setwd("C:/users/Josh/Documents/CSV Personal")
+  X<-read.csv("Texts.csv",colClasses="character")
+  Y<-rbind(X,c(From,To,Time,Text))
+  write.csv(Y,"Texts.csv",row.names=FALSE)
+  print(tail(read.csv("Texts.csv"),3))
+  setwd(resetwd)
+}
+
+add.phrase<-function(author,phrase){
+  resetwd<-getwd()
+  setwd("C:/Users/Josh/Documents/CSV Personal")
+  X<-read.csv("phrasebox.csv",colClasses="character")
+  Z<-rbind(X,c(author,phrase))
+  write.csv(Z,"phrasebox.csv",row.names=FALSE)
+  print(tail(read.csv("phrasebox.csv"),3))
+  setwd(resetwd)
+}
+
+add.bill<-function(Corp,
+                   Prdt,
+                   Chrg,
+                   Pmnt,
+                   Per.,
+                   Due,
+                   P.Dt,
+                   Cnfm){
+  resetwd<-getwd()
+  setwd("C:/Users/Josh/Documents/CSV Personal")
+  X<-read.csv("liv_exp.csv",colClasses="character")
+  Z<-rbind(X,c(Corp,Prdt,Chrg,Pmnt,Per.,Due,P.Dt,Cnfm))
+  write.csv(Z,"liv_exp.csv",row.names=FALSE)
+  print(tail(read.csv("liv_exp.csv"),3))
+  setwd(resetwd)
+}
+
+add.link<-function(link){
+  resetwd<-getwd()
+  setwd("C:/Users/Josh/Documents/CSV")
+  X<-read.csv("listoflinks.txt")
+  Y<-rbind(as.matrix(X[,2]),c("https://www.youtube.com/watch?v=D25l1SWOF9M&app=desktop"))
+  write.csv(Y,"listoflinks.csv",row.names=FALSE)
+  print(tail(read.csv("listoflinks.csv"),3))
+}
+
 add.article<-function(Author,
                       Title,
                       Organization,
@@ -6,22 +78,17 @@ add.article<-function(Author,
                       From){
   resetwd<-getwd()
   setwd("C:/Users/Josh/Documents/CSV")
-  X<-read.csv("Articles.txt")
+  X<-read.csv("Articles.csv")
   Y<-data.frame(Author=as.matrix(append(as.vector(X$Author),Author)),
                 Title=as.matrix(append(as.vector(X$Title),Title)),
                 Organization=as.matrix(append(as.vector(X$Organization),Organization)),
                 Site=as.matrix(append(as.vector(X$Site),Site)),
                 Date=as.matrix(append(as.vector(X$Date),Date)),
                 From=as.matrix(append(as.vector(X$From),From)))
-  write.csv(Y,"Articles.txt")
+  write.csv(Y,"Articles.csv", row.names=FALSE)
+  print(tail(read.csv("Articles.csv"),3))
   setwd(resetwd)
 }
-
-setjm<-function(directory){
-  apd<-c("C:/Users/Josh/Documents",directory)
-  gsub(apd)
-}
-directory<-"Functions"
 
 getline<-function(m,n){
   setwd("C:/Users/Josh/Documents/CSV")
@@ -40,7 +107,7 @@ readcsv<-function(n){
 m<-2
 n<-1
 
-pollutantmean<-function(directory, pollutant, id){
+pollutantmean<-function(directory, pollutant, id=1:332){
   setwd("C:/Users/Josh/Documents/CSV")
   setwd(directory)
   count.nitrate<-function(n){
@@ -66,33 +133,12 @@ pollutantmean<-function(directory, pollutant, id){
   mean.sulfate<-(sum(as.numeric(extraction$sum_S))/
                    sum(as.numeric(extraction$count_S)))
   if (toupper(pollutant)=="NITRATE"){
-    print(mean.nitrate)
+    return(mean.nitrate)
   }
   if (toupper(pollutant)=="SULFATE"){
-    print(mean.sulfate)
+    return(mean.sulfate)
   }
 }
-
-sums.nitrate<-function(id){
-  sum.nitrate<-function(n){
-    sum(read.csv(
-      getElement(Sys.glob("*csv"),n))$nitrate, na.rm=TRUE)
-  }
-  lapply(id, sum.nitrate)
-}
-
-sums.sulfate<-function(id){
-  for(n in id){
-    print(sum(read.csv(getElement(Sys.glob("*csv"),n))$sulfate, na.rm=TRUE))
-  }
-}
-
-sums.nitrate<-function(id){
-  for(n in id){
-    print(sum(read.csv(getElement(Sys.glob("*csv"),n))$nitrate, na.rm=TRUE))
-  }
-}
-
 
 sum.sulfate<-function(id){
   sum(read.csv(getElement(Sys.glob("*csv"),id))$sulfate, na.rm=TRUE)
@@ -100,18 +146,6 @@ sum.sulfate<-function(id){
 
 sum.nitrate<-function(id){
   sum(read.csv(getElement(Sys.glob("*csv"),id))$nitrate, na.rm=TRUE)
-}
-
-sum.sulfate<-function(id){
-  sulfate<-read.csv(getElement(Sys.glob("*csv"),id))$sulfate
-  sum(subset(sulfate,
-             !is.na(sulfate)))
-}
-
-sum.nitrate<-function(id){
-  nitrate<-read.csv(getElement(Sys.glob("*csv"),id))$nitrate
-  sum(subset(nitrate,
-             !is.na(nitrate)))
 }
 
 count.sulfate<-function(id){
@@ -125,8 +159,6 @@ count.nitrate<-function(id){
   length(subset(nitrate,
          !is.na(nitrate)))
 }
-
-length(subset(read.csv("001.csv")$sulfate, !is.na(read.csv("001.csv")$sulfate)))
 
 read.pollutant<-function(n){
   if (pollutant=="sulfate"){
@@ -172,11 +204,12 @@ stateset<-function(State){subset(medgrid,medgrid[,2]==State)}#"2014-10-27 16:53:
 medvariables<-function(n){getElement(colnames(read.csv("outcome-of-care-measures.csv")), n)}
 
 alllinks<-function(){
+  resetwd<-getwd()
   setwd("C:/Users/Josh/Documents/CSV")
-  Author<-as.matrix(read.csv("articles.txt")$Author)
-  Date<-as.matrix(read.csv("articles.txt")$Date)
-  Organization<-as.matrix(read.csv("articles.txt")$Organization)
-  From<-as.matrix(read.csv("articles.txt")$From)
+  Author<-as.matrix(read.csv("articles.csv")$Author)
+  Date<-as.matrix(read.csv("articles.csv")$Date)
+  Organization<-as.matrix(read.csv("articles.csv")$Organization)
+  From<-as.matrix(read.csv("articles.csv")$From)
   articlegrid<-data.frame(Author, Date, Organization, From)
   as.matrix(
     lapply(
@@ -185,6 +218,7 @@ alllinks<-function(){
       manylinks)
   )
   print()
+  setwd(resetwd)
 }
 
 manylinksnum<-function(){getElement(manylinks(1),2)}
@@ -615,106 +649,3 @@ pollutantmean<-function(directory, pollutant, id){
   doc<-read.csv(getElement(list.files(), id))
   pol<-getElement(doc, pollutant)
 }
-pollutantmean("specdata", "sulfate", 5)
-## no errors, but nothing printed
-
-#@"2014-10-15 07:49:22 CDT"
-cc<-function(id){
-  read.csv(getElement(list.files(), id))
-}
-cc(001)
-## successful
-cc(002)
-## successful
-cc(3)
-## successful
-
-#@"2014-10-14 23:55:51 CDT"
-b<-function(pollutant){
-  getElement(read.csv("001.csv"), pollutant)
-}
-b("sulfate")
-b("nitrate")
-## successful
-
-
-#@"2014-10-14 23:15:39 CDT"
-b<-function(pollutant){
-  read.csv("001.csv")$pollutant
-}
-b("sulfate")
-b("nitrate")
-#   NULL
-## unsuccessful
-
-#@"2014-10-14 22:58:43 CDT"
-a<-function(directory){
-  setwd("C:\\Users\\Josh\\Documents")
-  setwd(directory)
-}
-a("specdata")
-## successful
-
-#@"2014-10-14 22:32:52 CDT"
-a<-function(directory){setwd(directory)}
-a("C:\\Users\\Josh\\Documents\\specdata")
-## sets directory if file path is full and specially formatted
-a("specdata")
-## fails to set directory based on file name
-
-#@"2014-10-13 17:16:07 CDT"
-read.csv("001.csv")
-## successful
-
-#@"2014-10-11 19:07:40 CDT"
-subschedule1<-function(input){subset(schedule,schedule$activity==c(" ", "input"))}
-subschedule1("RStudio")
-## unsuccessful
-
-#@"2014-10-11 18:58:42 CDT"
-subschedule1<-function(input){
-  subset(
-    schedule, (schedule$activity==input) | 
-      (schedule$activity== input)
-  )
-}
-subschedule1(" RStudio")
-## successful
-subschedule1("RStudio")
-## unsuccessful
-
-#@"2014-10-11 18:56:37 CDT"
-subschedule1<-function(input){subset(schedule,schedule$activity=="input")}
-subschedule1(" RStudio")
-## unsuccessful
-
-#@"2014-10-11 18:49:57 CDT"
-subschedule1<-function(input){subset(schedule,schedule$activity==input)}
-RStudio<-subschedule1(" RStudio")
-CSV<-subschedule1(" CSV")
-## successful
-
-#@"2014-10-11 15:38:21 CDT"
-subschedule1<-function(input){subset(schedule,schedule$activity==input)}
-subschedule1("Rstudio")
-#   <0 rows>
-
-#@"2014-10-11 15:36:41 CDT"
-subschedule1<-function(input){subset(schedule,schedule$activity==input)}
-subschedule1("RStudio")
-#   <0 rows>
-
-#@"2014-10-11 15:35:16 CDT"
-subschedule1<-function(input){subset(schedule,schedule$activity==input)}
-subschedule1("RStudio")
-#   <0 rows>
-
-#@"2014-10-11 15:28:15 CDT"
-subschedule2<-function(input1,input2){
-  subset(
-    schedule,subset = (as.POSIXct(schedule$start) >= input1 
-                       & as.POSIXct(schedule$start) <= input2)
-  )
-}
-subschedule2("2014-10-07 21:38:00 CDT","2014-10-08 21:11:33 CDT")
-#   returns [55:85]x6 data frame with dim=NULL

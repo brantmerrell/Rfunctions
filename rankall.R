@@ -53,4 +53,5 @@ rankall <- function(outcome, num = "best") {
   ## (abbreviated) state name
   outframe<-data.frame(hospital=as.matrix(lapply(sort(unique(State)), staterank)),
                        state=sort(unique(State)))
+  print(outframe)
 }
