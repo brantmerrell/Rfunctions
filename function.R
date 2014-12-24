@@ -1,18 +1,90 @@
-path<-"C:/Users/Josh/Documents/All_Reports_20140930"
-file.variables<-function(path){
+variables<-as.vector(read.csv("C:/Users/Josh/Documents/CSV/variables.csv")[,1])
+quarterpath<-"C:/Users/Josh/Documents/All_Reports/All_Reports_19921231"
+var.deficit<-function(variables,quarterpath){
+  folder.variables<-function(quarterpath){
+    resetwd<-getwd()
+    setwd(quarterpath)
+    varnames<-function(n){
+      as.matrix(colnames(read.csv(list.files()[n],row.names=NULL)))
+    }
+    return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
+  }
+  qvariables<-folder.variables(quarterpath)
+  return(c(deficit.variables=subset(variables,!(variables %in% qvariables))))
+  setwd(resetwd)
+}
+
+directories<-c("C:/Users/Josh/Documents/All_Reports_20140630",
+               "C:/Users/Josh/Documents/All_Reports/All_Reports_19921231")
+var.masterlist<-function(directories){
+  folder.variables<-function(quarterpath){
+    resetwd<-getwd()
+    setwd(quarterpath)
+    varnames<-function(n){
+      as.matrix(colnames(read.csv(list.files()[n],row.names = NULL)))
+    }
+    return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
+    setwd(resetwd)
+  }
+  return(unique(unlist(lapply(directories,folder.variables))))
+}
+variables<-var.masterlist(directories)
+write.csv(variables,"variables.csv",row.names=FALSE)
+
+quarterpath1<-"C:/Users/Josh/Documents/All_Reports_20140930"
+quarterpath2<-"C:/Users/Josh/Documents/All_Reports_20140630"
+var.added<-function(quarterpath1,quarterpath2){
   resetwd<-getwd()
-  setwd(path)
+  folder.variables<-function(quarterpath){
+    setwd(quarterpath)
+    varnames<-function(n){
+      as.matrix(colnames(read.csv(list.files()[n],row.names = NULL)))
+    }
+    return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
+    setwd(resetwd)
+  }
+  quarter1<-folder.variables(quarterpath1)
+  quarter2<-folder.variables(quarterpath2)
+  return(subset(quarter2,!(quarter2[1:2] %in% quarter1)))
+}
+var.subtracted<-function(quarterpath1,quarterpath2){
+  resetwd<-getwd()
+  folder.variables<-function(quarterpath){
+    setwd(quarterpath)
+    setwd(quarterpath)
+    varnames<-function(n){
+      as.matrix(colnames(read.csv(list.files()[],row.names = NULL)))
+    }
+    return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
+  }
+  quarter1<-folder.variables(quarterpath1)
+  quarter2<-folder.variables(quarterpath2)
+  return(subset(quarter1,!(quarter1 %in% quarter2)))
+}
+
+folder.cert<-function(quarterpath){
+  resetwd<-getwd()
+  setwd(quarterpath)
+  file.cert<-function(n){
+    return(unique(read.csv(list.files()[n],row.names=NULL)$cert))
+  }
+  return(unique(unlist(lapply(1:length(list.files()),file.cert))))
+  setwd(resetwd)
+}
+
+file.cert<-function(filepath){
+  return(unique(read.csv(filepath)$cert))
+}
+
+folder.variables<-function(quarterpath){
+  resetwd<-getwd()
+  setwd(quarterpath)
   varnames<-function(n){
     as.matrix(colnames(read.csv(list.files()[n],row.names = NULL)))
   }
-  X<-lapply(1:length(list.files()),varnames)
-  Y<-sort(unique(unlist(X)))
+  return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
   setwd(resetwd)
-  print(Y)
 }
-
-list.files("C:/Users/Josh/Documents/All_Reports_20140930")[1]
-         var<-sort(colnames(read.csv("C:/Users/Josh/Documents/All_Reports_20140930/All_Reports_20140930_- Past Due and Nonaccrual Loans Wholly or Partially US Gvmt Guaranteed.csv")))
 
 add.paper<-function(Aut,Yr,Ttl,Jrnl,Vol,Num,Pgs){
   resetwd<-getwd()

@@ -1,0 +1,10 @@
+quarterpath<-"C:/Users/Josh/Documents/All_Reports_20140930"
+folder.cert<-function(quarterpath){
+  resetwd<-getwd()
+  setwd(quarterpath)
+  file.cert<-function(n){
+    return(unique(read.csv(list.files()[n],row.names=NULL)$cert))
+  }
+  return(unique(unlist(lapply(1:length(list.files()),file.cert))))
+  setwd(resetwd)
+}
