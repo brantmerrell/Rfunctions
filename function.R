@@ -1,30 +1,37 @@
+variables.csv<-function(folder){
+  list.files<-function(n){
+    replicate(ncol(read.csv(Sys.glob("*csv")[n])),Sys.glob("*csv")[n])
+  }
+  varnames<-function(n){
+    colnames(read.csv(Sys.glob("*csv")[n]))
+  }
+  data.frame(file=as.matrix(unlist(lapply(1:length(Sys.glob("*csv")),list.files))),
+             variable=as.matrix(unlist(lapply(1:length(Sys.glob("*csv")),varnames))))
+}
+
+colnames(read.csv(list.files()[n],row.names = NULL))
+
 variables<-as.vector(read.csv("C:/Users/Josh/Documents/CSV/variables.csv")[,1])
 quarterpath<-"C:/Users/Josh/Documents/All_Reports/All_Reports_19921231"
 var.deficit<-function(variables,quarterpath){
   folder.variables<-function(quarterpath){
-    resetwd<-getwd()
-    setwd(quarterpath)
     varnames<-function(n){
-      as.matrix(colnames(read.csv(list.files()[n],row.names=NULL)))
+      as.matrix(colnames(read.csv(list.files(quarterpath)[n],row.names=NULL)))
     }
     return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
   }
   qvariables<-folder.variables(quarterpath)
   return(c(deficit.variables=subset(variables,!(variables %in% qvariables))))
-  setwd(resetwd)
 }
 
 directories<-c("C:/Users/Josh/Documents/All_Reports_20140630",
                "C:/Users/Josh/Documents/All_Reports/All_Reports_19921231")
 var.masterlist<-function(directories){
   folder.variables<-function(quarterpath){
-    resetwd<-getwd()
-    setwd(quarterpath)
     varnames<-function(n){
-      as.matrix(colnames(read.csv(list.files()[n],row.names = NULL)))
+      as.matrix(colnames(read.csv(list.files(quarterpath)[n],row.names = NULL)))
     }
     return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
-    setwd(resetwd)
   }
   return(unique(unlist(lapply(directories,folder.variables))))
 }
@@ -34,14 +41,11 @@ write.csv(variables,"variables.csv",row.names=FALSE)
 quarterpath1<-"C:/Users/Josh/Documents/All_Reports_20140930"
 quarterpath2<-"C:/Users/Josh/Documents/All_Reports_20140630"
 var.added<-function(quarterpath1,quarterpath2){
-  resetwd<-getwd()
   folder.variables<-function(quarterpath){
-    setwd(quarterpath)
     varnames<-function(n){
-      as.matrix(colnames(read.csv(list.files()[n],row.names = NULL)))
+      as.matrix(colnames(read.csv(list.files(quarterpath)[n],row.names = NULL)))
     }
     return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
-    setwd(resetwd)
   }
   quarter1<-folder.variables(quarterpath1)
   quarter2<-folder.variables(quarterpath2)
@@ -51,11 +55,10 @@ var.subtracted<-function(quarterpath1,quarterpath2){
   resetwd<-getwd()
   folder.variables<-function(quarterpath){
     setwd(quarterpath)
-    setwd(quarterpath)
-    varnames<-function(n){
+    colnames<-function(n){
       as.matrix(colnames(read.csv(list.files()[],row.names = NULL)))
     }
-    return(sort(unique(unlist(lapply(1:length(list.files()),varnames)))))
+    return(sort(unique(unlist(lapply(1:length(list.files()),colnames)))))
   }
   quarter1<-folder.variables(quarterpath1)
   quarter2<-folder.variables(quarterpath2)
@@ -97,13 +100,10 @@ add.paper<-function(Aut,Yr,Ttl,Jrnl,Vol,Num,Pgs){
 }
 
 add.text<-function(From,To,Time,Text){
-  resetwd<-getwd()
-  setwd("C:/users/Josh/Documents/CSV Personal")
-  X<-read.csv("Texts.csv",colClasses="character")
+  X<-read.csv("C:/users/Josh/Documents/CSV Personal/Texts.csv",colClasses="character")
   Y<-rbind(X,c(From,To,Time,Text))
-  write.csv(Y,"Texts.csv",row.names=FALSE)
-  print(tail(read.csv("Texts.csv"),3))
-  setwd(resetwd)
+  write.csv(Y,"C:/users/Josh/Documents/CSV Personal/Texts.csv",row.names=FALSE)
+  print(tail(read.csv("C:/users/Josh/Documents/CSV Personal/Texts.csv"),3))
 }
 
 add.phrase<-function(author,phrase){
