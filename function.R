@@ -1,3 +1,27 @@
+add.object<-function(object,location,comment="",time=Sys.time()){
+  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"))
+  Y<-as.matrix(data.frame(object,location,time,comment))
+  Z<-rbind(X,Y)
+  write.csv(Z,"C:/Users/Josh/Documents/CSV Personal/paper.csv",row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"),3))
+}
+
+add.note<-function(note){
+  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
+  Y<-as.matrix(data.frame(note,Sys.time()))
+  Z<-rbind(X,Y)
+  write.csv(Z,"C:/Users/Josh/Documents/CSV Personal/notes.csv",row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv"),3))
+}
+
+clock<-function(punch,comment=""){
+  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/clock.csv",colClasses="character"))
+  Y<-as.matrix(data.frame(punch,Sys.time(),comment))
+  Z<-rbind(X,Y)
+  write.csv(Z,"C:/Users/Josh/Documents/CSV Personal/clock.csv",row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/clock.csv"),3))
+}
+
 variables.csv<-function(folder){
   list.files<-function(n){
     replicate(ncol(read.csv(Sys.glob("*csv")[n])),Sys.glob("*csv")[n])
