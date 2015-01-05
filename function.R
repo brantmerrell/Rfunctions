@@ -1,7 +1,14 @@
+view.uncategorized<-function(n){
+  objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",
+                    colClasses="character")
+  subset(objects[,1], objects[,6]=="" & objects[,7]=="")[n]
+}
+
 view.material<-function(n){
-  objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",colClasses="character")
+  objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",
+                    colClasses="character")
   selection<-sort(unique(objects$material)[n])
-  subset(objects[,1],objects[,2]==selection)
+  subset(objects[,1],objects[,6]==selection)
 }
 
 lapply(1:length(unique(objects$object)),view.object)
