@@ -1,3 +1,26 @@
+view.material<-function(n){
+  objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",colClasses="character")
+  selection<-sort(unique(objects$material)[n])
+  subset(objects[,1],objects[,2]==selection)
+}
+
+lapply(1:length(unique(objects$object)),view.object)
+view.object<-function(n){
+  objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",colClasses="character")
+  selection<-sort(unique(objects$object)[n])
+  subset(objects[,1],objects[,2]==selection)
+}
+
+add.film<-function(Film,genre,recommend,Time=Sys.time()){
+  filmlist<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/filmlist.csv",
+                               colClasses="character"))
+  film<-as.matrix(data.frame(Film,genre,recommend,Time))
+  filmlist<-rbind(filmlist,film)
+  write.csv(filmlist,"C:/Users/Josh/Documents/CSV Personal/filmlist.csv", 
+            row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/filmlist.csv"),3))
+}
+
 rm.paper<-function(paper,comment,time=Sys.time()){
   X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/rmpaper.csv"))
   Y<-as.matrix(data.frame(paper,comment,time))
