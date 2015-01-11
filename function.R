@@ -1,3 +1,23 @@
+subset.note<-function(newfilepath,newfilename, vector){
+  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
+  X<-X[order(X[,1]),]
+  newfilename<-subset(X,X[vector,])
+  X<-subset(X,X[-vector,])
+  write.csv(newfilename, newfilepath, row.names=FALSE)
+  write.csv(X, "C:/Users/Josh/Documents/CSV Personal/notes.csv", row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv"),3))
+  View(newfilename)
+}
+
+coursera.note<-function(note, course, time=Sys.time()){
+  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv",colClasses="character"))
+  Y<-as.matrix(data.frame(note,time,course))
+  Z<-rbind(X,Y)
+  write.csv(Z, "C:/Users/Josh/Documents/CSV Personal/coursera.csv", row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv"),3))
+  View(subset(Z, Z[,3]==course))
+}
+
 view.uncategorized<-function(n){
   objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",
                     colClasses="character")
