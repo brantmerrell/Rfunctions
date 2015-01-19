@@ -1,3 +1,28 @@
+add.note2<-function(category,note,time=Sys.time()){
+  note2<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes2.csv",colClasses="character"))
+  add2<-as.matrix(data.frame(note,time,category))
+  note2<-rbind(note2,add2)
+  write.csv(note2,"C:/Users/Josh/Documents/CSV Personal/notes2.csv",row.names=FALSE)
+  print(
+    as.character(
+      unique(
+        read.csv("C:/Users/Josh/Documents/CSV Personal/notes2.csv")$category
+        )
+      )
+    )
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/notes2.csv"),3))
+}
+
+add.artiquote<-function(art_number,art_quote,time=Sys.time()){
+  artiquote<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv",colClasses="character"))
+  addquote<-as.matrix(data.frame(art_quote,time,art_number))
+  artiquote<-rbind(artiquote,addquote)
+  write.csv(artiquote,"C:/Users/Josh/Documents/CSV Personal/artiquote.csv",row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv")))
+}
+
+write.csv(Y,"C:/Users/Josh/Documents/CSV Personal/artiquote.csv",row.names=FALSE)
+
 subset.note<-function(newfilepath,newfilename, vector){
   X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
   X<-X[order(X[,1]),]
@@ -9,13 +34,13 @@ subset.note<-function(newfilepath,newfilename, vector){
   View(newfilename)
 }
 
-coursera.note<-function(note, course, time=Sys.time()){
+coursera.note<-function(note, course, category,time=Sys.time(),validity=NA){
   X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv",colClasses="character"))
-  Y<-as.matrix(data.frame(note,time,course))
+  rw<-nrow(X)+1
+  Y<-as.matrix(data.frame(rw,note,time,course,category,validity))
   Z<-rbind(X,Y)
   write.csv(Z, "C:/Users/Josh/Documents/CSV Personal/coursera.csv", row.names=FALSE)
   print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv"),3))
-  View(subset(Z, Z[,3]==course))
 }
 
 view.uncategorized<-function(n){
@@ -230,18 +255,15 @@ add.article<-function(Author,
                       Site,
                       Date,
                       From){
-  resetwd<-getwd()
-  setwd("C:/Users/Josh/Documents/CSV")
-  X<-read.csv("Articles.csv")
-  Y<-data.frame(Author=as.matrix(append(as.vector(X$Author),Author)),
-                Title=as.matrix(append(as.vector(X$Title),Title)),
-                Organization=as.matrix(append(as.vector(X$Organization),Organization)),
-                Site=as.matrix(append(as.vector(X$Site),Site)),
-                Date=as.matrix(append(as.vector(X$Date),Date)),
-                From=as.matrix(append(as.vector(X$From),From)))
-  write.csv(Y,"Articles.csv", row.names=FALSE)
-  print(tail(read.csv("Articles.csv"),3))
-  setwd(resetwd)
+  articles<-read.csv("C:/Users/Josh/Documents/CSV/Articles.csv",colClasses="character")
+  Y<-data.frame(Author=as.matrix(append(as.vector(articles$Author),Author)),
+                Title=as.matrix(append(as.vector(articles$Title),Title)),
+                Organization=as.matrix(append(as.vector(articles$Organization),Organization)),
+                Site=as.matrix(append(as.vector(articles$Site),Site)),
+                Date=as.matrix(append(as.vector(articles$Date),Date)),
+                From=as.matrix(append(as.vector(articles$From),From)))
+  write.csv(Y,"C:/Users/Josh/Documents/CSV/Articles.csv", row.names=FALSE)
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV/Articles.csv"),3))
 }
 
 getline<-function(m,n){
