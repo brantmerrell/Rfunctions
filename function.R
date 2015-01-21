@@ -10,15 +10,15 @@ add.note2<-function(category,note,time=Sys.time()){
         )
       )
     )
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/notes2.csv"),3))
+  print(tail(subset(note2,note2[,3]==category),3))
 }
 
-add.artiquote<-function(art_number,art_quote,time=Sys.time()){
+artiquote<-function(art_number,art_quote,time=Sys.time()){
   artiquote<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv",colClasses="character"))
   addquote<-as.matrix(data.frame(art_quote,time,art_number))
   artiquote<-rbind(artiquote,addquote)
   write.csv(artiquote,"C:/Users/Josh/Documents/CSV Personal/artiquote.csv",row.names=FALSE)
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv")))
+  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv"),3))
 }
 
 write.csv(Y,"C:/Users/Josh/Documents/CSV Personal/artiquote.csv",row.names=FALSE)
@@ -34,10 +34,10 @@ subset.note<-function(newfilepath,newfilename, vector){
   View(newfilename)
 }
 
-coursera.note<-function(note, course, category,time=Sys.time(),validity=NA){
+coursera.note<-function(note, course, category,week,time=Sys.time(),validity=NA){
   X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv",colClasses="character"))
   rw<-nrow(X)+1
-  Y<-as.matrix(data.frame(rw,note,time,course,category,validity))
+  Y<-as.matrix(data.frame(rw,note,time,course,category,validity,week))
   Z<-rbind(X,Y)
   write.csv(Z, "C:/Users/Josh/Documents/CSV Personal/coursera.csv", row.names=FALSE)
   print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv"),3))
@@ -89,12 +89,12 @@ add.object<-function(object,location,comment="",time=Sys.time()){
   print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"),3))
 }
 
-add.note<-function(note){
-  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
-  Y<-as.matrix(data.frame(note,Sys.time()))
-  Z<-rbind(X,Y)
-  write.csv(Z,"C:/Users/Josh/Documents/CSV Personal/notes.csv",row.names=FALSE)
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv"),3))
+add.note<-function(note,Time=Sys.time()){
+  notes<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
+  obs<-as.matrix(data.frame(note,Time))
+  notes<-rbind(notes,obs)
+  write.csv(notes,"C:/Users/Josh/Documents/CSV Personal/notes.csv",row.names=FALSE)
+  print(tail(notes,3))
 }
 
 clock<-function(punch,comment=""){
@@ -263,7 +263,7 @@ add.article<-function(Author,
                 Date=as.matrix(append(as.vector(articles$Date),Date)),
                 From=as.matrix(append(as.vector(articles$From),From)))
   write.csv(Y,"C:/Users/Josh/Documents/CSV/Articles.csv", row.names=FALSE)
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV/Articles.csv"),3))
+  print(tail(Y,3))
 }
 
 getline<-function(m,n){
