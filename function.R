@@ -21,8 +21,6 @@ artiquote<-function(art_number,art_quote,time=Sys.time()){
   print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv"),3))
 }
 
-write.csv(Y,"C:/Users/Josh/Documents/CSV Personal/artiquote.csv",row.names=FALSE)
-
 subset.note<-function(newfilepath,newfilename, vector){
   X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
   X<-X[order(X[,1]),]
