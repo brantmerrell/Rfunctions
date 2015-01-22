@@ -18,7 +18,7 @@ artiquote<-function(art_number,art_quote,time=Sys.time()){
   addquote<-as.matrix(data.frame(art_quote,time,art_number))
   artiquote<-rbind(artiquote,addquote)
   write.csv(artiquote,"C:/Users/Josh/Documents/CSV Personal/artiquote.csv",row.names=FALSE)
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv"),3))
+  print(tail(artiquote,3))
 }
 
 subset.note<-function(newfilepath,newfilename, vector){
@@ -38,7 +38,7 @@ coursera.note<-function(note, course, category,week,time=Sys.time(),validity=NA)
   Y<-as.matrix(data.frame(rw,note,time,course,category,validity,week))
   Z<-rbind(X,Y)
   write.csv(Z, "C:/Users/Josh/Documents/CSV Personal/coursera.csv", row.names=FALSE)
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv"),3))
+  print(tail(Z,3))
 }
 
 view.uncategorized<-function(n){
@@ -80,11 +80,11 @@ rm.paper<-function(paper,comment,time=Sys.time()){
 }
 
 add.object<-function(object,location,comment="",time=Sys.time()){
-  X<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"))
+  objects<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"))
   Y<-as.matrix(data.frame(object,location,time,comment))
-  Z<-rbind(X,Y)
-  write.csv(Z,"C:/Users/Josh/Documents/CSV Personal/paper.csv",row.names=FALSE)
-  print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"),3))
+  objects<-rbind(X,Y)
+  write.csv(objects,"C:/Users/Josh/Documents/CSV Personal/paper.csv",row.names=FALSE)
+  print(tail(objects,3))
 }
 
 add.note<-function(note,Time=Sys.time()){
