@@ -1,10 +1,70 @@
+finddoc<-function(keyword){
+  if(tolower(keyword) %in% c('clock','timeclock','chessclock','punch','timepunch','clock.csv')){
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/clock.csv",
+                docname="clock"))
+  }
+  if(tolower(keyword) %in% c('article','articles','articles.csv','news')){
+    return(list(filepath="C:/Users/Josh/Documents/CSV/Articles.csv",
+                docname="articles"))
+  }
+  if(tolower(Variable) %in% c('article quotes','article quote','artiquote','artiquotes')){
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/artiquote.csv",
+                docname="artiquote"))
+  }
+  if(tolower(Variable) %in% c('raw notes','notes.csv','notes','note')){
+    return(list("C:/Users/Josh/Documents/CSV Personal/notes.csv",
+                docname="notes"))
+  }
+  if(tolower(Variable) %in% c('sorted notes','note2','notes2','notes2.csv')){
+    return(list("C:/Users/Josh/Documents/CSV Personal/notes2.csv",
+                docname="notes2"))
+  }
+  if(tolower(Variable) %in% c('coursera','coursera.csv','coursera.note','coursera notes','coursera note')){
+    return("C:/Users/Josh/Documents/CSV Personal/coursera.csv")
+  }
+}
+
+cell.modify<-function(Var, row, col, mod){
+  recpath<-"C:/Users/Josh/Documents/CSV Personal/records_modify_cell.csv"
+  filepath<-finddoc(Var)$filepath
+  Var<-finddoc(Var)$docname
+  X<-read.csv(filepath, colClasses="character")
+  before<-X[row,col]
+  X[row,col]<-mod
+  write.csv(X, filepath, row.names=FALSE)
+  records_modify_cell<-read.csv(recpath, colClasses='character')
+  new_modify_cell<-data.frame(Var=Var,
+                              row=row,
+                              col=col,
+                              before=before,
+                              after=mod,
+                              time=paste(Sys.time()))
+  records_modify_cell<-rbind(records_modify_cell, new_modify_cell)
+  write.csv(records_modify_cell, recpath, row.names=FALSE)
+  list(changed=read.csv(filepath)[c((row-1):(row+1)),],
+       recorded=tail(read.csv(recpath),3))
+}
+
 tailall<-function(clock=1,articles=2,artiquote=1,notes=2,notes2=2,coursera=2){
-  print(tail(as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/clock.csv")),clock))
-  print(tail(as.matrix(read.csv("C:/Users/Josh/Documents/CSV/Articles.csv")),articles))
-  print(tail(as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv")),artiquote))
-  print(tail(as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv")),notes))
-  print(tail(as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes2.csv")),notes2))
-  print(tail(as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv")),coursera))
+  list(
+    'clock'=tail(
+      as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/clock.csv")),
+      clock),
+    'articles'=tail(
+      as.matrix(read.csv("C:/Users/Josh/Documents/CSV/Articles.csv")),
+      articles),
+    'Article Quotes'=tail(
+      as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/artiquote.csv")),
+      artiquote),
+    'raw notes'=tail(
+      as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv")),
+      notes),
+    'sorted notes'=tail(
+      as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes2.csv")),
+      notes2),
+    'coursera notes'=tail(
+      as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/coursera.csv")),
+      coursera))
 }
 
 add.note2<-function(category,note,time=Sys.time()){
