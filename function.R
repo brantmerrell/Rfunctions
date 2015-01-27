@@ -1,3 +1,14 @@
+
+
+add.toll<-function(AmtDue,DateDue,Start,End,Unpaid,NewT,NewF,Hypo,nth){
+  newrow<-c(AmtDue,DateDue,Start,End,Unpaid,NewT,NewF,Hypo,nth)
+  filepath<-"C:/Users/Josh/Documents/CSV Personal/tolls.csv"
+  tollframe<-rbind(read.csv(filepath,colClasses="character"),
+                   newrow)
+  write.csv(tollframe,filepath,row.names=FALSE)
+  print(tail(tollframe, 3))
+}
+
 finddoc<-function(keyword){
   if(tolower(keyword) %in% c('clock','timeclock','chessclock','punch','timepunch','clock.csv')){
     return(list(filepath="C:/Users/Josh/Documents/CSV Personal/clock.csv",
@@ -7,20 +18,21 @@ finddoc<-function(keyword){
     return(list(filepath="C:/Users/Josh/Documents/CSV/Articles.csv",
                 docname="articles"))
   }
-  if(tolower(Variable) %in% c('article quotes','article quote','artiquote','artiquotes')){
+  if(tolower(keyword) %in% c('article quotes','article quote','artiquote','artiquotes')){
     return(list(filepath="C:/Users/Josh/Documents/CSV Personal/artiquote.csv",
                 docname="artiquote"))
   }
-  if(tolower(Variable) %in% c('raw notes','notes.csv','notes','note')){
-    return(list("C:/Users/Josh/Documents/CSV Personal/notes.csv",
+  if(tolower(keyword) %in% c('raw notes','notes.csv','notes','note')){
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/notes.csv",
                 docname="notes"))
   }
-  if(tolower(Variable) %in% c('sorted notes','note2','notes2','notes2.csv')){
-    return(list("C:/Users/Josh/Documents/CSV Personal/notes2.csv",
+  if(tolower(keyword) %in% c('sorted notes','note2','notes2','notes2.csv')){
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/notes2.csv",
                 docname="notes2"))
   }
-  if(tolower(Variable) %in% c('coursera','coursera.csv','coursera.note','coursera notes','coursera note')){
-    return("C:/Users/Josh/Documents/CSV Personal/coursera.csv")
+  if(tolower(keyword) %in% c('coursera','coursera.csv','coursera.note','coursera notes','coursera note')){
+    return(filepath="C:/Users/Josh/Documents/CSV Personal/coursera.csv",
+           docname="coursera")
   }
 }
 
