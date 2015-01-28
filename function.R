@@ -1,4 +1,22 @@
+add.move<-function(ID,pgn){
+  filepath<-"C:/Users/Josh/Documents/CSV Personal/chesspgn.csv"
+  chesspgn<-read.csv(filepath,colClasses="character")
+  newrow<-c(ID,pgn)
+  chesspgn<-rbind(chesspgn,newrow)
+  write.csv(chesspgn,
+            filepath,
+            row.names=FALSE)
+  tail(read.csv(filepath),3)
+}
 
+road.toll<-function(Date,Time,Location,Toll,Admin,pg,of,ID){
+  newrow<-c(Date,Time,Location,Toll,Admin,pg,of,ID)
+  filepath<-"C:/Users/Josh/Documents/CSV Personal/tollroads.csv"
+  tollroads<-rbind(read.csv(filepath,colClasses="character"),
+                   newrow)
+  write.csv(tollroads,filepath,row.names=FALSE)
+  print(tail(tollroads, 3))
+}
 
 add.toll<-function(AmtDue,DateDue,Start,End,Unpaid,NewT,NewF,Hypo,nth){
   newrow<-c(AmtDue,DateDue,Start,End,Unpaid,NewT,NewF,Hypo,nth)
