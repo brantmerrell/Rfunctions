@@ -1,7 +1,11 @@
-add.move<-function(ID,pgn){
+read.pgn1<-function(file){
+  read.csv(file,skip=9)
+}
+
+add.move<-function(type,ID,pgn){
   filepath<-"C:/Users/Josh/Documents/CSV Personal/chesspgn.csv"
   chesspgn<-read.csv(filepath,colClasses="character")
-  newrow<-c(ID,pgn)
+  newrow<-c(type,ID,pgn)
   chesspgn<-rbind(chesspgn,newrow)
   write.csv(chesspgn,
             filepath,
