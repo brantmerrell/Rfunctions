@@ -1,5 +1,5 @@
 add.move<-function(type,ID,pgn){
-  filepath<-"C:/Users/Josh/Documents/CSV Personal/chesspgn.csv"
+  filepath<-"C:/Users/Josh/Documents/CSV/chesspgn.csv"
   chesspgn<-read.csv(filepath,colClasses="character")
   newrow<-c(type,ID,pgn)
   chesspgn<-rbind(chesspgn,newrow)

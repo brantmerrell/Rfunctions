@@ -1,9 +1,31 @@
+
+
+num.pgn2<-function(pgn){
+  n<-10
+  while(n<pgn){n<-n+1}
+  return(n-1)
+}
+
+num.pgn1<-function(pgn){
+  n<-0
+  while(n<pgn){n<-n+1}
+  return(n-1)
+}
+
+Qtwo<-function(n){
+  paste(n,"..",sep="")
+}
+
+Qone<-function(n){
+  paste(n,".1",sep="")
+}
+
 read.pgn1<-function(file){
   read.csv(file,skip=9)
 }
 
 add.move<-function(type,ID,pgn){
-  filepath<-"C:/Users/Josh/Documents/CSV Personal/chesspgn.csv"
+  filepath<-"C:/Users/Josh/Documents/CSV/chesspgn.csv"
   chesspgn<-read.csv(filepath,colClasses="character")
   newrow<-c(type,ID,pgn)
   chesspgn<-rbind(chesspgn,newrow)
