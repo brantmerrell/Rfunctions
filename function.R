@@ -1,33 +1,40 @@
-
-
-num.pgn2<-function(pgn){
-  n<-10
-  while(n<pgn){n<-n+1}
-  return(n-1)
-}
-
-num.pgn1<-function(pgn){
-  n<-0
-  while(n<pgn){n<-n+1}
-  return(n-1)
-}
-
-Qtwo<-function(n){
-  paste(n,"..",sep="")
-}
-
-Qone<-function(n){
-  paste(n,".1",sep="")
-}
-
-read.pgn1<-function(file){
-  read.csv(file,skip=9)
+chesscolor<-function(pgn){
+  between<-function(n){
+    Qtwo<-function(n){
+      paste(n,"..",sep="")
+    }
+    Qone<-function(n){
+      paste(n,".1",sep="")
+    }
+    if(Qtwo(n)<pgn & pgn<Qone(n)){TRUE}
+    else{FALSE}
+  }
+  generate<-function(pgn){
+    n<-100
+    while(n<pgn){n<-n+1}
+    n<-n+1
+    n:1
+  }
+  nm<-generate(pgn)
+  if(TRUE %in% lapply(nm,between)){
+    return("black")
+  }
+  else(return("white"))
 }
 
 add.move<-function(type,ID,pgn){
-  filepath<-"C:/Users/Josh/Documents/CSV/chesspgn.csv"
+  if(tolower(type)=="echess"){
+    filepath<-"C:/Users/Josh/Documents/CSV/echess.csv"
+  }
+  if(tolower(type)=="livechess"){
+    filepath<-"C:/Users/Josh/Documents/CSV Personal/livechess.csv"
+  }
   chesspgn<-read.csv(filepath,colClasses="character")
-  newrow<-c(type,ID,pgn)
+  newcolor<-chesscolor(pgn)
+  newrow<-c(type,ID,pgn,newcolor)
+  if(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID)){
+    stop("this move has already been recorded")
+  }
   chesspgn<-rbind(chesspgn,newrow)
   write.csv(chesspgn,
             filepath,
