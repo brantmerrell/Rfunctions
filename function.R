@@ -1,25 +1,58 @@
-chesscolor<-function(pgn){
-  between<-function(n){
-    Qtwo<-function(n){
-      paste(n,"..",sep="")
-    }
-    Qone<-function(n){
-      paste(n,".1",sep="")
-    }
-    if(Qtwo(n)<pgn & pgn<Qone(n)){TRUE}
-    else{FALSE}
+pgn.xy<-function(pgn){
+  test<-function(sq){grepl(sq,pgn)}
+  sq<-unlist(lapply(1:8,upboard))
+  replic8<-function(x){
+    replicate(8,x)
   }
-  generate<-function(pgn){
-    n<-100
-    while(n<pgn){n<-n+1}
-    n<-n+1
-    n:1
+  x<-unlist(lapply(letters[1:8],replic8))
+  y<-rep(1:8,times=8)
+  df<-data.frame(sq=sq, x=x,y=y,assess=unlist(lapply(sq,test)))
+  if(sum(df$assess)!=1){
+    stop("unrecognized coordinates")
   }
-  nm<-generate(pgn)
-  if(TRUE %in% lapply(nm,between)){
-    return("black")
+  x<-as.character(subset(df$x,df$assess==TRUE))
+  y<-as.character(subset(df$y,df$assess==TRUE))
+  sq<-as.character(subset(df$sq,df$assess==TRUE))
+  return(list(x=x,y=y,sq=sq))
+}
+
+crossboard<-function(y){
+  if(!(y %in% 1:8)){
+    stop("invalid y coordinate")
   }
-  else(return("white"))
+  paste(letters[1:8],y,sep="")
+}
+
+upboard<-function(x){
+  if(!(tolower(x) %in% c(1:8,letters[1:8]))){
+    stop("invalid X coordinate")
+  }
+  if(tolower(x) %in% letters[1:8]){
+    return(paste(tolower(x),1:8,sep=""))
+  }
+  if(x %in% 1:8){
+    return(paste(letters[x],1:8,sep=""))
+  }
+}
+
+pgnpiece<-function(pgn){
+  test<-function(L){grepl(L,pgn)}
+  P<-c("K","Q","R","N","B")
+  Piece=c("King","Queen","Rook","Knight","Bishop")
+  df<-data.frame(P=P, Piece=Piece,assess=unlist(lapply(P,test)))
+  if(sum(df$assess)==0){
+    return("pawn")
+  }
+  if(sum(df$assess)==1){
+    return(as.character(subset(df$Piece,df$assess==TRUE)))
+  }
+  if(1<sum(df$assess)){
+    stop("Input contains extra piece")
+  }
+}
+
+movenumber<-function(pgn){
+  read.table(textConnection(pgn),sep=".")[1,1]
 }
 
 add.move<-function(type,ID,pgn){
@@ -31,7 +64,9 @@ add.move<-function(type,ID,pgn){
   }
   chesspgn<-read.csv(filepath,colClasses="character")
   newcolor<-chesscolor(pgn)
-  newrow<-c(type,ID,pgn,newcolor)
+  move_integer<-movenumber(pgn)
+  piece<-pgnpiece(pgn)
+  newrow<-c(type,ID,pgn,newcolor,move_integer,piece)
   if(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID)){
     stop("this move has already been recorded")
   }
