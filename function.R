@@ -1,18 +1,21 @@
 pgn.xy<-function(pgn){
   test<-function(sq){grepl(sq,pgn)}
-  sq<-unlist(lapply(1:8,upboard))
+  sq<-c(unlist(lapply(1:8,upboard)),"O")
   replic8<-function(x){
     replicate(8,x)
   }
-  x<-unlist(lapply(letters[1:8],replic8))
-  y<-rep(1:8,times=8)
+  x<-c(unlist(lapply(letters[1:8],replic8)),"multiple")
+  y<-c(rep(1:8,times=8),"1|8")
   df<-data.frame(sq=sq, x=x,y=y,assess=unlist(lapply(sq,test)))
   if(sum(df$assess)!=1){
-    stop("unrecognized coordinates")
+    stop("invalid coordinates")
   }
   x<-as.character(subset(df$x,df$assess==TRUE))
   y<-as.character(subset(df$y,df$assess==TRUE))
   sq<-as.character(subset(df$sq,df$assess==TRUE))
+  if(sq=="O"){
+    sq<-"castle"
+  }
   return(list(x=x,y=y,sq=sq))
 }
 
@@ -37,8 +40,8 @@ upboard<-function(x){
 
 pgnpiece<-function(pgn){
   test<-function(L){grepl(L,pgn)}
-  P<-c("K","Q","R","N","B")
-  Piece=c("King","Queen","Rook","Knight","Bishop")
+  P<-c("K","Q","R","N","B","O")
+  Piece=c("King","Queen","Rook","Knight","Bishop","King&Rook")
   df<-data.frame(P=P, Piece=Piece,assess=unlist(lapply(P,test)))
   if(sum(df$assess)==0){
     return("pawn")
@@ -66,7 +69,10 @@ add.move<-function(type,ID,pgn){
   newcolor<-chesscolor(pgn)
   move_integer<-movenumber(pgn)
   piece<-pgnpiece(pgn)
-  newrow<-c(type,ID,pgn,newcolor,move_integer,piece)
+  x_coord<-pgn.xy(pgn)$x
+  y_coord<-pgn.xy(pgn)$y
+  square<-pgn.xy(pgn)$sq
+  newrow<-c(type,ID,pgn,newcolor,move_integer,piece,x_coord,y_coord,square)
   if(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID)){
     stop("this move has already been recorded")
   }
