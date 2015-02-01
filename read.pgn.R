@@ -1,4 +1,11 @@
-read.pgn<-function(pgnpath){
+read.pgn<-function(id){
+  download.pgn<-function(id){
+    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+    download.file(URL,filepath)
+  }
+  download.pgn(id)
+  pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
   linecol<-function(n){
     if(readLines(pgnpath)[n]==""){
       return(0)
@@ -10,7 +17,7 @@ read.pgn<-function(pgnpath){
   }
   lineclass<-function(n){
     if(n==length(readLines(pgnpath))){
-      return("meta")
+      return("pgn")
     }
     if(n==(length(readLines(pgnpath))-1)){
       return("pgn")
