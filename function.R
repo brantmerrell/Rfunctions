@@ -1,4 +1,170 @@
 
+livemove<-function(pgn){
+  add.move("livechess",id,pgn)
+}
+lapply(pgn[3:122],livemove)
+
+download.pgn<-function(id){
+  URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+  download.file(URL,filepath)
+}
+
+notate.pgn<-function(id){
+  pgn<-read.pgn(id)
+  pgn<-read.table(textConnection(pgn),sep=".",colClasses="character",comment.char="")
+  pgn<-matrix(pgn,nrow=ncol(pgn),ncol=1)
+  white<-function(n){
+    n<-n+1
+    as.character(read.table(textConnection(as.character(pgn[n,])),sep=" ")$V1)
+  }
+  black<-function(n){
+    n<-n+1
+    as.character(read.table(textConnection(as.character(pgn[n,])),sep=" ")$V2)
+  }
+  white<-unlist(lapply(1:(length(pgn)-1),white))
+  black<-unlist(lapply(1:(length(pgn)-1),black))
+  whitepaste<-function(n){
+    paste(n,white[n],sep=".")
+  }
+  blackpaste<-function(n){
+    paste(n,black[n],sep="...")
+  }
+  white<-unlist(lapply(1:length(pgn),whitepaste))
+  black<-unlist(lapply(1:length(pgn),blackpaste))
+  all<-sort(c(white,black))
+  all<-subset(all,grepl("NA",all)==FALSE)
+  return(all)
+}
+
+read.pgn<-function(id){
+  download.pgn<-function(id){
+    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+    download.file(URL,filepath)
+  }
+  download.pgn(id)
+  pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+  linecol<-function(n){
+    if(readLines(pgnpath)[n]==""){
+      return(0)
+    }
+    if(!(readLines(pgnpath)[n]=="")){
+      return(ncol(read.table(textConnection(readLines(pgnpath)[n]))))
+    }
+    grepl(readLines(pgnpath)[n],metaproperties)
+  }
+  lineclass<-function(n){
+    if(n==length(readLines(pgnpath))){
+      return("pgn")
+    }
+    if(n==(length(readLines(pgnpath))-1)){
+      return("pgn")
+    }
+    if(n<(length(readLines(pgnpath))-1) & linecol(n)==3){
+      return("meta")
+    }
+    if((n<(length(readLines(pgnpath))-1)) & (3<linecol(n))){
+      return("pgn")
+    }
+    if(linecol(n)==0){
+      return("blank")
+    }
+  }
+  df<-data.frame(n=1:length(readLines(pgnpath)),
+                 Lclass=unlist(lapply(1:length(readLines(pgnpath)),lineclass)))
+  m<-subset(df$n,df$Lclass=="pgn")
+  l<-min(m)
+  pgn<-paste(readLines(pgnpath)[l])
+  while(l<max(m)){
+    pgn<-paste(pgn,readLines(pgnpath)[l+1])
+    l<-(l+1)
+  }
+  return(pgn)
+}
+
+# Does not yet work
+# Error in download.file(URL, destfile = filepath) : unsupported URL scheme
+download.pgn<-function(ID,pgnfolder="C:/Users/Josh/Documents/pgn",gamename=ID){
+  if(file.exists(pgnfolder)==FALSE){
+    dir.create(pgnfolder)
+  }
+  URL<-paste('www.chess.com/echess/download_pgn?lid=',ID,sep="")
+  filepath<-paste(pgnfolder,'/',gamename,'.pgn',sep="")
+  download.file(URL,destfile=filepath)
+  print(read.table(paste(pgnfolder,'/',ID,'.pgn',sep=""),skip=8)[1,])
+}
+
+properties.pgn<-function(pgn){
+  chesscolor<-function(pgn){
+    if(ncol(read.table(textConnection(pgn),sep="."))==4){
+      return("black")
+    }
+    if(ncol(read.table(textConnection(pgn),sep="."))==2){
+      return("white")
+    }
+    if(!(ncol(read.table(textConnection(pgn),sep=".")) %in% c(2,4))){
+      stop("invalid number of dots")
+    }
+  }
+  movenumber<-function(pgn){
+    read.table(textConnection(pgn),sep=".")[1,1]
+  }
+  piece<-function(pgn){
+    test<-function(L){grepl(L,pgn)}
+    P<-c("K","Q","R","N","B","O")
+    Piece=c("King","Queen","Rook","Knight","Bishop","King & Rook")
+    df<-data.frame(P=P, Piece=Piece,assess=unlist(lapply(P,test)))
+    if(sum(df$assess)==0){
+      return("pawn")
+    }
+    if(sum(df$assess)==1){
+      return(as.character(subset(df$Piece,df$assess==TRUE)))
+    }
+    if(1<sum(df$assess)){
+      stop("Input contains extra piece")
+    }
+  }
+  upboard<-function(x){
+    if(!(tolower(x) %in% c(1:8,letters[1:8]))){
+      stop("invalid X coordinate")
+    }
+    if(tolower(x) %in% letters[1:8]){
+      return(paste(tolower(x),1:8,sep=""))
+    }
+    if(x %in% 1:8){
+      return(paste(letters[x],1:8,sep=""))
+    }
+  }
+  test<-function(sq){grepl(sq,pgn)}
+  sq<-c(unlist(lapply(1:8,upboard)),"O")
+  replic8<-function(x){
+    replicate(8,x)
+  }
+  x<-c(unlist(lapply(letters[1:8],replic8)),"multiple")
+  y<-c(rep(1:8,times=8),"1|8")
+  df<-data.frame(sq=sq, x=x,y=y,assess=unlist(lapply(sq,test)))
+  if(sum(df$assess)!=1){
+    stop("invalid coordinates")
+  }
+  xcoor<-function(pgn){
+    return(as.character(subset(df$x,df$assess==TRUE)))
+  }
+  ycoor<-function(pgn){
+    return(as.character(subset(df$y,df$assess==TRUE)))
+  }
+  sqcoor<-function(pgn){
+    return(as.character(subset(df$sq,df$assess==TRUE)))
+  }
+  return(list(pgn=pgn,
+              color=chesscolor(pgn),
+              move=movenumber(pgn),
+              piece=piece(pgn),
+              x=xcoor(pgn),
+              y=ycoor(pgn),
+              sq=sqcoor(pgn)))
+}
+
 completeID<-function(ID){
   sample1<-sort(as.numeric(subset(chesspgn$move,chesspgn$ID==ID & chesspgn$color=="white")))
   test1<-ifelse((length(sample1)!=0),identical(paste(sample1),paste(1:max(sample1))),FALSE)
@@ -75,12 +241,12 @@ add.move<-function(type,ID,pgn){
     filepath<-"C:/Users/Josh/Documents/CSV Personal/livechess.csv"
   }
   chesspgn<-read.csv(filepath,colClasses="character")
-  newcolor<-chesscolor(pgn)
-  move_integer<-movenumber(pgn)
-  piece<-pgnpiece(pgn)
-  x_coord<-pgn.xy(pgn)$x
-  y_coord<-pgn.xy(pgn)$y
-  square<-pgn.xy(pgn)$sq
+  newcolor<-properties.pgn(pgn)$color
+  move_integer<-properties.pgn(pgn)$move
+  piece<-properties.pgn(pgn)$piece
+  x_coord<-properties.pgn(pgn)$x
+  y_coord<-properties.pgn(pgn)$y
+  square<-properties.pgn(pgn)$sq
   newrow<-c(type,ID,pgn,newcolor,move_integer,piece,x_coord,y_coord,square)
   if(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID)){
     stop("this move has already been recorded")
