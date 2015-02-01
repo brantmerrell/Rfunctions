@@ -3,7 +3,7 @@ notate.pgn<-function(id){
     download.pgn<-function(id){
       URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
       filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-      if(file.exists(filepath)==FALSE){
+      if(file.exists("C:/Users/Josh/Documents")==FALSE){
         dir.create(filepath)
       }
       download.file(URL,filepath)
