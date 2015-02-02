@@ -1,18 +1,46 @@
+read.meta<-function(id){
+  filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+  Event<-as.character(read.table(textConnection(readLines(filepath)[1]))$V2)
+  Site<-as.character(read.table(textConnection(readLines(filepath)[2]))$V2)
+  Date<-strptime(as.character(read.table(textConnection(readLines(filepath)[3]))$V2),
+                 format="%Y.%m.%d")
+  White<-as.character(read.table(textConnection(readLines(filepath)[4]))$V2)
+  Black<-as.character(read.table(textConnection(readLines(filepath)[5]))$V2)
+  Result<-as.character(read.table(textConnection(readLines(filepath)[6]))$V2)
+  WhiteElo<-as.character(read.table(textConnection(readLines(filepath)[7]))$V2)
+  BlackElo<-as.character(read.table(textConnection(readLines(filepath)[8]))$V2)
+  TimeControl<-as.character(read.table(textConnection(readLines(filepath)[9]))$V2)
+  Termination<-as.character(read.table(textConnection(readLines(filepath)[10]))$V2)
+  return(list(Event=Event,Site=Site,
+              Date=Date,White=White,
+              Black=Black,Result=Result,
+              WhiteElo=WhiteElo,BlackElo=BlackElo,
+              TimeControl=TimeControl,Termination=Termination))
+}
+
 completelivemoves<-function(incomplete_ID_live){
   id<-incomplete_ID_live
   pgn<-notate.pgn(id)
   livemove<-function(pgn){
-    add.move("livechess",id,pgn)
+    add.move(id,pgn)
   }
   lapply(pgn,livemove)
 }
 
-
-download.pgn<-function(id){
-  URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+download.pgn<-function(id,update=FALSE){
+  if(nchar(id)==9){
+    URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
+  }
+  if(nchar(id)==10){
+    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  }
   filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-  download.file(URL,filepath)
+  if((file.exists(filepath)==FALSE) |
+       (update==TRUE){
+         download.file(URL,filepath)
+       }
 }
+
 
 notate.pgn<-function(id){
   pgn<-read.pgn(id)
@@ -42,14 +70,6 @@ notate.pgn<-function(id){
 }
 
 read.pgn<-function(id){
-  download.pgn<-function(id){
-    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
-    filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-    if(file.exists("C:/Users/Josh/Documents")==FALSE){
-      dir.create("C:/Users/Josh/Documents")
-    }
-    download.file(URL,filepath)
-  }
   download.pgn(id)
   pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
   linecol<-function(n){
@@ -177,27 +197,6 @@ completeID<-function(ID){
   ifelse((test1==TRUE & test2==TRUE),return("complete"),return("incomplete"))
 }
 
-pgn.xy<-function(pgn){
-  test<-function(sq){grepl(sq,pgn)}
-  sq<-c(unlist(lapply(1:8,upboard)),"O")
-  replic8<-function(x){
-    replicate(8,x)
-  }
-  x<-c(unlist(lapply(letters[1:8],replic8)),"multiple")
-  y<-c(rep(1:8,times=8),"1|8")
-  df<-data.frame(sq=sq, x=x,y=y,assess=unlist(lapply(sq,test)))
-  if(sum(df$assess)!=1){
-    stop("invalid coordinates")
-  }
-  x<-as.character(subset(df$x,df$assess==TRUE))
-  y<-as.character(subset(df$y,df$assess==TRUE))
-  sq<-as.character(subset(df$sq,df$assess==TRUE))
-  if(sq=="O"){
-    sq<-"castle"
-  }
-  return(list(x=x,y=y,sq=sq))
-}
-
 crossboard<-function(y){
   if(!(y %in% 1:8)){
     stop("invalid y coordinate")
@@ -237,23 +236,25 @@ movenumber<-function(pgn){
   read.table(textConnection(pgn),sep=".")[1,1]
 }
 
-add.move<-function(type,ID,pgn){
-  filepath<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
-  chesspgn<-read.csv(filepath,colClasses="character")
-  newcolor<-properties.pgn(pgn)$color
-  move_integer<-properties.pgn(pgn)$move
-  piece<-properties.pgn(pgn)$piece
-  x_coord<-properties.pgn(pgn)$x
-  y_coord<-properties.pgn(pgn)$y
-  square<-properties.pgn(pgn)$sq
-  newrow<-c(type,ID,pgn,newcolor,move_integer,piece,x_coord,y_coord,square)
+add.move<-function(ID,pgn){
+  if(nchar(ID)==10){type<-"livechess"}
+  if(nchar(ID)==9){type<-"echess"}
   if(!(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID))){
+    filepath<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
+    chesspgn<-read.csv(filepath,colClasses="character")
+    color<-properties.pgn(pgn)$color
+    move<-properties.pgn(pgn)$move
+    piece<-properties.pgn(pgn)$piece
+    xcoor<-properties.pgn(pgn)$x
+    ycoor<-properties.pgn(pgn)$y
+    sq<-properties.pgn(pgn)$sq
+    newrow<-c(type,ID,pgn,color,move,piece,xcoor,ycoor,sq)
     chesspgn<-rbind(chesspgn,newrow)
-    write.csv(chesspgn,
+    write.csv(unique(chesspgn),
               filepath,
               row.names=FALSE)
   }
-  tail(read.csv(filepath),1)
+  tail(read.csv(filepath),2)
 }
 
 road.toll<-function(Date,Time,Location,Toll,Admin,pg,of,ID){

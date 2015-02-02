@@ -1,9 +1,4 @@
 read.pgn<-function(id){
-  download.pgn<-function(id){
-    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
-    filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-    download.file(URL,filepath)
-  }
   download.pgn(id)
   pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
   linecol<-function(n){
