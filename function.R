@@ -238,12 +238,7 @@ movenumber<-function(pgn){
 }
 
 add.move<-function(type,ID,pgn){
-  if(tolower(type)=="echess"){
-    filepath<-"C:/Users/Josh/Documents/CSV/echess.csv"
-  }
-  if(tolower(type)=="livechess"){
-    filepath<-"C:/Users/Josh/Documents/CSV Personal/incomplete_live_games.csv"
-  }
+  filepath<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
   chesspgn<-read.csv(filepath,colClasses="character")
   newcolor<-properties.pgn(pgn)$color
   move_integer<-properties.pgn(pgn)$move
