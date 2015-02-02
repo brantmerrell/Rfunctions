@@ -1,8 +1,12 @@
-
-livemove<-function(pgn){
-  add.move("livechess",id,pgn)
+completelivemoves<-function(incomplete_ID_live){
+  id<-incomplete_ID_live
+  pgn<-notate.pgn(id)
+  livemove<-function(pgn){
+    add.move("livechess",id,pgn)
+  }
+  lapply(pgn,livemove)
 }
-lapply(pgn[3:122],livemove)
+
 
 download.pgn<-function(id){
   URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
@@ -147,9 +151,6 @@ properties.pgn<-function(pgn){
   x<-c(unlist(lapply(letters[1:8],replic8)),"multiple")
   y<-c(rep(1:8,times=8),"1|8")
   df<-data.frame(sq=sq, x=x,y=y,assess=unlist(lapply(sq,test)))
-  if(sum(df$assess)!=1){
-    stop("invalid coordinates")
-  }
   xcoor<-function(pgn){
     return(as.character(subset(df$x,df$assess==TRUE)))
   }
@@ -241,7 +242,7 @@ add.move<-function(type,ID,pgn){
     filepath<-"C:/Users/Josh/Documents/CSV/echess.csv"
   }
   if(tolower(type)=="livechess"){
-    filepath<-"C:/Users/Josh/Documents/CSV Personal/livechess.csv"
+    filepath<-"C:/Users/Josh/Documents/CSV Personal/incomplete_live_games.csv"
   }
   chesspgn<-read.csv(filepath,colClasses="character")
   newcolor<-properties.pgn(pgn)$color
@@ -251,14 +252,13 @@ add.move<-function(type,ID,pgn){
   y_coord<-properties.pgn(pgn)$y
   square<-properties.pgn(pgn)$sq
   newrow<-c(type,ID,pgn,newcolor,move_integer,piece,x_coord,y_coord,square)
-  if(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID)){
-    stop("this move has already been recorded")
+  if(!(pgn %in% subset(chesspgn$pgn,chesspgn$ID==ID))){
+    chesspgn<-rbind(chesspgn,newrow)
+    write.csv(chesspgn,
+              filepath,
+              row.names=FALSE)
   }
-  chesspgn<-rbind(chesspgn,newrow)
-  write.csv(chesspgn,
-            filepath,
-            row.names=FALSE)
-  tail(read.csv(filepath),3)
+  tail(read.csv(filepath),1)
 }
 
 road.toll<-function(Date,Time,Location,Toll,Admin,pg,of,ID){
