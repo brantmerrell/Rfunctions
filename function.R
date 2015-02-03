@@ -1,3 +1,90 @@
+barfiles<-function(id_OR_df){
+  total<-function(file){
+    sum(chessgrid$x==file)
+  }
+  if(class(id_OR_df)=="data.frame"){
+    chessgrid<-id_OR_df
+    explain<-paste("Number of Moves in",length(unique(chessgrid$ID)),"games",sep=" ")
+  }
+  if(class(id_OR_df) %in% c('numeric','integer')){
+    id<-id_OR_df
+    filepath<-paste("C:/Users/Josh/Documents/chess/chesspgn.csv")
+    chesspgn<-read.csv(filepath,colClasses="character")
+    explain<-paste("Use of files in game",id)
+    ifelse(id %in% chesspgn$ID,
+           chessgrid<-subset(chesspgn,chesspgn$ID==id),
+           message("This game has not been stored in chesspgn"))
+  }
+  files<-c("a","b","c","d","e","f","g","h")
+  counts<-unlist(lapply(files,
+                        total))
+  df<-data.frame(counts=counts,files=files)
+  col<-c("purple","darkgreen","red","darkblue","lightsteelblue","darkred","green","grey50")
+  densitor<-(10^(as.integer(mean(df$counts))+1))/(df$count+1)
+  par(mar=c(6,4,4,6))
+  barplot(height=df$counts,width=0.5,space=.2,
+          names.arg=TRUE,legend.text=TRUE,horiz=FALSE, 
+          density=densitor,angle=0,
+          col=col,
+          border="brown",main="Use of Board Files", sub=explain,
+          xlab="Files",ylab="moves",axes=TRUE,axisnames=TRUE)
+  legend('topright', legend=paste(df$files,df$counts,sep=" : "), 
+         col=col,lty=1, bty='o', cex=.75,xjust=0)
+}
+
+gamesize<-function(id){
+  filepath<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
+  chesspgn<-read.csv(filepath,colClasses="character")
+  game<-subset(chesspgn,chesspgn$ID==id)
+  black<-max(as.numeric(subset(game$move,game$color=="black")))
+  white<-max(as.numeric(subset(game$move,game$color=="white")))
+  return(mean(c(black,white)))
+}
+
+barpieces_jpeg<-function(id){
+  filepath<-paste("C:/Users/Josh/Documents/Chess/barpieces_",id,".jpeg",sep="")
+  if(file.exists(filepath)==TRUE){
+    message("this game has already been plotted!")
+  }
+  jpeg(filepath)
+  barpieces(id)
+  dev.off()
+}
+
+barpieces<-function(id_OR_df){
+  total<-function(piece){
+    sum(chessgrid$piece==piece)
+  }
+  if(class(id_OR_df)=="data.frame"){
+    chessgrid<-id_OR_df
+    explain<-paste("Number of Moves in",length(unique(chessgrid$ID)),"games",sep=" ")
+  }
+  if(class(id_OR_df) %in% c('numeric','integer')){
+    id<-id_OR_df
+    filepath<-paste("C:/Users/Josh/Documents/chess/chesspgn.csv")
+    chesspgn<-read.csv(filepath,colClasses="character")
+    explain<-paste("Use of pieces in game",id)
+    ifelse(id %in% chesspgn$ID,
+           chessgrid<-subset(chesspgn,chesspgn$ID==id),
+           message("This game has not been stored in chesspgn"))
+  }
+  counts<-unlist(lapply(c("King","Queen","Rook","Bishop","Knight","pawn","King & Rook"),
+                        total))
+  pieces<-paste(c("K","Q","R","B","N","p","Cstl"),counts,sep=" : ")
+  df<-data.frame(counts=counts,pieces=pieces)
+  col<-c("green1","red","yellow1","royalblue2","purple2","turquoise","brown4")
+  densitor<-(10^(nchar(as.integer(mean(df$counts)))+1))/(df$count+1)
+  par(mar=c(8,4,6,4))
+  barplot(height=df$counts,width=0.8,space=.2,
+          names.arg=TRUE,legend.text=FALSE,horiz=TRUE, 
+          density=densitor,angle=90, 
+          col=col,
+          border="brown",main="Use of Chess Pieces", sub=explain,
+          xlab=NULL,ylab="pieces",axes=TRUE,axisnames=FALSE)
+  legend('bottomright', legend=(df$pieces), 
+         col=col,lty=1, bty='n', cex=.75)
+}
+
 read.meta<-function(id){
   filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
   Event<-as.character(read.table(textConnection(readLines(filepath)[1]))$V2)
@@ -179,6 +266,14 @@ properties.pgn<-function(pgn){
   }
   sqcoor<-function(pgn){
     return(as.character(subset(df$sq,df$assess==TRUE)))
+  }
+  capture<-function(pgn){
+    if(grepl("x",pgn)==TRUE){
+      return("capture")
+    }
+    else{
+      return("none")
+    }
   }
   return(list(pgn=pgn,
               color=chesscolor(pgn),
