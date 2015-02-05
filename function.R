@@ -1,14 +1,74 @@
+bar_gamelengths<-function(chessgrid,filepath,note=NULL){
+  n<-length(unique(chessgrid$ID))
+  col<-colors()[24:(24+n)]
+  jpeg(filepath)
+  hist(as.numeric(chessgrid$move),col=c("grey10","grey20","grey30","grey40","grey50"),density=c(50,90,70),
+       angle=c(0,45),main=paste("Histogram of move numbers in",n,"games"),sub=note,xlab="movenumbers")
+  dev.off()
+}
+
+ranksfiles_jpeg<-function(id){
+  filepath1<-paste("C:/Users/Josh/Documents/Chess/barfiles_",id,".jpeg",sep="")
+  filepath2<-paste("C:/Users/Josh/Documents/Chess/barranks_",id,".jpeg",sep="")
+  if(file.exists(filepath1)==TRUE | file.exists(filepath2)){
+    message("this game has already been plotted!")
+  }
+  jpeg(filepath1)
+  barfiles(id)
+  dev.off()
+  jpeg(filepath2)
+  barranks(id)
+  dev.off()
+}
+
+
+barranks<-function(id_OR_df){
+  total<-function(file){
+    sum(chessgrid$y==file)
+  }
+  if(class(id_OR_df)=="data.frame"){
+    chessgrid<-id_OR_df
+    explain<-paste("Number of Moves in",length(unique(chessgrid$ID)),"games, by rank",sep=" ")
+  }
+  if(class(id_OR_df) %in% c('numeric','integer')){
+    id<-id_OR_df
+    filepath<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
+    chesspgn<-read.csv(filepath,colClasses="character")
+    explain<-paste("Use of ranks in game",id)
+    ifelse(id %in% chesspgn$ID,
+           chessgrid<-subset(chesspgn,chesspgn$ID==id),
+           message("This game has not been stored in chesspgn"))
+  }
+  counts<-unlist(lapply(1:8,
+                        total))
+  df<-data.frame(counts=counts,ranks=1:8)
+  col<-c("beige","bisque","blanchedalmond","burlywood","burlywood1","burlywood2","burlywood3","burlywood4")
+  densitor<-as.integer(50*(mean(df$counts)+1)/(df$count+1))
+  par(mar=c(6,4,4,6))
+  barplot(height=df$counts,width=0.5,space=.2,
+          names.arg=TRUE,legend.text=TRUE,horiz=TRUE, 
+          density=densitor,angle=0,
+          col=col,
+          border="brown",main="Use of Board Ranks", sub=explain,
+          xlab="moves",ylab="ranks",axes=TRUE,axisnames=TRUE)
+  legend(x='topright', legend=paste(df$ranks,df$counts,sep=" : "), 
+         fill=col,border="brown",lty=.5,pch=NULL,angle=90,
+         density=densitor,box.lwd=".2",
+         box.col="blue",pt.bg="maroon",
+         col=col, bty='o', cex=.35,pt.cex=0,xjust=0.5,yjust=1)
+}
+
 barfiles<-function(id_OR_df){
   total<-function(file){
     sum(chessgrid$x==file)
   }
   if(class(id_OR_df)=="data.frame"){
     chessgrid<-id_OR_df
-    explain<-paste("Number of Moves in",length(unique(chessgrid$ID)),"games",sep=" ")
+    explain<-paste("Number of Moves in",length(unique(chessgrid$ID)),"games, by file",sep=" ")
   }
   if(class(id_OR_df) %in% c('numeric','integer')){
     id<-id_OR_df
-    filepath<-paste("C:/Users/Josh/Documents/chess/chesspgn.csv")
+    filepath<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
     chesspgn<-read.csv(filepath,colClasses="character")
     explain<-paste("Use of files in game",id)
     ifelse(id %in% chesspgn$ID,
@@ -19,8 +79,8 @@ barfiles<-function(id_OR_df){
   counts<-unlist(lapply(files,
                         total))
   df<-data.frame(counts=counts,files=files)
-  col<-c("purple","darkgreen","red","darkblue","lightsteelblue","darkred","green","grey50")
-  densitor<-(10^(as.integer(mean(df$counts))+1))/(df$count+1)
+  col<-c("aquamarine1","aquamarine2","aquamarine3","aquamarine4","azure1","azure2","azure3","azure4")
+  densitor<-as.integer(50*(mean(df$counts)+1)/(df$count+1))
   par(mar=c(6,4,4,6))
   barplot(height=df$counts,width=0.5,space=.2,
           names.arg=TRUE,legend.text=TRUE,horiz=FALSE, 
@@ -28,8 +88,11 @@ barfiles<-function(id_OR_df){
           col=col,
           border="brown",main="Use of Board Files", sub=explain,
           xlab="Files",ylab="moves",axes=TRUE,axisnames=TRUE)
-  legend('topright', legend=paste(df$files,df$counts,sep=" : "), 
-         col=col,lty=1, bty='o', cex=.75,xjust=0)
+  legend(x='topleft', legend=paste(df$files,df$counts,sep=" : "), 
+         fill=col,border="black",lty=.5,pch=NULL,angle=90,
+         density=densitor,box.lwd=".2",
+         box.col="blue",pt.bg="maroon",
+         col=col, bty='o', cex=.35,pt.cex=0,xjust=0.5,yjust=1)
 }
 
 gamesize<-function(id){
