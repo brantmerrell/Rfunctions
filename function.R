@@ -1,3 +1,72 @@
+threshsplit<-function(threshold,filepath="C:/Users/Josh/Documents/Chess/chesspgn.csv"){
+  data<-read.csv(filepath,colClasses="character")
+  idcount<-function(id){
+    sum(data$ID==id)
+  }
+  df<-data.frame(ID=sort(unique(data$ID)),
+                 idcount=unlist(lapply(sort(unique(data$ID)),idcount)))
+  games_above<-as.character(subset(df$ID,threshold<=df$idcount))
+  games_below<-as.character(subset(df$ID,df$idcount<threshold))
+  moves_above<-subset(data,data$ID %in% games_above)
+  moves_below<-subset(data,as.integer(data$ID) %in% games_below)
+  data.frame(label=c("games_above","games_below","moves_above","moves_below"),
+             count=c(length(games_above),length(games_below),
+                     nrow(moves_above),nrow(moves_below)))
+}
+
+doodle.note<-function(note,Time=Sys.time()){
+  doodle<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/doodlenotes.csv",colClasses="character"))
+  obs<-as.matrix(data.frame(note,Time))
+  doodle<-rbind(doodle,obs)
+  write.csv(doodle,"C:/Users/Josh/Documents/CSV Personal/doodlenotes.csv",row.names=FALSE)
+  print(tail(doodle,3))
+}
+
+gitpdf.note<-function(note,course,week,lecture,slide_num,slide_of,Time=Sys.time()){
+  filepath<-"C:/Users/Josh/Documents/CSV Personal/gitpdf.csv"
+  gitpdf<-read.csv(filepath,colClasses="character")
+  newrow<-c(note,paste(Time),course,week,lecture,slide_num,slide_of)
+  gitpdf<-rbind(gitpdf,newrow)
+  write.csv(gitpdf,filepath,row.names=FALSE)
+  tail(read.csv(filepath),3)
+}
+
+monthlyfinance<-function(year,month,category,amount,percentage){
+  filepath<-"C:/Users/Josh/Documents/Finance/months.csv"
+  data<-read.csv(filepath,colClasses="character")
+  data<-rbind(data,c(year,month,category,amount,percentage))
+  write.csv(data,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath)))
+}
+
+
+mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
+  filepath<-"C:/Users/Josh/Documents/CSV Personal/Mongo.DB.csv"
+  data<-read.csv(filepath,colClasses="character")
+  data<-rbind(data,c(lecnumber,mongonote,paste(Time)))
+  write.csv(data,filepath,row.names=FALSE)
+  tail(read.csv(filepath),3)
+}
+
+read.definitions<-function(n,SKIP=1){
+  folderpath<-"C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"
+  filename<-list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV")[n]
+  filepath<-paste(folderpath,filename,sep="/")
+  data<-cbind(read.csv(filepath,colClasses="character",skip=SKIP),file=filename)
+  return(data)
+}
+
+alldefinitions<-function(){
+  m<-length(list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"))
+  data<-read.definitions(1)
+  n<-1
+  while(n<m){
+    data<-rbind(data,read.definitions(n+1))
+    n<-n+1
+  }
+  return(data)
+}
+
 bar_gamelengths<-function(chessgrid,filepath,note=NULL){
   n<-length(unique(chessgrid$ID))
   col<-colors()[24:(24+n)]
