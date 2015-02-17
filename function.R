@@ -1,3 +1,23 @@
+
+
+add.fitness<-function(activity,unit,measure,count,limit,Time=Sys.time(),comment=NA){
+  fitnesspath<-"C:/Users/Josh/Documents/CSV Personal/fitness.csv"
+  fitness<-read.csv(filepath,colClasses="character")
+  observation<-c(activity,unit,measure,count,limit,paste(Time),comment)
+  fitness<-rbind(fitness,newrow)
+  write.csv(fitness,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
+add.food<-function(fd, cbs, prt, ft, Tm=paste(Sys.time())){
+  foodpath<-"C:/Users/Josh/Documents/CSV Personal/foods.csv"
+  food<-as.matrix(read.csv(filepath,colClasses="character"),ncol=5)
+  newrow<-as.matrix(data.frame(Time=Tm,food=fd,carbs=cbs,protein=prt,fat=ft))
+  food<-rbind(food,newrow)
+  write.csv(food,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
 threshsplit<-function(threshold,filepath="C:/Users/Josh/Documents/Chess/chesspgn.csv"){
   data<-read.csv(filepath,colClasses="character")
   idcount<-function(id){
@@ -255,7 +275,7 @@ download.pgn<-function(id,update=FALSE){
   }
   filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
   if((file.exists(filepath)==FALSE) |
-       (update==TRUE){
+       (update==TRUE)){
          download.file(URL,filepath)
        }
 }
@@ -415,6 +435,8 @@ properties.pgn<-function(pgn){
               y=ycoor(pgn),
               sq=sqcoor(pgn)))
 }
+## 
+
 
 completeID<-function(ID){
   sample1<-sort(as.numeric(subset(chesspgn$move,chesspgn$ID==ID & chesspgn$color=="white")))
@@ -786,12 +808,11 @@ add.text<-function(From,To,Time,Text){
 }
 
 add.phrase<-function(author,phrase){
-  resetwd<-getwd()
-  setwd("C:/Users/Josh/Documents/CSV Personal")
-  X<-read.csv("phrasebox.csv",colClasses="character")
+  phrasepath<-"C:/Users/Josh/Documents/CSV Personal/phrasebox.csv"
+  X<-read.csv(phrasepath,colClasses="character")
   Z<-rbind(X,c(author,phrase))
-  write.csv(Z,"phrasebox.csv",row.names=FALSE)
-  print(tail(read.csv("phrasebox.csv"),3))
+  write.csv(Z,phrasepath,row.names=FALSE)
+  print(tail(read.csv(phrasepath),3))
   setwd(resetwd)
 }
 
@@ -856,7 +877,6 @@ m<-2
 n<-1
 
 pollutantmean<-function(directory, pollutant, id=1:332){
-  setwd("C:/Users/Josh/Documents/CSV")
   setwd(directory)
   count.nitrate<-function(n){
     length(subset(read.csv(getElement(Sys.glob("*csv"),n))$nitrate,
@@ -880,11 +900,13 @@ pollutantmean<-function(directory, pollutant, id=1:332){
                    sum(as.numeric(extraction$count_N)))
   mean.sulfate<-(sum(as.numeric(extraction$sum_S))/
                    sum(as.numeric(extraction$count_S)))
-  if (toupper(pollutant)=="NITRATE"){
+  if (toupper(pollutant)=="NITRATE"){?
     return(mean.nitrate)
+    print(mean.nitrate)
   }
   if (toupper(pollutant)=="SULFATE"){
     return(mean.sulfate)
+    print(mean.nitrate)
   }
 }
 
