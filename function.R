@@ -1,12 +1,33 @@
 
 
+mongochess<-function(row,df=echess,dbN="local",h="localhost"){
+  library(RMongo)
+  doc<-paste("{'movedata':[{'",
+             colnames(df)[1],"':'",df[row,1],"'},{'",
+             colnames(df)[2],"':'",df[row,2],"'},{'",
+             colnames(df)[3],"':'",df[row,3],"'},{'",
+             colnames(df)[4],"':'",df[row,4],"'},{'",
+             colnames(df)[5],"':'",df[row,5],"'},{'",
+             colnames(df)[6],"':'",df[row,6],"'},{'",
+             colnames(df)[7],"':'",df[row,7],"'},{'",
+             colnames(df)[8],"':'",df[row,8],"'},{'",
+             colnames(df)[9],"':'",df[row,9],
+             "'}]}",sep="")
+  output <- dbInsertDocument(rmongo.object=mongoDbConnect(dbName=dbN, host=h), 
+                             collection="josh_chess", 
+                             doc=doc)
+  dbDisconnect(mongo)
+}
+
+
+
 add.fitness<-function(activity,unit,measure,count,limit,Time=Sys.time(),comment=NA){
   fitnesspath<-"C:/Users/Josh/Documents/CSV Personal/fitness.csv"
-  fitness<-read.csv(filepath,colClasses="character")
+  fitness<-read.csv(fitnesspath,colClasses="character")
   observation<-c(activity,unit,measure,count,limit,paste(Time),comment)
-  fitness<-rbind(fitness,newrow)
-  write.csv(fitness,filepath,row.names=FALSE)
-  print(tail(read.csv(filepath),3))
+  fitness<-rbind(fitness,observation)
+  write.csv(fitness,fitnesspath,row.names=FALSE)
+  print(tail(read.csv(fitnesspath),3))
 }
 
 add.food<-function(fd, cbs, prt, ft, Tm=paste(Sys.time())){
