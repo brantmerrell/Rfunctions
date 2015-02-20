@@ -1,4 +1,23 @@
-
+mongoFDIC<-function(row,df=FDIC,dbN="local",h="localhost"){
+  library(RMongo)
+  workdoc<-paste("{'_id':",row,",","stuff:",toJSON(df[row,]),"}")
+  #mongodoc<-paste("'FDIC':[","{'",
+          #colnames(df)[1],"':'",df[row,1],
+          #"'}{'",
+          #colnames(df)[2],"':'",df[row,2],
+          #"'}{'",
+          #colnames(df)[3],"':'",df[row,3],
+          #"'}{'",
+          #colnames(df)[4],"':'",df[row,4],
+          #"'}{'",
+          #colnames(df)[5],"':'",df[row,5],
+          #"'}","]",sep="")
+  mongo <- mongoDbConnect("test", "localhost", 27017)
+  output <- dbInsertDocument(rmongo.object=mongoDbConnect(dbName=dbN, host=h), 
+                             collection="FDIC", 
+                             doc=workdoc)
+  dbDisconnect(mongo)
+}
 
 mongochess<-function(row,df=echess,dbN="local",h="localhost"){
   library(RMongo)
@@ -94,7 +113,8 @@ read.definitions<-function(n,SKIP=1){
   filename<-list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV")[n]
   filepath<-paste(folderpath,filename,sep="/")
   data<-cbind(read.csv(filepath,colClasses="character",skip=SKIP),file=filename)
-  return(data)
+  names(data)<-c("X","ShortDesciption","Variable","LongDescription","File")
+  return(data[,c(1,3,2,4,5)])
 }
 
 alldefinitions<-function(){
