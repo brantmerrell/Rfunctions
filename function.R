@@ -1,3 +1,29 @@
+coursepath<-"C:/Users/Josh/Documents/Courses/Courses"
+workframe<-data.frame(Course=list.files(coursepath)[1],
+                      lecture=list.files(
+                        paste(paste(coursepath,list.files(coursepath)[1],sep="/"),"lectures",sep="/")),
+                      filepath=paste(paste(coursepath,list.files(coursepath)[n],sep="/"),
+                                      "lectures",
+                                      list.files(paste(paste(coursepath,
+                                                             list.files(coursepath)[n],sep="/"),
+                                                       "lectures",
+                                                       sep="/")),
+                                      sep="/"))
+for(n in 2:9){
+  newframe<-data.frame(Course=list.files(coursepath)[n],
+                       lecture=list.files(paste(paste(coursepath,list.files(
+                         coursepath)[n],sep="/"),"lectures",sep="/")),
+                       filepath=paste(paste(coursepath,list.files(coursepath)[n],sep="/"),
+                                       "lectures",
+                                       list.files(paste(paste(coursepath,
+                                                              list.files(coursepath)[n],sep="/"),
+                                                        "lectures",
+                                                        sep="/")),
+                                       sep="/"))
+  workframe<-rbind(workframe,newframe)
+}
+data.frame
+
 newsdata<-function(newslinks){
   for(newslink in newslinks){
     if(grepl("www.nytimes.com",newslink)){
