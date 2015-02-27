@@ -1,17 +1,173 @@
+newsdata<-function(newslinks){
+  for(newslink in newslinks){
+    if(grepl("www.nytimes.com",newslink)){
+      year<-read.table(textConnection(newslink),sep="/")$V4
+      month<-read.table(textConnection(newslink),sep="/")$V5
+      day<-read.table(textConnection(newslink),sep="/")$V6
+      
+    }
+  }
+  
+}
+
+newslink<-function(links)
+
+musiclink<-function(links){
+  if(FALSE %in% grepl("pandora.com",links)){
+    message("this includes a non-pandora link")
+  }
+  filepath<-"C:/Users/Josh/Documents/CSV Personal/pandoralinks.csv"
+  current<-as.matrix(read.csv(filepath,colClasses="character"))
+  write.csv(unique(rbind(current,as.matrix(links))),filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
+pandoradata<-function(pandoralinks="default"){
+  if("default" %in% pandoralinks){
+    pandoralinks<-read.csv("C:/Users/Josh/Documents/CSV Personal/pandoralinks.csv",
+                           colClasses="character")$x
+  }
+  data<-data.frame(artist=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V4),
+                   album=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V5),
+                   track=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V6),
+                   link=as.character(pandoralinks[1]))
+  if(length(pandoralinks)!=1){
+    for(link in pandoralinks[2:length(pandoralinks)]){
+      newrow<-data.frame(artist=as.character(read.table(textConnection(link),sep="/")$V4),
+                         album=as.character(read.table(textConnection(link),sep="/")$V5),
+                         track=as.character(read.table(textConnection(link),sep="/")$V6),
+                         link=as.character(link))
+      data<-rbind(data,newrow)
+    }
+  }
+  data
+}
+
+meta.loop<-function(ids,Var="Event"){
+  if(tolower(Var)=="event"){
+    FUN<-function(id){as.vector(read.meta(id)$Event)}
+  }
+  if(tolower(Var)=="site"){
+    FUN<-function(id){as.vector(read.meta(id)$Site)}
+  }
+  if(tolower(Var)=="date"){
+    FUN<-function(id){as.vector(read.meta(id)$Date)}
+  }
+  if(tolower(Var)=="white"){
+    FUN<-function(id){as.vector(read.meta(id)$White)}
+  }
+  if(tolower(Var)=="black"){
+    FUN<-function(id){as.vector(read.meta(id)$Black)}
+  }
+  if(tolower(Var)=="result"){
+    FUN<-function(id){as.vector(read.meta(id)$Result)}
+  }
+  if(tolower(Var)=="whiteelo"){
+    FUN<-function(id){as.vector(read.meta(id)$WhiteElo)}
+  }
+  if(tolower(Var)=="blackelo"){
+    FUN<-function(id){as.vector(read.meta(id)$BlackElo)}
+  }
+  if(tolower(Var)=="timecontrol"){
+    FUN<-function(id){as.vector(read.meta(id)$TimeControl)}
+  }
+  unlist(lapply(ids,FUN))
+}
+
+dividemove<-function(n=1,incolor=c("white","black")){
+  chesspgn<-"C:/Users/Josh/Documents/chess/chesspgn.csv"
+  chesspgn<-read.csv(chesspgn,colClasses="character")
+  while(sum(chesspgn$move %in% n)<500 & max(n)<max(as.numeric(chesspgn$move))){
+    n<-c(n,(max(n)+1))
+  }
+  workframe<-subset(chesspgn,chesspgn$color %in% incolor & chesspgn$move %in% n)
+  if(nchar(min(n))==1){filepath<-paste("C:/Users/Josh/Documents/Chess/move_0")}
+  if(nchar(min(n))==2){filepath<-paste("C:/Users/Josh/Documents/Chess/move_")}
+  if(2<nchar(min(n))){
+    filepath<-paste("C:/Users/Josh/Documents/Chess/move_0")
+    message("I might have to adjust the filenames for this length of game")
+  }
+  filepath<-paste(filepath,min(n),".csv",sep="")
+  if(500<=nrow(workframe)){
+    write.csv(workframe,filepath,row.names=FALSE)
+    print(filepath)
+    sampleframe<-rbind(workframe[1,],
+                       workframe[as.integer(nrow(workframe)*.2),],
+                       workframe[as.integer(nrow(workframe)*.4),],
+                       workframe[as.integer(nrow(workframe)*.6),],
+                       workframe[as.integer(nrow(workframe)*.8),],
+                       workframe[as.integer(nrow(workframe)),])
+  }
+  else{
+    sampleframe<-tail(workframe,3)
+  }
+  sumframe<-data.frame(King=sum(workframe$piece=="King"),
+                       Queen=sum(workframe$piece=="Queen"),
+                       Rook=sum(workframe$piece=="Rook"),
+                       Knight=sum(workframe$piece=="Knight"),
+                       Bishop=sum(workframe$piece=="Bishop"),
+                       pawn=sum(workframe$piece=="pawn"),
+                       total=nrow(workframe))
+  print(sampleframe)
+  print(sumframe)
+}
+
+retrieve<-function(country,category="Personnel"){
+  country<-tolower(gsub("_"," ",country))
+  category<-tolower(gsub("_"," ",category))
+  if(country=="east asia" & category=="personnel"){
+    data<-read.csv("C:/Users/Josh/Documents/data/personnel_nationmaster.csv",
+                   colClasses="character")
+    subdata<-subset(data,data$Country %in% 
+                      c("China","Vietnam","North Korea","South Korea","Japan"))
+    subdata$Country<-factor(subdata$Country,c("China","Japan","Vietnam","North Korea","South Korea"),
+                            labels=c("China","Japan","Vietnam","North Korea","South Korea"))
+    qplot(y=as.numeric(Number),data=subdata,fill=Country,alpha=I(.5),
+          margins=TRUE,main="East Asian Active Duty Personnel", xlab="Year",binwidth=0.5,
+          ylab=c("Personnel"))
+  }
+}
+
+request(){
+  
+  East_Asia<-subset(data,data$Country %in% c("China","North Korea","South Korea","Vietnam","Japan"))
+  East_Asia<-East_Asia[order(East_Asia$Date),]
+  Date<-as.numeric(East_Asia$Date)
+  Personnel<-as.numeric(East_Asia$Number)
+  #China<-subset(data,data$Country=="China")
+  #China<-China[order(China$Date),]
+  #Date<-as.numeric(China$Date)
+  #Personnel<-as.numeric(China$Number)
+  barplot(c(Date,Personnel),)
+  xyplot(Number ~ Date | Country, data=East_Asia, layout =c(5,1))
+  lines()
+}
+plot(China$Date,China$Number,"l")
+
+number<-function(row,frame=personnel_total){
+  n<-gsub(",","",frame$Amount[row])
+  if(grepl(" million",n)==TRUE){
+    return(as.numeric(gsub(" million","",n))*1000000)
+  }else(return(n))
+}
+
+nationmaster_personnel<-function(){}
+download.file()
+
 mongoFDIC<-function(row,df=FDIC,dbN="local",h="localhost"){
-  library(RMongo)
-  workdoc<-paste("{'_id':",row,",","stuff:",toJSON(df[row,]),"}")
-  #mongodoc<-paste("'FDIC':[","{'",
-          #colnames(df)[1],"':'",df[row,1],
-          #"'}{'",
-          #colnames(df)[2],"':'",df[row,2],
-          #"'}{'",
-          #colnames(df)[3],"':'",df[row,3],
-          #"'}{'",
-          #colnames(df)[4],"':'",df[row,4],
-          #"'}{'",
-          #colnames(df)[5],"':'",df[row,5],
-          #"'}","]",sep="")
+  #workdoc<-gsub("'","\\.",toJSON(df[row,]))
+  workdoc<-gsub("'","\\'",paste('{"_id":',row,
+                              ',',
+                              '"variable":"',
+                              df[row,2],
+                              '","ShortDescription":"',
+                              df[row,3],
+                              '","LongDescription":"',
+                              df[row,4],
+                              '","File":"',
+                              df[row,5],
+                              '"}',
+                              sep=""))
   mongo <- mongoDbConnect("test", "localhost", 27017)
   output <- dbInsertDocument(rmongo.object=mongoDbConnect(dbName=dbN, host=h), 
                              collection="FDIC", 
@@ -279,23 +435,17 @@ barpieces<-function(id_OR_df){
 }
 
 read.meta<-function(id){
-  filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-  Event<-as.character(read.table(textConnection(readLines(filepath)[1]))$V2)
-  Site<-as.character(read.table(textConnection(readLines(filepath)[2]))$V2)
-  Date<-strptime(as.character(read.table(textConnection(readLines(filepath)[3]))$V2),
-                 format="%Y.%m.%d")
-  White<-as.character(read.table(textConnection(readLines(filepath)[4]))$V2)
-  Black<-as.character(read.table(textConnection(readLines(filepath)[5]))$V2)
-  Result<-as.character(read.table(textConnection(readLines(filepath)[6]))$V2)
-  WhiteElo<-as.character(read.table(textConnection(readLines(filepath)[7]))$V2)
-  BlackElo<-as.character(read.table(textConnection(readLines(filepath)[8]))$V2)
-  TimeControl<-as.character(read.table(textConnection(readLines(filepath)[9]))$V2)
-  Termination<-as.character(read.table(textConnection(readLines(filepath)[10]))$V2)
-  return(list(Event=Event,Site=Site,
-              Date=Date,White=White,
-              Black=Black,Result=Result,
-              WhiteElo=WhiteElo,BlackElo=BlackElo,
-              TimeControl=TimeControl,Termination=Termination))
+  filepath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
+  if(!(file.exists(filepath))){
+    download.pgn(id)
+  }
+  n<-1
+  while(readLines(filepath)[n]!=""){
+    n<-n+1
+  }
+  workframe<-data.frame(matrix(read.table(textConnection(readLines(filepath)[1:(n-1)]))$V2,ncol=(n-1)))
+  names(workframe)<-gsub("\\[","",read.table(textConnection(readLines(filepath)[1:(n-1)]))$V1)
+  workframe
 }
 
 completelivemoves<-function(incomplete_ID_live){
@@ -307,20 +457,19 @@ completelivemoves<-function(incomplete_ID_live){
   lapply(pgn,livemove)
 }
 
-download.pgn<-function(id,update=FALSE){
+download.pgn<-function(id,update=TRUE){
   if(nchar(id)==9){
     URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
   }
   if(nchar(id)==10){
     URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
   }
-  filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+  filepath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
   if((file.exists(filepath)==FALSE) |
        (update==TRUE)){
          download.file(URL,filepath)
        }
 }
-
 
 notate.pgn<-function(id){
   pgn<-read.pgn(id)
@@ -351,7 +500,7 @@ notate.pgn<-function(id){
 
 read.pgn<-function(id){
   download.pgn(id)
-  pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+  pgnpath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
   linecol<-function(n){
     if(readLines(pgnpath)[n]==""){
       return(0)
