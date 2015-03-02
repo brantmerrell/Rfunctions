@@ -1,28 +1,71 @@
-coursepath<-"C:/Users/Josh/Documents/Courses/Courses"
-workframe<-data.frame(Course=list.files(coursepath)[1],
-                      lecture=list.files(
-                        paste(paste(coursepath,list.files(coursepath)[1],sep="/"),"lectures",sep="/")),
-                      filepath=paste(paste(coursepath,list.files(coursepath)[n],sep="/"),
-                                      "lectures",
-                                      list.files(paste(paste(coursepath,
-                                                             list.files(coursepath)[n],sep="/"),
-                                                       "lectures",
-                                                       sep="/")),
-                                      sep="/"))
-for(n in 2:9){
-  newframe<-data.frame(Course=list.files(coursepath)[n],
-                       lecture=list.files(paste(paste(coursepath,list.files(
-                         coursepath)[n],sep="/"),"lectures",sep="/")),
-                       filepath=paste(paste(coursepath,list.files(coursepath)[n],sep="/"),
-                                       "lectures",
-                                       list.files(paste(paste(coursepath,
-                                                              list.files(coursepath)[n],sep="/"),
-                                                        "lectures",
-                                                        sep="/")),
-                                       sep="/"))
-  workframe<-rbind(workframe,newframe)
+download.file(url="http://data.gdeltproject.org/gkg/20150301.gkgcounts.csv.zip",
+              destfile="C:/Users/Josh/Documents/Data/gdelt.gkgcounts.csv.zip")
+unzip(zipfile="C:/Users/Josh/Documents/Data/gdelt.gkgcounts.csv.zip",
+      exdir="C:/Users/Josh/Documents/Data/gdelt.gkgcounts")
+gdelt<-scan(file="C:/Users/Josh/Documents/Data/gdelt.gkgcounts/20150301.gkgcounts.csv",
+            what="list",nmax=100,sep=";",nlines=1000,fill=TRUE,strip.white=TRUE,quiet=FALSE,
+            blank.lines.skip=TRUE)
+gdelt<-read.table(file="C:/Users/Josh/Documents/Data/gdelt.gkgcounts/20150301.gkgcounts.csv",
+                  sep=";",skip=10,header=FALSE,nrows=100)[1,1]
+gdelt<-read.csv2(file="C:/Users/Josh/Documents/Data/gdelt.gkgcounts/20150301.gkgcounts.csv",
+                 skip=10,header=FALSE,nrows=100)
+
+newlink<-function(links){
+  if(!(TRUE %in% c(grepl("chess.com",links),
+                   grepl("pandora.com",links)))){
+    filepath<-"C:Users/Josh/Documents/CSV Personal/unsortedlinks.csv"
+  }
+  if(grepl("chess.com",links)){
+    filepath<-"C:/Users/Josh/Documents/chess/chesslinks.csv"
+  }
+  if(grepl("pandora.com",links)){
+    filepath<-"C:/Users/Josh/Documents/CSV/pandoralinks.csv"
+  }
+  current<-as.matrix(read.csv(filepath,colClasses="character"))
+  write.csv(unique(rbind(current,as.matrix(links))),filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
 }
-data.frame
+
+
+chesslink<-function(links){
+  if(FALSE %in% grepl("chess.com",links)){
+    message("this includes a non-chess.com link")
+  }
+  filepath<-"C:/Users/Josh/Documents/chess/chesslinks.csv"
+  current<-as.matrix(read.csv(filepath,colClasses="character"))
+  write.csv(unique(rbind(current,as.matrix(links))),filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
+lecsummary<-function(summary,key,Time=Sys.time(),command="modify"){
+  filepath<-"C:/Users/Josh/Documents/CSV/DSLectures.csv"
+  lectures<-read.csv(filepath,colClasses="character")
+  if(class(key) %in% c("numeric","integer")){
+    print(lectures[key,])
+    if(command=="modify"){
+      lectures[key,3]<-summary
+      lectures[key,4]<-paste(Time)
+      print(lectures[(key-1):(key+1),])
+      write.csv(lectures,filepath,row.names=FALSE)
+    }
+  }
+}
+#lecsummary(summary="",key=55,command="find")
+
+coursemap<-function(){
+  coursepath<-"C:/Users/Josh/Documents/Courses/Courses"
+  workframe<-data.frame(Course=list.files(coursepath)[7],
+                        lecture=list.files(
+                          paste(paste(coursepath,list.files(coursepath)[7],sep="/"),
+                                "pdfs",
+                                sep="/")))
+  for(n in c(1:6,8:9)){
+    newframe<-data.frame(Course=list.files(path=coursepath)[n],
+                         lecture=list.files(path=paste(paste(coursepath,list.files(coursepath)[n],sep="/"),"lectures",sep="/"),
+                                            pattern=".pdf"))
+    workframe<-rbind(workframe,newframe)
+  }
+}
 
 newsdata<-function(newslinks){
   for(newslink in newslinks){
@@ -42,7 +85,7 @@ musiclink<-function(links){
   if(FALSE %in% grepl("pandora.com",links)){
     message("this includes a non-pandora link")
   }
-  filepath<-"C:/Users/Josh/Documents/CSV Personal/pandoralinks.csv"
+  filepath<-"C:/Users/Josh/Documents/CSV/pandoralinks.csv"
   current<-as.matrix(read.csv(filepath,colClasses="character"))
   write.csv(unique(rbind(current,as.matrix(links))),filepath,row.names=FALSE)
   print(tail(read.csv(filepath),3))
@@ -50,7 +93,7 @@ musiclink<-function(links){
 
 pandoradata<-function(pandoralinks="default"){
   if("default" %in% pandoralinks){
-    pandoralinks<-read.csv("C:/Users/Josh/Documents/CSV Personal/pandoralinks.csv",
+    pandoralinks<-read.csv("C:/Users/Josh/Documents/CSV/pandoralinks.csv",
                            colClasses="character")$x
   }
   data<-data.frame(artist=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V4),
