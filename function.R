@@ -1,3 +1,31 @@
+Urltest<-"https://www2.fdic.gov/sdi/Resource/AllReps/All_Reports_19991231.zip"
+download.FDIC<-function(year=1999,
+                        quarter=4,
+                        destfolder="C:/Users/Administrator/Documents",
+                        limit=FALSE){
+  quarters<-data.frame(Q=c(1,2,3,4),
+                       month=c("March","June","September","December"),
+                       day=c(31,30,30,31),
+                       datecode=c("0331","0630","0930","1231"))
+  datecode<-paste(year,
+                  as.character(subset(quarters$datecode,quarters$Q==quarter)),
+                  sep="")
+  Url<-paste("https://www2.fdic.gov/sdi/Resource/AllReps/All_Reports_",
+             datecode,
+             ".zip",
+             sep="")
+  if(limit==TRUE){
+    Destfile=paste(destfolder,"FDICtemp.zip",sep="/")
+  }
+  if(limit==FALSE){
+    Destfile=paste(destfolder,"/All_Reports_",datecode,".zip",sep="")
+  }
+  download.file(url=Url,destfile=Destfile)
+  unzip(zipfile=Destfile,
+        exdir=gsub("\\.zip","",Destfile))
+  print(gsub("\\.zip","",Destfile))
+}
+
 letterparse<-function(l,df=music,col="album"){
   if(tolower(col) %in% tolower(colnames(df))){
     m<-1
