@@ -1,19 +1,184 @@
-download.file(url="http://data.gdeltproject.org/gkg/20150301.gkgcounts.csv.zip",
-              destfile="C:/Users/Josh/Documents/Data/gdelt.gkgcounts.csv.zip")
-unzip(zipfile="C:/Users/Josh/Documents/Data/gdelt.gkgcounts.csv.zip",
-      exdir="C:/Users/Josh/Documents/Data/gdelt.gkgcounts")
-gdelt<-scan(file="C:/Users/Josh/Documents/Data/gdelt.gkgcounts/20150301.gkgcounts.csv",
-            what="list",nmax=100,sep=";",nlines=1000,fill=TRUE,strip.white=TRUE,quiet=FALSE,
-            blank.lines.skip=TRUE)
-gdelt<-read.table(file="C:/Users/Josh/Documents/Data/gdelt.gkgcounts/20150301.gkgcounts.csv",
-                  sep=";",skip=10,header=FALSE,nrows=100)[1,1]
-gdelt<-read.csv2(file="C:/Users/Josh/Documents/Data/gdelt.gkgcounts/20150301.gkgcounts.csv",
-                 skip=10,header=FALSE,nrows=100)
+letterparse<-function(l,df=music,col="album"){
+  if(tolower(col) %in% tolower(colnames(df))){
+    m<-1
+    while(m<=ncol(df) & !(tolower(colnames(df)[m])==tolower(col))){
+      m<-m+1
+    }
+  }
+  if(class(l)=="character"){
+    n<-1
+    while(!(tolower(l)==letters[n]) & (n<=27)){
+      n<-n+1
+    }
+    l<-n
+  }
+  length(levels(df[,m])[letters[l]<=levels(df[,m]) & levels(df[,m])<=letters[l+1]])
+}
+
+tolink<-function(ids,command="return"){
+  for(id in ids){
+    if(nchar(id)==9){
+      url<-paste("http://www.chess.com/echess/game?id=",id,sep="")
+    }
+    if(nchar(id)==10){
+      url<-paste("http://www.chess.com/echess/game?lid=",id,sep="")
+    }
+    if(command=="store"){
+      newlink(url)
+    }
+    if(command=="return"){
+      return(url)
+    }
+  }
+}
+chesspgn<-read.csv(paste("./chess/",list.files("./chess",".csv")[4],sep=""))
+
+positions<-function(game=chessgame){
+  pieces<-c(wR_a="a1",wp_a="a2",bp_a="a7",bR_a="a8",
+            wN_b=)
+  squares<-data.frame(a1="wR_a",a2="wp_a",a7="bp_a",a8="bR_a",
+                      b1="wN_b",b2="wp_b",b7="bp_b",b8="bN_b",
+                      c1="wB_c",c2="wp_c",c7="bp_c",c8="bB_c",
+                      d1="wQ",d2="wp_d",d7="bp_d",d8="bQ",
+                      e1="wK",e2="wp_e",e7="bp_e",e8="bK",
+                      f1="wB_f",f2="wp_f",f7="bp_f",f8="bB_f",
+                      g1="wN_g",g2="wp_g",g7="bp_g",g8="gN_b",
+                      h1="wR_h",h2="wp_h",h7="bp_h",h8="bR_h")
+  subset(game$pgn,grepl(square)
+}
+
+movetype<-function(pgn){
+  Type<-"normal"
+  if(grepl("x",pgn)){Type<-paste(Type,"capture",sep=" & ")}
+  if(grepl("O-O",pgn) & !grepl("O-O-O",pgn)){Type<-paste(Type,"castle_kingside",sep=" & ")}
+  if(grepl("O-O-O",pgn)){Type<-paste(Type,"castle_queenside",sep=" & ")}
+  if(grepl("\\+",pgn)){Type<-paste(Type,"check",sep=" & ")}
+  if(grepl("#",pgn)){Type<-paste(Type,"capture",sep=" & ")}
+  if(grepl("=",pgn)){Type<-paste(Type,"promotion",sep=" & ")}
+  if(grepl("&",Type)){Type<-gsub("normal & ","",Type)}
+  Type
+}
+
+ratings<-function(metachess="default"){
+  if(metachess=="default"){
+    metachess<-read.csv("C:/Users/Josh/documents/chess/chesslogs.csv")
+  }
+  if(metachess$White[1]=="thinkboolean"){
+    rateframe<-data.frame(myrating=as.numeric(as.character(metachess$WhiteElo[1])))
+  }
+  if(metachess$Black[1]=="thinkboolean"){
+    rateframe<-data.frame(myrating=as.numeric(as.character(metachess$BlackElo[1])))
+  }
+  for(row in 2:nrow(metachess)){
+    if(metachess$White[row]=="thinkboolean"){
+      rateframe<-rbind(rateframe, as.numeric(as.character(metachess$WhiteElo[row])))
+    }
+    if(metachess$Black[row]=="thinkboolean"){
+      rateframe<-rbind(rateframe,as.numeric(as.character(metachess$BlackElo[row])))
+    }
+  }
+  plot(metachess$Date,rateframe[,1],type="n",main="chess ratings: thinkboolean",
+       xlab="date",ylab="rating")
+}
+
+logchess<-function(command="write"){
+  linkpath<-"C:/Users/Josh/Documents/Chess/chesslinks.csv"
+  logpath<-"C:/Users/Josh/Documents/chesslogs.csv"
+  chesslinks<-unique(read.csv(linkpath,colClasses="character"))
+  chesslogs<-data.frame(link=as.vector(chesslinks$link),
+                        type=as.vector(read.table(textConnection(as.vector(chesslinks$link)),sep="/")$V4),
+                        ID=as.vector(read.table(textConnection(as.vector(chesslinks$link)),sep="=")$V2))
+  FUN<-function(id){
+    read.meta(id)$Event
+  }
+  chesslogs<-cbind(chesslogs,Event=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    paste(strptime(read.meta(id)$Date,format="%Y.%m.%d"))
+  }
+  chesslogs<-cbind(chesslogs,Date=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    read.meta(id)$White
+  }
+  chesslogs<-cbind(chesslogs,White=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    read.meta(id)$Black
+  }
+  chesslogs<-cbind(chesslogs,Black=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    read.meta(id)$Result
+  }
+  chesslogs<-cbind(chesslogs,Result=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    read.meta(id)$WhiteElo
+  }
+  chesslogs<-cbind(chesslogs,WhiteElo=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    read.meta(id)$BlackElo
+  }
+  chesslogs<-cbind(chesslogs,BlackElo=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  FUN<-function(id){
+    read.meta(id)$TimeControl
+  }
+  chesslogs<-cbind(chesslogs,TimeControl=as.matrix(unlist(lapply(chesslogs$ID,FUN))))
+  if(command=="write"){
+    write.csv(chesslogs,logpath,row.names=FALSE)
+    print(tail(read.csv(logpath),3))
+  }
+  if(command=="return"){
+    return(chesslogs)
+    print(list(varnames=colnames(chesslogs),
+               rows=nrow(chesslogs),
+               columns=ncol(chesslogs)))
+  }
+}
+colnames(chesslinks)
+
+linkconvert<-function(ids){
+  for(id in ids){
+    if(nchar(id)==9){
+      url<-paste("http://www.chess.com/echess/game?id=",id,sep="")
+    }
+    if(nchar(id)==10){
+      url<-paste("http://www.chess.com/liveechess/game?id=",id,sep="")
+    }
+    newlink(url)
+  }
+}
+
+metanews<-function(date=Sys.Date(),type="gdelt",command="store"){
+  if(type=="gdelt"){
+    date<-gsub("-","",(date-1))
+    download.file(url=paste("http://data.gdeltproject.org/gkg/",date,".gkgcounts.csv.zip",sep=""),
+                  destfile="C:/Users/Josh/Documents/Data/gdelt.gkgcounts.csv.zip")
+    unzip(zipfile="C:/Users/Josh/Documents/Data/gdelt.gkgcounts.csv.zip",
+          exdir="C:/Users/Josh/Documents/Data/gdelt.gkgcounts")
+    gdelt<-read.delim(file=paste("C:/Users/Josh/Documents/Data/gdelt.gkgcounts/",
+                                 date,
+                                 ".gkgcounts.csv",
+                                 sep=""),
+                      skip=0,header=TRUE,nrows=1000000)
+  }
+  if(command=="return"){
+    return(gdelt)
+  }
+  if(command=="store"){
+    countpath<-"C:/Users/Josh/Documents/CSV/counttype.csv"
+    objectpath<-"C:/Users/Josh/Documents/CSV/objecttype.csv"
+    geopath<-"C:/Users/Josh/Documents/CSV/geo_fullname.csv"
+    geocode<-"C:/Users/Josh/Documents/CSV/geo_code.csv"
+    admcode<-"C:/Users/Josh/Documents/CSV/admcode.csv"
+    counttype<-read.csv(countpath,colClasses="character")
+    counttype<-sort(unique(rbind(matrix(counttype[,1]),
+                                 matrix(levels(gdelt$COUNTTYPE)))))
+    print(counttype)
+    write.csv(counttype,countpath,row.names=FALSE)
+  }
+}
 
 newlink<-function(links){
   if(!(TRUE %in% c(grepl("chess.com",links),
                    grepl("pandora.com",links)))){
-    filepath<-"C:Users/Josh/Documents/CSV Personal/unsortedlinks.csv"
+    filepath<-"C:/Users/Josh/Documents/CSV Personal/unsortedlinks.csv"
   }
   if(grepl("chess.com",links)){
     filepath<-"C:/Users/Josh/Documents/chess/chesslinks.csv"
@@ -25,7 +190,6 @@ newlink<-function(links){
   write.csv(unique(rbind(current,as.matrix(links))),filepath,row.names=FALSE)
   print(tail(read.csv(filepath),3))
 }
-
 
 chesslink<-function(links){
   if(FALSE %in% grepl("chess.com",links)){
@@ -61,7 +225,10 @@ coursemap<-function(){
                                 sep="/")))
   for(n in c(1:6,8:9)){
     newframe<-data.frame(Course=list.files(path=coursepath)[n],
-                         lecture=list.files(path=paste(paste(coursepath,list.files(coursepath)[n],sep="/"),"lectures",sep="/"),
+                         lecture=list.files(path=paste(paste(coursepath,list.files(coursepath)[n],
+                                                             sep="/"),
+                                                       "lectures",
+                                                       sep="/"),
                                             pattern=".pdf"))
     workframe<-rbind(workframe,newframe)
   }
@@ -79,7 +246,7 @@ newsdata<-function(newslinks){
   
 }
 
-newslink<-function(links)
+newslink<-function(links){}
 
 musiclink<-function(links){
   if(FALSE %in% grepl("pandora.com",links)){
@@ -198,7 +365,6 @@ retrieve<-function(country,category="Personnel"){
 }
 
 request(){
-  
   East_Asia<-subset(data,data$Country %in% c("China","North Korea","South Korea","Vietnam","Japan"))
   East_Asia<-East_Asia[order(East_Asia$Date),]
   Date<-as.numeric(East_Asia$Date)
@@ -222,47 +388,6 @@ number<-function(row,frame=personnel_total){
 
 nationmaster_personnel<-function(){}
 download.file()
-
-mongoFDIC<-function(row,df=FDIC,dbN="local",h="localhost"){
-  #workdoc<-gsub("'","\\.",toJSON(df[row,]))
-  workdoc<-gsub("'","\\'",paste('{"_id":',row,
-                              ',',
-                              '"variable":"',
-                              df[row,2],
-                              '","ShortDescription":"',
-                              df[row,3],
-                              '","LongDescription":"',
-                              df[row,4],
-                              '","File":"',
-                              df[row,5],
-                              '"}',
-                              sep=""))
-  mongo <- mongoDbConnect("test", "localhost", 27017)
-  output <- dbInsertDocument(rmongo.object=mongoDbConnect(dbName=dbN, host=h), 
-                             collection="FDIC", 
-                             doc=workdoc)
-  dbDisconnect(mongo)
-}
-
-mongochess<-function(row,df=echess,dbN="local",h="localhost"){
-  library(RMongo)
-  doc<-paste("{'movedata':[{'",
-             colnames(df)[1],"':'",df[row,1],"'},{'",
-             colnames(df)[2],"':'",df[row,2],"'},{'",
-             colnames(df)[3],"':'",df[row,3],"'},{'",
-             colnames(df)[4],"':'",df[row,4],"'},{'",
-             colnames(df)[5],"':'",df[row,5],"'},{'",
-             colnames(df)[6],"':'",df[row,6],"'},{'",
-             colnames(df)[7],"':'",df[row,7],"'},{'",
-             colnames(df)[8],"':'",df[row,8],"'},{'",
-             colnames(df)[9],"':'",df[row,9],
-             "'}]}",sep="")
-  output <- dbInsertDocument(rmongo.object=mongoDbConnect(dbName=dbN, host=h), 
-                             collection="josh_chess", 
-                             doc=doc)
-  dbDisconnect(mongo)
-}
-
 
 
 add.fitness<-function(activity,unit,measure,count,limit,Time=Sys.time(),comment=NA){
@@ -526,14 +651,25 @@ completelivemoves<-function(incomplete_ID_live){
   lapply(pgn,livemove)
 }
 
-download.pgn<-function(id,update=TRUE){
-  if(nchar(id)==9){
-    URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
-  }
-  if(nchar(id)==10){
+download.pgn<-function(
+  #id,
+  link,
+  update=TRUE){
+  #if(nchar(id)==9){
+    #URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
+  #}
+  #if(nchar(id)==10){
+    #URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  #}
+  id<-read.table(textConnection(link),sep="=")$V2
+  if(grepl("livechess",link)){
     URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
   }
-  filepath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
+  if(read.table(textConnection(link),sep="/")$V4=="echess"){
+    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  }
+  #filepath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
+  filepath<-"C:/Users/Josh/Documents/Chess/PGN/temp.pgn"
   if((file.exists(filepath)==FALSE) |
        (update==TRUE)){
          download.file(URL,filepath)
@@ -567,9 +703,15 @@ notate.pgn<-function(id){
   return(all)
 }
 
-read.pgn<-function(id){
-  download.pgn(id)
+read.pgn<-function(
+  #id,
+  link){
   pgnpath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
+  link<-tolink(id,command="return")
+  if(!file.exists(pgnpath)){
+    #download.pgn(id)
+    download.pgn(link)
+  }
   linecol<-function(n){
     if(readLines(pgnpath)[n]==""){
       return(0)
@@ -622,10 +764,10 @@ download.pgn<-function(ID,pgnfolder="C:/Users/Josh/Documents/pgn",gamename=ID){
 
 properties.pgn<-function(pgn){
   chesscolor<-function(pgn){
-    if(ncol(read.table(textConnection(pgn),sep="."))==4){
+    if(grepl("\\.\\.\\.",pgn)){
       return("black")
     }
-    if(ncol(read.table(textConnection(pgn),sep="."))==2){
+    if(grepl("\\.",pgn)){
       return("white")
     }
     if(!(ncol(read.table(textConnection(pgn),sep=".")) %in% c(2,4))){
@@ -1200,7 +1342,6 @@ read.pollutant<-function(n){
   }
   return(selection)
 }
-
 
 list.pollutant<-function(n){
   if (pollutant=="sulfate"){
