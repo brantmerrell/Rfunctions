@@ -1,7 +1,6 @@
-Urltest<-"https://www2.fdic.gov/sdi/Resource/AllReps/All_Reports_19991231.zip"
-download.FDIC<-function(year=1999,
-                        quarter=4,
-                        destfolder="C:/Users/Administrator/Documents",
+download.FDIC<-function(year,
+                        quarter,
+                        destfolder="C:/Users/Administrator/Documents/FDIC",
                         limit=FALSE){
   quarters<-data.frame(Q=c(1,2,3,4),
                        month=c("March","June","September","December"),
@@ -24,7 +23,10 @@ download.FDIC<-function(year=1999,
   unzip(zipfile=Destfile,
         exdir=gsub("\\.zip","",Destfile))
   print(gsub("\\.zip","",Destfile))
+  file.remove(Destfile)
 }
+#aws s3 cp C:/Users/Administrator/Documents/FDIC s3://adaptive.codes.fdic --recursive
+#file.remove("C:/Users/Administrator/Documents/FDIC/All_Reports_20020331")
 
 letterparse<-function(l,df=music,col="album"){
   if(tolower(col) %in% tolower(colnames(df))){
