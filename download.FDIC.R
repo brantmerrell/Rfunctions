@@ -1,0 +1,24 @@
+download.FDIC<-function(year,
+                        quarter,
+                        destfolder="C:/Users/Administrator/Documents/FDIC"){
+  if(!file.exists(destfolder)){
+    file.create(destfolder)
+  }
+  quarters<-data.frame(Q=c(1,2,3,4),
+                       month=c("March","June","September","December"),
+                       day=c(31,30,30,31),
+                       datecode=c("0331","0630","0930","1231"))
+  datecode<-paste(year,
+                  as.character(subset(quarters$datecode,quarters$Q==quarter)),
+                  sep="")
+  Url<-paste("https://www2.fdic.gov/sdi/Resource/AllReps/All_Reports_",
+             datecode,
+             ".zip",
+             sep="")
+  Destfile<-paste(destfolder,"/All_Reports_",datecode,".zip",sep="")
+  download.file(url=Url,destfile=Destfile)
+  unzip(zipfile=Destfile,
+        exdir=gsub("\\.zip","",Destfile))
+  print(gsub("\\.zip","",Destfile))
+  file.remove(Destfile)
+}
