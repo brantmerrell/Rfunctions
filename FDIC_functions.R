@@ -127,27 +127,6 @@ FDIC.quartershape<-function(Year,Quarter,Control_var=c("cert")){
   return(workframe[,-4])
 }
 
-FDIC.file<-function(year,quarter,n){
-  quarters<-data.frame(Q=c(1,2,3,4),
-                       month=c("March","June","September","December"),
-                       day=c(31,30,30,31),
-                       datecode=c("0331","0630","0930","1231"))
-  datecode<-paste(year,
-                  as.character(subset(quarters$datecode,quarters$Q==quarter)),
-                  sep="")
-  folderpath<-paste("C:/Users/Administrator/Documents/FDIC/All_Reports",
-                    datecode,
-                    sep="_")
-  if(!file.exists(folderpath)){
-    download.FDIC(year=year,quarter=quarter)
-  }
-  filepath<-paste(folderpath,list.files(folderpath)[n],sep="/")
-  list(file=list.files(folderpath)[n],
-       width=ncol(read.csv(filepath,nrows=3)),
-       length=nrow(read.csv(filepath,nrows=1000000)),
-       variables=colnames(read.csv(filepath,nrows=3)))
-}
-
 download.FDIC<-function(year,
                         quarter,
                         destfolder="C:/Users/Administrator/Documents/FDIC"){
