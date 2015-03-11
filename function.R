@@ -1,35 +1,3 @@
-
-
-download.FDIC<-function(year,
-                        quarter,
-                        destfolder="C:/Users/Administrator/Documents/FDIC",
-                        limit=FALSE){
-  quarters<-data.frame(Q=c(1,2,3,4),
-                       month=c("March","June","September","December"),
-                       day=c(31,30,30,31),
-                       datecode=c("0331","0630","0930","1231"))
-  datecode<-paste(year,
-                  as.character(subset(quarters$datecode,quarters$Q==quarter)),
-                  sep="")
-  Url<-paste("https://www2.fdic.gov/sdi/Resource/AllReps/All_Reports_",
-             datecode,
-             ".zip",
-             sep="")
-  if(limit==TRUE){
-    Destfile=paste(destfolder,"FDICtemp.zip",sep="/")
-  }
-  if(limit==FALSE){
-    Destfile=paste(destfolder,"/All_Reports_",datecode,".zip",sep="")
-  }
-  download.file(url=Url,destfile=Destfile)
-  unzip(zipfile=Destfile,
-        exdir=gsub("\\.zip","",Destfile))
-  print(gsub("\\.zip","",Destfile))
-  file.remove(Destfile)
-}
-#aws s3 cp C:/Users/Administrator/Documents/FDIC s3://adaptive.codes.fdic --recursive
-#file.remove("C:/Users/Administrator/Documents/FDIC/All_Reports_20020331")
-
 letterparse<-function(l,df=music,col="album"){
   if(tolower(col) %in% tolower(colnames(df))){
     m<-1
@@ -77,18 +45,6 @@ positions<-function(game=chessgame){
                       g1="wN_g",g2="wp_g",g7="bp_g",g8="gN_b",
                       h1="wR_h",h2="wp_h",h7="bp_h",h8="bR_h")
   subset(game$pgn,grepl(square)
-}
-
-movetype<-function(pgn){
-  Type<-"normal"
-  if(grepl("x",pgn)){Type<-paste(Type,"capture",sep=" & ")}
-  if(grepl("O-O",pgn) & !grepl("O-O-O",pgn)){Type<-paste(Type,"castle_kingside",sep=" & ")}
-  if(grepl("O-O-O",pgn)){Type<-paste(Type,"castle_queenside",sep=" & ")}
-  if(grepl("\\+",pgn)){Type<-paste(Type,"check",sep=" & ")}
-  if(grepl("#",pgn)){Type<-paste(Type,"capture",sep=" & ")}
-  if(grepl("=",pgn)){Type<-paste(Type,"promotion",sep=" & ")}
-  if(grepl("&",Type)){Type<-gsub("normal & ","",Type)}
-  Type
 }
 
 ratings<-function(metachess="default"){
@@ -812,7 +768,7 @@ properties.pgn<-function(pgn){
     }
   }
   movenumber<-function(pgn){
-    read.table(textConnection(pgn),sep=".")[1,1]
+    as.numeric(read.table(textConnection(pgn),sep=".")[1,1])
   }
   piece<-function(pgn){
     test<-function(L){grepl(L,pgn)}
@@ -865,13 +821,25 @@ properties.pgn<-function(pgn){
       return("none")
     }
   }
-  return(list(pgn=pgn,
-              color=chesscolor(pgn),
-              move=movenumber(pgn),
-              piece=piece(pgn),
-              x=xcoor(pgn),
-              y=ycoor(pgn),
-              sq=sqcoor(pgn)))
+  movetype<-function(pgn){
+    Type<-"normal"
+    if(grepl("x",pgn)){Type<-paste(Type,"capture",sep=" & ")}
+    if(grepl("O-O",pgn) & !grepl("O-O-O",pgn)){Type<-paste(Type,"castle_kingside",sep=" & ")}
+    if(grepl("O-O-O",pgn)){Type<-paste(Type,"castle_queenside",sep=" & ")}
+    if(grepl("\\+",pgn)){Type<-paste(Type,"check",sep=" & ")}
+    if(grepl("#",pgn)){Type<-paste(Type,"checkmate",sep=" & ")}
+    if(grepl("=",pgn)){Type<-paste(Type,"promotion",sep=" & ")}
+    if(grepl("&",Type)){Type<-gsub("normal & ","",Type)}
+    Type
+  }
+  return(data.frame(pgn=pgn,
+                    color=chesscolor(pgn),
+                    move=movenumber(pgn),
+                    movetype=movetype(pgn),
+                    piece=piece(pgn),
+                    x=xcoor(pgn),
+                    y=ycoor(pgn),
+                    sq=sqcoor(pgn)))
 }
 ## 
 
