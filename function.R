@@ -1,6 +1,4 @@
 
-#aws s3 cp C:/Users/Administrator/Documents/FDIC s3://adaptive.codes.fdic --recursive
-#file.remove("C:/Users/Administrator/Documents/FDIC/All_Reports_20020331")
 
 letterparse<-function(l,df=music,col="album"){
   if(tolower(col) %in% tolower(colnames(df))){
@@ -460,26 +458,6 @@ mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
   data<-rbind(data,c(lecnumber,mongonote,paste(Time)))
   write.csv(data,filepath,row.names=FALSE)
   tail(read.csv(filepath),3)
-}
-
-read.definitions<-function(n,SKIP=1){
-  folderpath<-"C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"
-  filename<-list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV")[n]
-  filepath<-paste(folderpath,filename,sep="/")
-  data<-cbind(read.csv(filepath,colClasses="character",skip=SKIP),file=filename)
-  names(data)<-c("X","ShortDesciption","Variable","LongDescription","File")
-  return(data[,c(1,3,2,4,5)])
-}
-
-alldefinitions<-function(){
-  m<-length(list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"))
-  data<-read.definitions(1)
-  n<-1
-  while(n<m){
-    data<-rbind(data,read.definitions(n+1))
-    n<-n+1
-  }
-  return(data)
 }
 
 bar_gamelengths<-function(chessgrid,filepath,note=NULL){

@@ -106,7 +106,7 @@ FDIC.quartershape<-function(Year,Quarter,Control_var=c("cert")){
                     datecode,
                     sep="_")
   if(!file.exists(folderpath)){
-    download.FDIC(year=year,quarter=Quarter)
+    download.FDIC(year=Year,quarter=Quarter)
   }
   fileshape<-function(n,var_control=Control_var){
     filepath<-paste(folderpath,list.files(folderpath,"\\.csv")[n],sep="/")
@@ -171,4 +171,24 @@ download.FDIC<-function(year,
         exdir=gsub("\\.zip","",Destfile))
   print(gsub("\\.zip","",Destfile))
   file.remove(Destfile)
+}
+
+alldefinitions<-function(){
+  m<-length(list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"))
+  data<-read.definitions(1)
+  n<-1
+  while(n<m){
+    data<-rbind(data,read.definitions(n+1))
+    n<-n+1
+  }
+  return(data)
+}
+
+read.definitions<-function(n,SKIP=1){
+  folderpath<-"C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"
+  filename<-list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV")[n]
+  filepath<-paste(folderpath,filename,sep="/")
+  data<-cbind(read.csv(filepath,colClasses="character",skip=SKIP),file=filename)
+  names(data)<-c("X","ShortDesciption","Variable","LongDescription","File")
+  return(data[,c(1,3,2,4,5)])
 }
