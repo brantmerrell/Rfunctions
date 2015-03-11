@@ -1,0 +1,11 @@
+FDIC.YQ.varcompare<-function(year,quarter,variables){
+  workframe<-FDICvar.quarter(year,quarter,variables[1])
+  n<-1
+  while(n<length(variables)){
+    newdf<-FDICvar.quarter(year,quarter,variables[n+1])
+    workframe<-cbind(workframe,newdf)
+    n<-n+1
+  }
+  View(workframe)
+  return(workframe)
+}
