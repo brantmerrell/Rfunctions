@@ -1,3 +1,5 @@
+
+
 download.FDIC<-function(year,
                         quarter,
                         destfolder="C:/Users/Administrator/Documents/FDIC",
@@ -293,15 +295,20 @@ pandoradata<-function(pandoralinks="default"){
     pandoralinks<-read.csv("C:/Users/Josh/Documents/CSV/pandoralinks.csv",
                            colClasses="character")$x
   }
-  data<-data.frame(artist=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V4),
-                   album=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V5),
-                   track=as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V6),
+  data<-data.frame(artist=gsub("-"," ",as.character(read.table(textConnection(pandoralinks[1]),
+                                                               sep="/")$V4)),
+                   album=gsub("-"," ",as.character(read.table(textConnection(pandoralinks[1]),
+                                                              sep="/")$V5)),
+                   track=gsub("-"," ",as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V6)),
                    link=as.character(pandoralinks[1]))
   if(length(pandoralinks)!=1){
     for(link in pandoralinks[2:length(pandoralinks)]){
-      newrow<-data.frame(artist=as.character(read.table(textConnection(link),sep="/")$V4),
-                         album=as.character(read.table(textConnection(link),sep="/")$V5),
-                         track=as.character(read.table(textConnection(link),sep="/")$V6),
+      newrow<-data.frame(artist=gsub("-"," ",as.character(read.table(textConnection(link),
+                                                                     sep="/")$V4)),
+                         album=gsub("-"," ",as.character(read.table(textConnection(link),
+                                                                    sep="/")$V5)),
+                         track=gsub("-"," ",as.character(read.table(textConnection(link),
+                                                                    sep="/")$V6)),
                          link=as.character(link))
       data<-rbind(data,newrow)
     }
