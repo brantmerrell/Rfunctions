@@ -1,0 +1,21 @@
+FDIC.quartervariables<-function(Year,Quarter){
+  quarters<-data.frame(Q=c(1,2,3,4),
+                       month=c("March","June","September","December"),
+                       day=c(31,30,30,31),
+                       datecode=c("0331","0630","0930","1231"))
+  datecode<-paste(Year,
+                  as.character(subset(quarters$datecode,quarters$Q==Quarter)),
+                  sep="")
+  folderpath<-paste("C:/Users/Administrator/Documents/FDIC/All_Reports",
+                    datecode,
+                    sep="_")
+  if(!file.exists(folderpath)){
+    download.FDIC(Year,Quarter)
+  }
+  varnames<-"cert"
+  for(File in list.files(folderpath,"\\.csv")){
+    filepath<-paste(folderpath,File,sep="/")
+    varnames<-unique(c(varnames,colnames(read.csv(filepath,nrows=3))))
+  }
+  return(varnames)
+}

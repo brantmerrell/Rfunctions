@@ -81,7 +81,7 @@ FDIC.varscan<-function(Year,Quarter,variable){
                     datecode,
                     sep="_")
   if(!file.exists(folderpath)){
-    download.FDIC(year=year,quarter=Quarter)
+    download.FDIC(year=Year,quarter=Quarter)
   }
   files<-"placeholder"
   for(file in list.files(folderpath,"\\.csv")){
