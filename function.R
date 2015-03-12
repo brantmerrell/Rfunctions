@@ -805,13 +805,23 @@ properties.pgn<-function(pgn){
   y<-c(rep(1:8,times=8),"1|8")
   df<-data.frame(sq=sq, x=x,y=y,assess=unlist(lapply(sq,test)))
   xcoor<-function(pgn){
-    return(as.character(subset(df$x,df$assess==TRUE)))
+    ifelse(!grepl("O",pgn),
+           return(as.character(subset(df$x,df$assess==TRUE))),
+           ifelse(grepl("O-O-O",pgn),
+                  return("Kc & Rd"),
+                  return("Kg & Rf")))
   }
   ycoor<-function(pgn){
-    return(as.character(subset(df$y,df$assess==TRUE)))
+    ifelse(!grepl("O",pgn),
+           return(as.character(subset(df$y,df$assess==TRUE))),
+           ifelse(chesscolor(pgn)=="black",
+                  return(8),
+                  return(1)))
   }
   sqcoor<-function(pgn){
-    return(as.character(subset(df$sq,df$assess==TRUE)))
+    ifelse(!grepl("O",pgn),
+           return(as.character(subset(df$sq,df$assess==TRUE))),
+           paste("(",xcoor(pgn),") &",ycoor(pgn)))
   }
   capture<-function(pgn){
     if(grepl("x",pgn)==TRUE){
