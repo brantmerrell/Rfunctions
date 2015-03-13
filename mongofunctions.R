@@ -1,5 +1,8 @@
+FDIC.mongodf<-function(doc,quarter=4,year=2014){
+  
+}
 
-mongoFDIC<-function(row,df=FDIC,dbN="local",h="localhost"){
+FDIC.mongorow<-function(row,df=FDIC,dbN="local",h="localhost"){
   library(RMongo)
   #workdoc<-gsub("'","\\.",toJSON(df[row,]))
   workdoc<-gsub("'","\\'",paste('{"_id":',row,

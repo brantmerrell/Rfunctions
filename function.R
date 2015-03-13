@@ -1,3 +1,49 @@
+download.gdelt<-function(date=(Sys.Date()-2),project="counts",
+                         workdir="C:/Users/Administrator/Documents"){
+  datestamp<-gsub("-","",date)
+  if(grepl("event",tolower(project))){
+    project<-"events"
+    url<-paste("http://data.gdeltproject.org/events/",datestamp,".export.CSV.zip",sep="")
+    if("2013-04-01"<date){
+      columns<-colnames(
+        read.delim(
+          textConnection(
+            readLines("http://gdeltproject.org/data/lookups/CSV.header.dailyupdates.txt"))))
+    }
+    if(date<"2013-04-01"){
+      names(df)<-colnames(
+        read.delim(
+          textConnection(
+            readLines("http://gdeltproject.org/data/lookups/CSV.header.historical.txt"))))
+    }
+    Header<-FALSE
+  }
+  if(grepl("count",tolower(project))){
+    project<-"gkgcounts"
+    url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkgcounts.csv.zip",sep="")
+    Header<-TRUE
+  }
+  if(grepl("gkg",tolower(project)) & !grepl("count",tolower(project))){
+    project<-"gkg"
+    url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkg.csv.zip",sep="")
+    Header<-TRUE
+  }
+  dir.create(file.path(workdir,project),showWarnings=FALSE)  
+  folderpath<-file.path(workdir,project,"export.csv")
+  filepath<-paste(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")),sep="/")
+  if(!grepl(datestamp,filepath)){
+    destfile<-file.path(workdir,project,"export.csv.zip",sep="")
+    download.file(url,destfile)
+    dir.create(folderpath,showWarnings=FALSE)
+    unzip(destfile,exdir=folderpath)
+    filepath<-paste(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")),sep="/")
+  }
+  df<-read.delim(filepath,header=Header)
+  if(project=="events"){names(df)<-columns}
+  View(df)
+  return(df)
+}
+
 letterparse<-function(l,df=music,col="album"){
   if(tolower(col) %in% tolower(colnames(df))){
     m<-1
@@ -163,16 +209,16 @@ metanews<-function(date=Sys.Date(),type="gdelt",command="store"){
   }
 }
 
-newlink<-function(links){
+newlink<-function(links,workdir="C:/Users/Josh/Documents"){
   if(!(TRUE %in% c(grepl("chess.com",links),
                    grepl("pandora.com",links)))){
-    filepath<-"C:/Users/Josh/Documents/CSV Personal/unsortedlinks.csv"
+    filepath<-file.path(workdir,"CSV Personal/unsortedlinks.csv")
   }
   if(grepl("chess.com",links)){
-    filepath<-"C:/Users/Josh/Documents/chess/chesslinks.csv"
+    filepath<-file.path(workdir,"chess/chesslinks.csv")
   }
   if(grepl("pandora.com",links)){
-    filepath<-"C:/Users/Josh/Documents/CSV/pandoralinks.csv"
+    filepath<-file.path(workdir,"CSV/pandoralinks.csv")
   }
   current<-as.matrix(read.csv(filepath,colClasses="character"))
   write.csv(unique(rbind(current,as.matrix(links))),filepath,row.names=FALSE)
@@ -1827,10 +1873,4 @@ pollutantmean<-function(directory, pollutant, id){
 pollutantmean("specdata", "sulfate", 5)
 ## successful
 
-#@"2014-10-15 07:55:54 CDT"
-pollutantmean<-function(directory, pollutant, id){
-  setwd("C:\\Users\\Josh\\Documents")
-  setwd(directory)
-  doc<-read.csv(getElement(list.files(), id))
-  pol<-getElement(doc, pollutant)
-}
+

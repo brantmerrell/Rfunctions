@@ -1,0 +1,45 @@
+download.gdelt<-function(date=(Sys.Date()-2),project="counts",
+                         workdir="C:/Users/Administrator/Documents"){
+  datestamp<-gsub("-","",date)
+  if(grepl("event",tolower(project))){
+    project<-"events"
+    url<-paste("http://data.gdeltproject.org/events/",datestamp,".export.CSV.zip",sep="")
+    if("2013-04-01"<date){
+      columns<-colnames(
+        read.delim(
+          textConnection(
+            readLines("http://gdeltproject.org/data/lookups/CSV.header.dailyupdates.txt"))))
+    }
+    if(date<"2013-04-01"){
+      names(df)<-colnames(
+        read.delim(
+          textConnection(
+            readLines("http://gdeltproject.org/data/lookups/CSV.header.historical.txt"))))
+    }
+    Header<-FALSE
+  }
+  if(grepl("count",tolower(project))){
+    project<-"gkgcounts"
+    url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkgcounts.csv.zip",sep="")
+    Header<-TRUE
+  }
+  if(grepl("gkg",tolower(project)) & !grepl("count",tolower(project))){
+    project<-"gkg"
+    url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkg.csv.zip",sep="")
+    Header<-TRUE
+  }
+  dir.create(file.path(workdir,project),showWarnings=FALSE)  
+  folderpath<-file.path(workdir,project,"export.csv")
+  filepath<-paste(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")),sep="/")
+  if(!grepl(datestamp,filepath)){
+    destfile<-file.path(workdir,project,"export.csv.zip",sep="")
+    download.file(url,destfile)
+    dir.create(folderpath,showWarnings=FALSE)
+    unzip(destfile,exdir=folderpath)
+    filepath<-paste(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")),sep="/")
+  }
+  df<-read.delim(filepath,header=Header)
+  if(project=="events"){names(df)<-columns}
+  View(df)
+  return(df)
+}
