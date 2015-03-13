@@ -292,25 +292,52 @@ musiclink<-function(links){
   print(tail(read.csv(filepath),3))
 }
 
-pandoradata<-function(pandoralinks="default"){
+pandoradata<-function(pandoralinks="default",
+                      workdir="C:/Users/Josh/Documents"){
   if("default" %in% pandoralinks){
-    pandoralinks<-read.csv("C:/Users/Josh/Documents/CSV/pandoralinks.csv",
+    pandoralinks<-read.csv(file.path(workdir,"/CSV/pandoralinks.csv"),
                            colClasses="character")$x
   }
-  data<-data.frame(artist=gsub("-"," ",as.character(read.table(textConnection(pandoralinks[1]),
-                                                               sep="/")$V4)),
-                   album=gsub("-"," ",as.character(read.table(textConnection(pandoralinks[1]),
-                                                              sep="/")$V5)),
-                   track=gsub("-"," ",as.character(read.table(textConnection(pandoralinks[1]),sep="/")$V6)),
+  data<-data.frame(artist=gsub("(\\w)(\\w*)", 
+                               "\\U\\1\\L\\2", 
+                               gsub("-"," ",
+                                    as.character(read.table(textConnection(pandoralinks[1]),
+                                                            sep="/")$V4)),
+                               perl=TRUE),
+                   album=gsub("(\\w)(\\w*)", 
+                              "\\U\\1\\L\\2", 
+                              gsub("-"," ",
+                                   as.character(read.table(textConnection(pandoralinks[1]),
+                                                           sep="/")$V5)), 
+                              perl=TRUE),
+                   track=gsub("(\\w)(\\w*)", 
+                              "\\U\\1\\L\\2", 
+                              gsub("-"," ",
+                                   as.character(
+                                     read.table(
+                                       textConnection(pandoralinks[1]),sep="/")$V6)), 
+                              perl=TRUE),
                    link=as.character(pandoralinks[1]))
   if(length(pandoralinks)!=1){
     for(link in pandoralinks[2:length(pandoralinks)]){
-      newrow<-data.frame(artist=gsub("-"," ",as.character(read.table(textConnection(link),
-                                                                     sep="/")$V4)),
-                         album=gsub("-"," ",as.character(read.table(textConnection(link),
-                                                                    sep="/")$V5)),
-                         track=gsub("-"," ",as.character(read.table(textConnection(link),
-                                                                    sep="/")$V6)),
+      newrow<-data.frame(artist=gsub("(\\w)(\\w*)", 
+                                     "\\U\\1\\L\\2", 
+                                     gsub("-"," ",
+                                          as.character(read.table(textConnection(link),
+                                                                  sep="/")$V4)),
+                                     perl=TRUE),
+                         album=gsub("(\\w)(\\w*)", 
+                                    "\\U\\1\\L\\2", 
+                                    gsub("-"," ",
+                                         as.character(read.table(textConnection(link),
+                                                                 sep="/")$V5)),
+                                    perl=TRUE),
+                         track=gsub("(\\w)(\\w*)", 
+                                    "\\U\\1\\L\\2", 
+                                    gsub("-"," ",
+                                         as.character(read.table(textConnection(link),
+                                                                 sep="/")$V6)),
+                                    perl=TRUE),
                          link=as.character(link))
       data<-rbind(data,newrow)
     }
@@ -497,10 +524,20 @@ mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
   tail(read.csv(filepath),3)
 }
 
-read.definitions<-function(n,SKIP=1){
-  folderpath<-"C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"
-  filename<-list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV")[n]
-  filepath<-paste(folderpath,filename,sep="/")
+read.definitions<-function(n,SKIP=1,workdir="C:/Users/Administrator/Documents"){
+  folderpath<-file.path(workdir,"FDIC")
+  filename<-list.files(folderpath,"*\\.csv")[n]
+  filepath<-file.path(folderpath,filename)
+  if(!file.exists(folderpath) | !file.exists(filepath)){
+    dir.create(file.path(folderpath),showWarnings=FALSE)
+    url<-"https://www2.fdic.gov/sdi/SDIAllDefinitions_CSV.zip"
+    destfile<-file.path(workdir,"FDIC","SDIAllDefinitions_CSV.zip")
+    download.file(url,destfile)
+    unzip(destfile,exdir=file.path(workdir,"FDIC"))
+    file.remove(destfile)
+    filename<-list.files(folderpath,"*\\.csv")[n]
+    filepath<-file.path(folderpath,filename)
+  }
   data<-cbind(read.csv(filepath,colClasses="character",skip=SKIP),file=filename)
   names(data)<-c("X","ShortDesciption","Variable","LongDescription","File")
   return(data[,c(1,3,2,4,5)])

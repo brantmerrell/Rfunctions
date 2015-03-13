@@ -1,5 +1,5 @@
-FDIC.mongodf<-function(doc,quarter=4,year=2014){
-  
+mongostore.FDIC<-function(quarter=4,year=2014){
+  library(RMongo)install.packages("RMongo")
 }
 
 FDIC.mongorow<-function(row,df=FDIC,dbN="local",h="localhost"){
