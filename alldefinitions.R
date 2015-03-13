@@ -1,15 +1,7 @@
-read.definitions<-function(n,SKIP=1){
-  folderpath<-"C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"
-  filename<-list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV")[n]
-  filepath<-paste(folderpath,filename,sep="/")
-  data<-cbind(read.csv(filepath,colClasses="character",skip=SKIP),file=filename)
-  return(data)
-}
-alldefinitions<-function(){
-  m<-length(list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"))
-  data<-read.definitions(1)
+alldefinitions<-function(workdir="C:/Users/Administrator/Documents"){
   n<-1
-  while(n<m){
+  data<-read.definitions(n)
+  while(n<length(list.files(file.path(workdir,"FDIC"),"*\\.csv"))){
     data<-rbind(data,read.definitions(n+1))
     n<-n+1
   }
