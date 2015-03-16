@@ -21,7 +21,7 @@ download.pgn<-function(
     }
     if(read.table(textConnection(game),sep="/")$V4=="echess"){
       type<-"echess"
-      URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+      URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
     }
   }
   filepath<-paste(workdir,"/Chess/PGN/",type,"_",id,".pgn",sep="")
