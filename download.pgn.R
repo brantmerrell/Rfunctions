@@ -1,13 +1,34 @@
-download.pgn<-function(id,update=FALSE){
-  if(nchar(id)==9){
-    URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
+download.pgn<-function(
+  game,
+  inputtype="id",
+  workdir="C:/Users/Josh/Documents",
+  update=TRUE){
+  if(nchar(game)==9){
+    id<-game
+    type<-"echess"
+    URL<-paste("http://www.chess.com/echess/download_pgn?id=",game,sep="")
   }
-  if(nchar(id)==10){
-    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  if(nchar(game)==10){
+    id<-game
+    type<-"livechess"
+    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",game,sep="")
   }
-  filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+  if(grepl("chess.com",game)){
+    id<-read.table(textConnection(game),sep="=")$V2
+    if(grepl("livechess",game)){
+      type<-"livechess"
+      URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    }
+    if(read.table(textConnection(game),sep="/")$V4=="echess"){
+      type<-"echess"
+      URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    }
+  }
+  filepath<-paste(workdir,"/Chess/PGN/",type,"_",id,".pgn",sep="")
+  #filepath<-"C:/Users/Josh/Documents/Chess/PGN/temp.pgn"
   if((file.exists(filepath)==FALSE) |
-       ((file.exists(filepath)==TRUE) & (update==TRUE))){
+       (update==TRUE)){
     download.file(URL,filepath)
   }
+  print(filepath)
 }

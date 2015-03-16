@@ -347,33 +347,33 @@ pandoradata<-function(pandoralinks="default",
   data
 }
 
-meta.loop<-function(ids,Var="Event"){
+meta.loop<-function(ids,Var="Event",workdir="C:/Users/Josh/Documents"){
   if(tolower(Var)=="event"){
-    FUN<-function(id){as.vector(read.meta(id)$Event)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$Event)}
   }
   if(tolower(Var)=="site"){
-    FUN<-function(id){as.vector(read.meta(id)$Site)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$Site)}
   }
   if(tolower(Var)=="date"){
-    FUN<-function(id){as.vector(read.meta(id)$Date)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$Date)}
   }
   if(tolower(Var)=="white"){
-    FUN<-function(id){as.vector(read.meta(id)$White)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$White)}
   }
   if(tolower(Var)=="black"){
-    FUN<-function(id){as.vector(read.meta(id)$Black)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$Black)}
   }
   if(tolower(Var)=="result"){
-    FUN<-function(id){as.vector(read.meta(id)$Result)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$Result)}
   }
   if(tolower(Var)=="whiteelo"){
-    FUN<-function(id){as.vector(read.meta(id)$WhiteElo)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$WhiteElo)}
   }
   if(tolower(Var)=="blackelo"){
-    FUN<-function(id){as.vector(read.meta(id)$BlackElo)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$BlackElo)}
   }
   if(tolower(Var)=="timecontrol"){
-    FUN<-function(id){as.vector(read.meta(id)$TimeControl)}
+    FUN<-function(id){as.vector(read.meta(id,workdir)$TimeControl)}
   }
   unlist(lapply(ids,FUN))
 }
@@ -731,24 +731,33 @@ completelivemoves<-function(incomplete_ID_live){
 }
 
 download.pgn<-function(
-  #id,
-  link,
+  game,
+  inputtype="id",
+  workdir="C:/Users/Josh/Documents",
   update=TRUE){
-  #if(nchar(id)==9){
-    #URL<-paste("http://www.chess.com/echess/download_pgn?id=",id,sep="")
-  #}
-  #if(nchar(id)==10){
-    #URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
-  #}
-  id<-read.table(textConnection(link),sep="=")$V2
-  if(grepl("livechess",link)){
-    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  if(nchar(game)==9){
+    id<-game
+    type<-"echess"
+    URL<-paste("http://www.chess.com/echess/download_pgn?id=",game,sep="")
   }
-  if(read.table(textConnection(link),sep="/")$V4=="echess"){
-    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+  if(nchar(game)==10){
+    id<-game
+    type<-"livechess"
+    URL<-paste("http://www.chess.com/echess/download_pgn?lid=",game,sep="")
   }
-  #filepath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
-  filepath<-"C:/Users/Josh/Documents/Chess/PGN/temp.pgn"
+  if(grepl("chess.com",game)){
+    id<-read.table(textConnection(game),sep="=")$V2
+    if(grepl("livechess",game)){
+      type<-"livechess"
+      URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    }
+    if(read.table(textConnection(game),sep="/")$V4=="echess"){
+      type<-"echess"
+      URL<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    }
+  }
+  filepath<-paste(workdir,"/Chess/PGN/",type,"_",id,".pgn",sep="")
+  #filepath<-"C:/Users/Josh/Documents/Chess/PGN/temp.pgn"
   if((file.exists(filepath)==FALSE) |
        (update==TRUE)){
          download.file(URL,filepath)
