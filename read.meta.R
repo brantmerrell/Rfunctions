@@ -1,19 +1,13 @@
-read.meta<-function(id){
-  filepath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-  Event<-as.character(read.table(textConnection(readLines(filepath)[1]))$V2)
-  Site<-as.character(read.table(textConnection(readLines(filepath)[2]))$V2)
-  Date<-strptime(as.character(read.table(textConnection(readLines(filepath)[3]))$V2),
-                 format="%Y.%m.%d")
-  White<-as.character(read.table(textConnection(readLines(filepath)[4]))$V2)
-  Black<-as.character(read.table(textConnection(readLines(filepath)[5]))$V2)
-  Result<-as.character(read.table(textConnection(readLines(filepath)[6]))$V2)
-  WhiteElo<-as.character(read.table(textConnection(readLines(filepath)[7]))$V2)
-  BlackElo<-as.character(read.table(textConnection(readLines(filepath)[8]))$V2)
-  TimeControl<-as.character(read.table(textConnection(readLines(filepath)[9]))$V2)
-  Termination<-as.character(read.table(textConnection(readLines(filepath)[10]))$V2)
-  return(list(Event=Event,Site=Site,
-              Date=Date,White=White,
-              Black=Black,Result=Result,
-              WhiteElo=WhiteElo,BlackElo=BlackElo,
-              TimeControl=TimeControl,Termination=Termination))
+read.meta<-function(id,workdir="C:/Users/Josh/Documents"){
+  filepath<-paste(workdir,"/Chess/PGN/",id,".pgn",sep="")
+  if(!(file.exists(filepath))){
+    download.pgn(id)
+  }
+  n<-1
+  while(readLines(filepath)[n]!=""){
+    n<-n+1
+  }
+  workframe<-data.frame(matrix(read.table(textConnection(readLines(filepath)[1:(n-1)]))$V2,ncol=(n-1)))
+  names(workframe)<-gsub("\\[","",read.table(textConnection(readLines(filepath)[1:(n-1)]))$V1)
+  workframe
 }

@@ -235,8 +235,9 @@ chesslink<-function(links){
   print(tail(read.csv(filepath),3))
 }
 
-lecsummary<-function(summary,key,Time=Sys.time(),command="modify"){
-  filepath<-"C:/Users/Josh/Documents/CSV/DSLectures.csv"
+DS.lecsummary<-function(summary,key,Time=Sys.time(),
+                        command="modify",workdir="C:/Users/Josh/Documents"){
+  filepath<-file.path(workdir,"CSV/DSLectures.csv")
   lectures<-read.csv(filepath,colClasses="character")
   if(class(key) %in% c("numeric","integer")){
     print(lectures[key,])
@@ -250,8 +251,8 @@ lecsummary<-function(summary,key,Time=Sys.time(),command="modify"){
 }
 #lecsummary(summary="",key=55,command="find")
 
-coursemap<-function(){
-  coursepath<-"C:/Users/Josh/Documents/Courses/Courses"
+coursemap<-function(workdir="C:/Users/Josh/Documents"){
+  coursepath<-file.path(workdir,"Courses/Courses")
   workframe<-data.frame(Course=list.files(coursepath)[7],
                         lecture=list.files(
                           paste(paste(coursepath,list.files(coursepath)[7],sep="/"),
@@ -266,6 +267,7 @@ coursemap<-function(){
                                             pattern=".pdf"))
     workframe<-rbind(workframe,newframe)
   }
+  workframe
 }
 
 newsdata<-function(newslinks){
@@ -456,8 +458,9 @@ nationmaster_personnel<-function(){}
 download.file()
 
 
-add.fitness<-function(activity,unit,measure,count,limit,Time=Sys.time(),comment=NA){
-  fitnesspath<-"C:/Users/Josh/Documents/CSV Personal/fitness.csv"
+add.fitness<-function(activity,unit,measure,count,limit,Time=Sys.time(),comment=NA,
+                      workdir="C:/Users/Josh/Documents"){
+  fitnesspath<-file.path(workdir,"CSV Personal/fitness.csv")
   fitness<-read.csv(fitnesspath,colClasses="character")
   observation<-c(activity,unit,measure,count,limit,paste(Time),comment)
   fitness<-rbind(fitness,observation)
@@ -704,8 +707,8 @@ barpieces<-function(id_OR_df){
          col=col,lty=1, bty='n', cex=.75)
 }
 
-read.meta<-function(id){
-  filepath<-paste("C:/Users/Josh/Documents/Chess/PGN/",id,".pgn",sep="")
+read.meta<-function(id,workdir="C:/Users/Josh/Documents"){
+  filepath<-paste(workdir,"/Chess/PGN/",id,".pgn",sep="")
   if(!(file.exists(filepath))){
     download.pgn(id)
   }
