@@ -1,6 +1,26 @@
-read.pgn<-function(id){
-  download.pgn(id)
-  pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
+read.pgn<-function(game,Workdir=getwd()){
+  download.pgn(game)
+  if(nchar(game)==9){
+    id<-"game"
+    type<-"echess"
+  }
+  if(nchar(game)==10){
+    id<-game
+    type<-"livechess"
+    message("Ten digit id implies live chess.
+            Assumption is unstable.")
+  }
+  if(grepl("chess.com",game)){
+    id<-read.table(textConnection(game),sep="=")$V2
+    ifelse(grepl("livechess",game),
+           type<-"livechess",
+           type<-"echess"
+           )
+  }
+  pgnpath<-paste(Workdir,"/chess/pgn/",type,"_",id,".pgn",sep="")
+  if(!file.exists(pgnpath)){
+    download.pgn(game,workdir=Workdir)
+  }
   linecol<-function(n){
     if(readLines(pgnpath)[n]==""){
       return(0)
@@ -36,5 +56,5 @@ read.pgn<-function(id){
     pgn<-paste(pgn,readLines(pgnpath)[l+1])
     l<-(l+1)
   }
-  return(pgn)
+  return(gsub("  "," ",pgn))
 }

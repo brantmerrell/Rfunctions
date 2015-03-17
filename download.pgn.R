@@ -1,7 +1,7 @@
 download.pgn<-function(
   game,
   inputtype="id",
-  workdir="C:/Users/Josh/Documents",
+  workdir=getwd(),
   update=TRUE){
   if(nchar(game)==9){
     id<-game

@@ -1,7 +1,22 @@
-read.meta<-function(id,workdir="C:/Users/Josh/Documents"){
-  filepath<-paste(workdir,"/Chess/PGN/",id,".pgn",sep="")
+read.meta<-function(game,workdir=getwd()){
+  if(nchar(game) %in% c(9:10)){
+    id<-game
+    if(nchar(id)==9){
+      type<-"echess"
+    }
+    if(nchar(id)==10){
+      type<-"livechess"
+    }
+  }
+  if(grepl("chess.com",game)){
+    id<-read.table(textConnection(game),sep="=")
+    ifelse(grepl("livechess",game),
+           type<-"livechess",
+           type<-"echess")
+  }
+  filepath<-paste(workdir,"/Chess/PGN/",type,"_",id,".pgn",sep="")
   if(!(file.exists(filepath))){
-    download.pgn(id)
+    download.pgn(game)
   }
   n<-1
   while(readLines(filepath)[n]!=""){
