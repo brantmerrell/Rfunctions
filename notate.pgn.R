@@ -1,45 +1,5 @@
-notate.pgn<-function(id){
-  read.pgn<-function(id){
-    download.pgn(id)
-    pgnpath<-paste("C:/Users/Josh/Documents/",id,".pgn",sep="")
-    linecol<-function(n){
-      if(readLines(pgnpath)[n]==""){
-        return(0)
-      }
-      if(!(readLines(pgnpath)[n]=="")){
-        return(ncol(read.table(textConnection(readLines(pgnpath)[n]))))
-      }
-      grepl(readLines(pgnpath)[n],metaproperties)
-    }
-    lineclass<-function(n){
-      if(n==length(readLines(pgnpath))){
-        return("pgn")
-      }
-      if(n==(length(readLines(pgnpath))-1)){
-        return("pgn")
-      }
-      if(n<(length(readLines(pgnpath))-1) & linecol(n)==3){
-        return("meta")
-      }
-      if((n<(length(readLines(pgnpath))-1)) & (3<linecol(n))){
-        return("pgn")
-      }
-      if(linecol(n)==0){
-        return("blank")
-      }
-    }
-    df<-data.frame(n=1:length(readLines(pgnpath)),
-                   Lclass=unlist(lapply(1:length(readLines(pgnpath)),lineclass)))
-    m<-subset(df$n,df$Lclass=="pgn")
-    l<-min(m)
-    pgn<-paste(readLines(pgnpath)[l])
-    while(l<max(m)){
-      pgn<-paste(pgn,readLines(pgnpath)[l+1])
-      l<-(l+1)
-    }
-    return(pgn)
-  }
-  pgn<-read.pgn(id)
+notate.pgn<-function(game){
+  pgn<-read.pgn(game)
   pgn<-read.table(textConnection(pgn),sep=".",colClasses="character",comment.char="")
   pgn<-matrix(pgn,nrow=ncol(pgn),ncol=1)
   white<-function(n){
