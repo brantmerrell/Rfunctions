@@ -1,60 +1,69 @@
 read.pgn<-function(game,Workdir=getwd()){
-  download.pgn(game)
-  if(nchar(game)==9){
-    id<-"game"
-    type<-"echess"
-  }
-  if(nchar(game)==10){
-    id<-game
-    type<-"livechess"
-    message("Ten digit id implies live chess.
-            Assumption is unstable.")
-  }
-  if(grepl("chess.com",game)){
-    id<-read.table(textConnection(game),sep="=")$V2
-    ifelse(grepl("livechess",game),
-           type<-"livechess",
-           type<-"echess"
-           )
-  }
-  pgnpath<-paste(Workdir,"/chess/pgn/",type,"_",id,".pgn",sep="")
-  if(!file.exists(pgnpath)){
-    download.pgn(game,workdir=Workdir)
-  }
-  linecol<-function(n){
-    if(readLines(pgnpath)[n]==""){
-      return(0)
+  pgn<-function(game,Workdir){
+    if(nchar(game)==9){
+      id<-"game"
+      type<-"echess"
     }
-    if(!(readLines(pgnpath)[n]=="")){
-      return(ncol(read.table(textConnection(readLines(pgnpath)[n]))))
+    if(nchar(game)==10){
+      id<-game
+      type<-"livechess"
+      message("Ten digit id implies live chess.
+              Assumption is unstable.")
     }
-    grepl(readLines(pgnpath)[n],metaproperties)
+    if(grepl("chess.com",game)){
+      id<-read.table(textConnection(game),sep="=")$V2
+      ifelse(grepl("livechess",game),
+             type<-"livechess",
+             type<-"echess"
+      )
+    }
+    pgnpath<-paste(Workdir,"/chess/pgn/",type,"_",id,".pgn",sep="")
+    if(!file.exists(pgnpath)){
+      download.pgn(game,workdir=Workdir)
+    }
+    print(readLines(pgnpath))
+    linecol<-function(n){
+      if(readLines(pgnpath)[n]==""){
+        return(0)
+      }
+      if(!(readLines(pgnpath)[n]=="")){
+        return(ncol(read.table(textConnection(readLines(pgnpath)[n]))))
+      }
+      grepl(readLines(pgnpath)[n],metaproperties)
+    }
+    lineclass<-function(n){
+      if(n==length(readLines(pgnpath))){
+        return("pgn")
+      }
+      if(n==(length(readLines(pgnpath))-1)){
+        return("pgn")
+      }
+      if(n<(length(readLines(pgnpath))-1) & linecol(n)==3){
+        return("meta")
+      }
+      if((n<(length(readLines(pgnpath))-1)) & (3<linecol(n))){
+        return("pgn")
+      }
+      if(linecol(n)==0){
+        return("blank")
+      }
+    }
+    df<-data.frame(n=1:length(readLines(pgnpath)),
+                   Lclass=unlist(lapply(1:length(readLines(pgnpath)),lineclass)))
+    m<-subset(df$n,df$Lclass=="pgn")
+    l<-min(m)
+    pgn<-paste(readLines(pgnpath)[l])
+    while(l<max(m)){
+      pgn<-paste(pgn,readLines(pgnpath)[l+1])
+      l<-(l+1)
+    }
+    return(gsub("  "," ",pgn))
   }
-  lineclass<-function(n){
-    if(n==length(readLines(pgnpath))){
-      return("pgn")
-    }
-    if(n==(length(readLines(pgnpath))-1)){
-      return("pgn")
-    }
-    if(n<(length(readLines(pgnpath))-1) & linecol(n)==3){
-      return("meta")
-    }
-    if((n<(length(readLines(pgnpath))-1)) & (3<linecol(n))){
-      return("pgn")
-    }
-    if(linecol(n)==0){
-      return("blank")
-    }
+  n<-1
+  total<-pgn(game[n],Workdir)
+  while(n<length(game)){
+    total<-c(total,pgn(game[n+1],Workdir))
+    n<-n+1
   }
-  df<-data.frame(n=1:length(readLines(pgnpath)),
-                 Lclass=unlist(lapply(1:length(readLines(pgnpath)),lineclass)))
-  m<-subset(df$n,df$Lclass=="pgn")
-  l<-min(m)
-  pgn<-paste(readLines(pgnpath)[l])
-  while(l<max(m)){
-    pgn<-paste(pgn,readLines(pgnpath)[l+1])
-    l<-(l+1)
-  }
-  return(gsub("  "," ",pgn))
+  return(total)
 }
