@@ -26,7 +26,7 @@ read.meta<-function(games,Workdir=getwd()){
     workframe<-data.frame(matrix(read.table(textConnection(readLines(filepath)[1:(n-1)]))$V2,ncol=(n-1)))
     names(workframe)<-gsub("\\[","",read.table(textConnection(readLines(filepath)[1:(n-1)]))$V1)
     if("ECO" %in% colnames(workframe)){
-      message(paste("trouble game:",game))
+      message(paste("problem game:",game))
       if(ncol(workframe)==11){workframe<-workframe[,-7]}
     }
     workframe

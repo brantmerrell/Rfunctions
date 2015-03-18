@@ -707,19 +707,49 @@ barpieces<-function(id_OR_df){
          col=col,lty=1, bty='n', cex=.75)
 }
 
-read.meta<-function(id,workdir="C:/Users/Josh/Documents"){
-  filepath<-paste(workdir,"/Chess/PGN/",id,".pgn",sep="")
-  if(!(file.exists(filepath))){
-    download.pgn(id)
+read.meta<-function(games,Workdir=getwd()){
+  meta<-function(game,workdir=Workdir){
+    if(nchar(game) %in% c(9:10)){
+      id<-game
+      if(nchar(id)==9){
+        type<-"echess"
+      }
+      if(nchar(id)==10){
+        type<-"livechess"
+      }
+    }
+    if(grepl("chess.com",game)){
+      id<-read.table(textConnection(game),sep="=")$V2
+      ifelse(grepl("livechess",game),
+             type<-"livechess",
+             type<-"echess")
+    }
+    filepath<-paste(workdir,"/Chess/PGN/",type,"_",id,".pgn",sep="")
+    if(!(file.exists(filepath))){
+      download.pgn(game)
+    }
+    n<-1
+    while(readLines(filepath)[n]!=""){
+      n<-n+1
+    }
+    workframe<-data.frame(matrix(read.table(textConnection(readLines(filepath)[1:(n-1)]))$V2,ncol=(n-1)))
+    names(workframe)<-gsub("\\[","",read.table(textConnection(readLines(filepath)[1:(n-1)]))$V1)
+    if("ECO" %in% colnames(workframe)){
+      message(paste("problem game:",game))
+      if(ncol(workframe)==11){workframe<-workframe[,-7]}
+    }
+    workframe
   }
   n<-1
-  while(readLines(filepath)[n]!=""){
+  workframe<-meta(games[n])
+  while(n<length(games)){
+    newrow<-meta(games[n+1])
+    workframe<-rbind(workframe,newrow)
     n<-n+1
   }
-  workframe<-data.frame(matrix(read.table(textConnection(readLines(filepath)[1:(n-1)]))$V2,ncol=(n-1)))
-  names(workframe)<-gsub("\\[","",read.table(textConnection(readLines(filepath)[1:(n-1)]))$V1)
   workframe
 }
+
 
 completelivemoves<-function(incomplete_ID_live){
   id<-incomplete_ID_live
