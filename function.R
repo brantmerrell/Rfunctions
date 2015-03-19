@@ -1,3 +1,83 @@
+
+
+read.pdftxt_1<-function(filepath="C:/Users/Josh/Documents/rmongodb.txt"){
+  n<-2
+  lines<-readLines(filepath)
+  workframe<-data.frame(type="",line=lines[1])
+  workframe$line<-as.character(workframe$line)
+  while(n<length(lines)){
+    if(grepl("\\. \\. \\.",workframe$line[n])){
+      workframe$line[n]<-gsub(" ","",gsub("(\\. )|9|8|7|6|5|4|3|2|1|0"," ",workframe$line[n]))
+      while((as.character(workframe$line[n])<"a") & (1<nchar(workframe$line[n]))){
+        lines[n]<-sub(".","",workframe[573,2])
+      }
+      type<-"Table of Contents"
+    }
+    else{type<-""}
+    workframe<-rbind(workframe,
+                     data.frame(type,line=lines[n]))
+    n<-n+1
+  }
+  functions<-as.vector(subset(workframe$line,workframe$type=="Table of Contents"))
+  n<-2
+  workframe<-cbind(workframe,FUN=workframe$type)
+  workframe$line<-as.character(workframe$line)
+  workframe$type<-as.character(workframe$type)
+  workframe$FUN<-as.character(workframe$FUN)
+  while(n<=nrow(workframe)){
+    if(workframe$line[n] %in% functions){workframe$FUN[n]<-workframe$line[n]}
+    else{workframe$FUN[n]<-workframe$FUN[n-1]}
+    n<-n+1
+  }
+  n<-2
+  workframe<-cbind(workframe,portion="")
+  workframe$portion<-as.character(workframe$portion)
+  portions<-c("Description","Usage","Arguments","Details","See Also","Examples","Value")
+  while(n<=nrow(workframe)){
+    if(workframe$line[n] %in% portions){
+      workframe$portion[n]<-workframe$line[n]
+    }
+    else{workframe$portion[n]<-workframe$portion[n-1]}
+    n<-n+1
+  }
+  unique(workframe$signal)
+}
+# write.csv(workframe,"./CSV/rmongodb.csv")
+
+rmongodb.frame<-function(Function,Text,command="automate"){
+  if(grepl("Description",Text)){
+    column<-2
+    colname<-"Description"
+  }
+  if(grepl("Usage",Text)){
+    column<-3
+    colname<-"Usage"
+  }
+  if(grepl("Arguments",Text)){
+    column<-4
+    colname<-"Arguments"
+  }
+  if(grepl("Details",Text)){
+    column<-5
+    colname<-"Details"
+  }
+  if(grepl("Value",Text)){
+    column<-5
+    colname<-"Value"
+  }
+  Text<-sub(colname,"",gsub("(\\n)"," ",Text))
+  row<-as.numeric(row.names(df[df$FUN==FUN,]))
+  df[,column]<-as.character(df[,column])
+  df[row,column]<-Text
+  print(df[(row-1):(row+1),])
+  return(df)
+}
+
+FUN<-function(funline){
+  unique(c(rmongodb,gsub("0|1|2|3|4|5|6|7|8|9|(\\. )|( )","",funline)))
+}
+df<-data.frame(FUN=rmongodb,Desc="",Usage="",args="",Details="")
+
 download.gdelt<-function(date=(Sys.Date()-2),project="counts",
                          workdir="C:/Users/Administrator/Documents"){
   datestamp<-gsub("-","",date)

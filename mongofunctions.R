@@ -1,3 +1,21 @@
+df<-read.csv(file.path(getwd(),"csv",list.files(file.path(getwd(),"CSV"),"*\\.csv")[1]))
+filename<-list.files(file.path(getwd(),"CSV"),"*\\.csv")[1]
+
+workdoc<-paste
+library(RMongo)
+
+mongo <- mongoDbConnect("acdb", "ds051750.mongolab.com", 51750)
+output <- ?dbInsertDocument(rmongo.object=mongo, 
+                           collection="ShareableStuffUser", 
+                           doc=workdoc)
+list.files(pattern="*\\.pdf")
+library(rmongodb)
+list(name="Fred", age=29, city="Boston")
+mongo.bson.from.list(list(name="Fred", age=29, city="Boston"))
+
+
+list("X"=c(1,2))
+
 mongostore.FDIC<-function(quarter=4,year=2014){
   library(RMongo)install.packages("RMongo")
 }
