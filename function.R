@@ -1,48 +1,46 @@
-
-
-read.pdftxt_1<-function(filepath="C:/Users/Josh/Documents/rmongodb.txt"){
-  n<-2
-  lines<-readLines(filepath)
-  workframe<-data.frame(type="",line=lines[1])
-  workframe$line<-as.character(workframe$line)
-  while(n<length(lines)){
-    if(grepl("\\. \\. \\.",workframe$line[n])){
-      workframe$line[n]<-gsub(" ","",gsub("(\\. )|9|8|7|6|5|4|3|2|1|0"," ",workframe$line[n]))
-      while((as.character(workframe$line[n])<"a") & (1<nchar(workframe$line[n]))){
-        lines[n]<-sub(".","",workframe[573,2])
-      }
-      type<-"Table of Contents"
-    }
-    else{type<-""}
-    workframe<-rbind(workframe,
-                     data.frame(type,line=lines[n]))
-    n<-n+1
-  }
-  functions<-as.vector(subset(workframe$line,workframe$type=="Table of Contents"))
-  n<-2
-  workframe<-cbind(workframe,FUN=workframe$type)
-  workframe$line<-as.character(workframe$line)
-  workframe$type<-as.character(workframe$type)
-  workframe$FUN<-as.character(workframe$FUN)
-  while(n<=nrow(workframe)){
-    if(workframe$line[n] %in% functions){workframe$FUN[n]<-workframe$line[n]}
-    else{workframe$FUN[n]<-workframe$FUN[n-1]}
-    n<-n+1
-  }
-  n<-2
-  workframe<-cbind(workframe,portion="")
-  workframe$portion<-as.character(workframe$portion)
-  portions<-c("Description","Usage","Arguments","Details","See Also","Examples","Value")
-  while(n<=nrow(workframe)){
-    if(workframe$line[n] %in% portions){
-      workframe$portion[n]<-workframe$line[n]
-    }
-    else{workframe$portion[n]<-workframe$portion[n-1]}
-    n<-n+1
-  }
-  unique(workframe$signal)
+slice.lines<-function(lines){
+  lines<-gsub("\"","\\\"",readLines(filepath))
+  #lines[as.integer(length(lines)*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
+  longframe<-data.frame(x=1:length(lines),line=lines)
+  Table_of_Contents<-subset(df_lines,grepl("\\. \\. \\.",df$line))
+  chapters<-gsub(" ","",gsub("(\\. )|9|8|7|6|5|4|3|2|1|0"," ",
+                              as.vector(subset(longframe$line,longframe$x %in% Table_of_Contents))))
 }
-# write.csv(workframe,"./CSV/rmongodb.csv")
+
+diffminutes<-function(row){
+  if(row<nrow(Today)){
+    return(as.integer((Today$unclass_POSIXct[row+1]-Today$unclass_POSIXct[row])/60))
+  }
+  else{
+    return(NA)
+  }
+}
+
+seconds<-function(row){unclass(as.POSIXct(Today$time[row]))[1]}
+
+testline<-function(line,iterate,chapters=functions,sec=sections){
+  result<-"line"
+  line<-as.vector(gsub("(\")|(\')","",line))
+  if(!grepl("\\#",line) & !(line=="")){
+    if(read.table(textConnection(line),sep=" ")$V1 %in% chapters){
+      if(iterate==1){
+        result<-"chapter"
+      }
+      if(iterate==2){
+        result<-read.table(textConnection(line),sep=" ")$V1
+      }
+    }
+    if(read.table(textConnection(line),sep=" ")$V1 %in% sec){
+      if(iterate==1){
+        result<-"section"
+      }
+      if(iterate==2){
+        result<-read.table(textConnection(line),sep=" ")$V1
+      }
+    }
+  }
+  result
+}
 
 rmongodb.frame<-function(Function,Text,command="automate"){
   if(grepl("Description",Text)){
