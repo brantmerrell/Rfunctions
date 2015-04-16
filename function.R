@@ -1,10 +1,346 @@
-slice.lines<-function(lines){
-  lines<-gsub("\"","\\\"",readLines(filepath))
-  #lines[as.integer(length(lines)*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
-  longframe<-data.frame(x=1:length(lines),line=lines)
-  Table_of_Contents<-subset(df_lines,grepl("\\. \\. \\.",df$line))
+MongoDefinitions<-function(year,quarter){
+  add.note(paste("begin MongoDefinitions",
+                 year,
+                 quarter))
+  host<-"ds051750.mongolab.com:51750"
+  collection<-"DefinitionDocsFDIC"
+  db<-"acdb"
+  namespace<-"acdb.DefinitionDocsFDIC"
+  password<-"TestPassword"
+  username<-"TestUser"
+  worklist<-as.list(replicate(nrow(workframe),""))
+  for(n in 1:nrow(workframe)){
+    ifelse(length(workframe$key[n])==1,
+           worklist[[n]]<-list(VariableName=as.character(workframe$key[n]),
+                               year=year,quarter=quarter,
+                               docs=as.list(FDIC.varscan(year,quarter,workframe$key[n]))),
+           worklist[[n]]<-list(VariableName=as.character(workframe$key[n]),
+                               year=year,quarter=quarter,
+                               docs=as.vector(FDIC.varscan(year,quarter,workframe$key[n]))))
+  }
+  add.note(paste(year,"quarter",quarter,"is processed and in R list form #autonote"))
+  library(rmongodb)
+  for(row in 1:length(worklist)){
+    b<-mongo.bson.from.list(worklist[[row]])
+    mongo <- mongo.create(host=host , db=db, username=username, password=password)
+    ok <- mongo.insert(mongo, namespace, b)
+  }
+  add.note(paste("FDIC Definitions for",
+                 year,
+                 quarter,
+                 "in mongo - close MongoDefinitions() function #autonote"))
+}
+
+export.notes<-function(filepath,query){
+  if(length(strsplit(getwd(),"/")[[1]])!=4
+     | !grepl("Documents",getwd())){
+    stop("relative filepath works from the 'Documents' workdir only")
+  }
+  if(grepl("./CSV Personal/notes.csv",filepath)){
+    stop("notes cannot export to itself")
+  }
+  notes<-read.csv("./CSV Personal/notes.csv",colClasses="character")
+  expnotes<-subset(notes,
+                   grepl(tolower(query),tolower(notes$note))
+                   | grepl(query,notes$time))
+  notes<-subset(notes,
+                !grepl(tolower(query),tolower(notes$note))
+                & !grepl(query,notes$time))
+  if(file.exists(filepath)){
+    expnotes<-unique(rbind(read.csv(filepath,colClasses="character"),
+                           expnotes))
+  }
+  write.csv(expnotes,filepath,row.names=FALSE)
+  write.csv(notes,"./CSV Personal/notes.csv",row.names=FALSE)
+  list(note=list(dim=dim(notes),
+                 tail=tail(notes)),
+       expnote=list(dim=dim(expnotes),
+                    tail=tail(expnotes,3),
+                    path=filepath))
+}
+
+FBWords<-function(FBLink,FBProfile,FBComment,Date=paste(Sys.Date())){
+  filepath<-file.path(getwd(),"CSV Personal/FBComments.csv")
+  newrow<-data.frame(link=FBLink,Source=FBProfile,Text=FBComment,
+                     Date=Date)
+  DF<-read.csv(filepath)
+  DF<-rbind(DF,newrow)
+  write.csv(DF,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
+linkgrid<-function(link1,link2="",link3="",link4="",link5="",Year=2015,Month="April",comment="",workdir="C:/Users/Josh/Documents"){
+  filepath<-file.path(workdir,"CSV Personal/linkgrid.csv")
+  df<-read.csv(filepath,colClasses="character")
+  newrow<-data.frame(link1,link2,link3,link4,link5,Year,Month,comment)
+#   newrow<-data.frame(link1="https://www.facebook.com/tennis.lilly/posts/10206463047873954",link2="https://www.facebook.com/tennis.lilly",link3="",link4="",link5="",Year=2015,Month="April",comment="")
+  df<-unique(rbind(df,newrow))
+  write.csv(df,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath)))
+}
+
+review.note<-function(reviewnote,row,Time=Sys.time(),filepath="CSV/gulp.js.csv",
+                        command="find",workdir="C:/Users/Josh/Documents"){
+  if(!grepl("Documents",filepath)){
+    filepath<-file.path(workdir,filepath)
+  }
+  content<-read.csv(filepath,colClasses="character")
+  if(command=="modify"){
+    content[row,]<-c(content[row,1:2],reviewnote,paste(Time))
+  }
+  View(content[(row-1):(row+9),c(3,4,1,2)])
+  print(content[(row-1):(row+1),])
+  write.csv(content,filepath,row.names=FALSE)
+}
+#   if(class(key) %in% c("numeric","integer")){
+#     print(lectures[key,])
+#     if(command=="modify"){
+#       lectures[key,3]<-summary
+#       lectures[key,4]<-paste(Time)
+#       print(lectures[(key-1):(key+1),])
+#       write.csv(lectures,filepath,row.names=FALSE)
+#     }
+#   }
+}
+
+
+getnote<-function(pattern,notepath="C:/Users/Josh/Documents/CSV Personal/notes.csv"){
+  notes<-read.csv(notepath, colClasses="character")
+  workframe<-(subset(notes,grepl(pattern,notes$note)))
+  View(workframe)
+}
+
+scholarmetric<-function(link="https://scholar.google.com/citations?view_op=top_venues&hl=en",
+                        first_journal="Nature",
+                        last_journal="The Journal of Immunology"){
+  metrics<-unlist(strsplit(readLines(link,warn=FALSE),"<|>"))
+  metrics<-metrics[(!(grepl("(http)|/|@|=|\\[|\\{|(Sorry)|(Please)|(best)|(div)",
+                            metrics))
+                    & !(metrics %in% c("","!doctype html","html","head","title","style","script",
+                                       "body","Web","Images","Sign in","","Google Chrome",
+                                       " or ","Mozilla Firefox","Scholar","Search Scholar",
+                                       "Categories","English","li","tr","hide")))]
+  n<-1
+  while(metrics[n]!=first_journal){
+    n<-n+1
+  }
+  metrics<-metrics[-(1:(n-2))]
+  n<-length(metrics)
+  while(metrics[n]!=last_journal){
+    n<-n-1
+  }
+  metrics<-metrics[-((n+3):(length(metrics)))]
+  df<-data.frame(categoryrank=metrics[(1:(length(metrics)/4))*4-3],
+                 journal=metrics[(1:(length(metrics)/4))*4-2],
+                 h5_index=metrics[(1:(length(metrics)/4))*4-1],
+                 h5_median=metrics[(1:(length(metrics)/4))*4])
+  return(df[,-1])
+}
+
+getFB<-function(info="Friends",Range=c(500,5000)){
+  if(tolower(info)=="friends"){
+    lines<-
+      strsplit(
+        readLines(
+          file.path("C:/Users/Josh/Documents/Data/Facebook/html",
+                    list.files("C:/Users/Josh/Documents/Data/Facebook/html")[4]
+          ),
+          warn=FALSE
+        ),
+        "(<li>)|(</li>)"
+      )[[1]]
+    lines<-subset(as.vector(lines),grepl(" ",lines) & !grepl("(htm)|(<)",lines))
+  }
+  if(tolower(info)=="message"){
+    lines<-
+      unlist(strsplit(
+        readLines(
+          file.path("C:/Users/Josh/Documents/Data/Facebook/html",
+                    list.files("C:/Users/Josh/Documents/Data/Facebook/html")[5]
+          ),
+          warn=FALSE
+        ),
+        "(<)|(>)"
+      ))
+    lines<-subset(lines,!grepl("(/p)|(/li)|(/h1)|(class=)|(/a)|(/div)|(/ul)|(/span)",lines) 
+           & !(lines %in% c("li","p","")))
+    lines[as.integer(1000/(20:1)+1)]
+    lines<-unlist(lines)
+    lines<-subset(lines,min(Range)<nchar(lines) 
+                  & nchar(lines)<max(Range))
+  }
+  if(info="wall"){
+    lines<-
+      readLines(
+        file.path("C:/Users/Josh/Documents/Data/Facebook/html",
+                  list.files("C:/Users/Josh/Documents/Data/Facebook/html")[17]
+        )
+        #,header=TRUE
+        ,warn=FALSE
+      )#)
+    )
+  }
+  lines
+}
+?range
+
+
+Descriptions<-function(DescLine=1,lines_filepath="C:/Users/Josh/Documents/rmongodb.txt",split=TRUE){
+  lines<-readLines(lines_filepath)
+  lineframe<-data.frame(row=1:length(lines),line=lines)
+  Descriptions<-sort(unique(lines[(subset(lineframe$row,lineframe$line=="Description")+DescLine)]))
+  if(split==TRUE){
+    split(lines,strsplit(lines," "))
+  }
+  Descriptions
+}
+
+segmentframe<-function(lines,extract="Usage"){
+  chapters<-chapterlist(lines)
+  segments<-unique(unlist(segmentlist(lines,extract)))
+  get.length<-function(line){
+    length(unlist(strsplit(line,"(\\()|\\)|(,)")))
+    #length(unlist(strsplit(lines[303],"(\\()|\\)|(,)")))
+  }
+  threshold<-20 #max(unlist(lapply(lines[segments],get.length)))+1
+  worktrix<-matrix(nrow=1,ncol=threshold)
+  ncols<-ncol(matrix)
+  for(n in 1:length(chapters)){
+    #n<-4
+    chapter<-chapters[[n]][[1]]
+    if(n<length(chapters)){
+      nextchapter<-chapters[[n+1]][[1]]
+    }
+    else{nextchapter<-length(lines)}
+    segment<-subset(segments,chapter<segments & segments<nextchapter)
+    segframe<-as.vector(gsub(" ","",unlist(strsplit(lines[segment],"(\\()|\\)|(,)"))))
+    chapter<-matrix(c(as.vector(lines[chapters[[n]][[1]]]),as.vector(segframe)),nrow=1)
+    while(ncol(chapter)<ncol(worktrix)){
+      chapter<-matrix(cbind(chapter,NA),nrow=1)
+    }
+    if(ncol(worktrix)<ncol(chapter)){
+      #matrix<-cbind(worktrix,NA)
+      stop(chapter)
+    }
+    if(is.na(worktrix[1,1])){
+      worktrix<-(chapter)
+    }
+    else{worktrix<-rbind(worktrix,chapter)}
+    #ncols<-c(ncols,ncol(worktrix))
+  }
+  while(!(FALSE %in% is.na(worktrix[,ncol(worktrix)]))){
+    worktrix<-worktrix[,-ncol(worktrix)]
+  }
+  worktrix
+  #ncols
+}
+
+segmentlist<-function(lines,extract){
+  worklines<-gsub("\\. ","",lines)
+  df<-data.frame(Row=(1:length(lines)),
+                 line=(lines),
+                 length=(unlist(lapply(strsplit(worklines," "),length))))
+  segments<-as.list(subset(df[,1],df$line==extract))
+  singlewords<-as.list(subset(df[,1],df$length==1))
+  for(n in 1:length(segments)){
+    start<-segments[[n]]
+    linerunner<-1
+    while(!(df$length[start+linerunner]==1) 
+          & linerunner<length(lines)){
+      linerunner<-linerunner+1
+    }
+    end<-start+linerunner-1
+    segments[[n]]<-start:end
+  }
+  segments
+}
+
+chapterlist<-function(lines,postkey="Arguments"){
+  df<-data.frame(Row=(1:length(lines)),
+                 line=(lines))
+  chaprows<-postchap(lines,postkey)
+  chapters<-as.list(chaprows)
+  for(n in 1:length(chapters)){
+    #row<-4073
+    start<-chapters[[n]]
+    ifelse(n<length(chapters),
+           end<-chapters[[n+1]]-1,
+           end<-length(lines))
+    chapters[[n]]<-start:end
+  }
+  chapters
+}
+
+postchap<-function(lines,postkey){
+  df<-data.frame(Row=(1:length(lines)),
+                 line=(lines))
+  postchap<-subset(df[,1],df$line==postkey)
+  df[postchap-1,1]
+}
+
+dim(df[postchap-1,c(1,2)])
+
+
+wordtable<-function(lines){
+  worklines<-gsub("(\\. \\. \\. \\.)","\\.",lines)
+  words<-strsplit(worklines," ")
+  df<-data.frame(Row=(1:length(lines)),
+                 line=(lines),
+                 length=(unlist(lapply(strsplit(worklines," "),length))))
+  wordcol<-max(df$length)
+  while(0<wordcol){
+    workvec<-replicate(length(lines),NA)
+    for(wordrow in 1:length(workvec)){
+      if(wordcol<=length(words[[wordrow]])){
+        workvec[wordrow]<-words[[wordrow]][[wordcol]]
+      }
+    }
+    df_names<-c(colnames(df),paste("word",wordcol,sep="_"))
+    df<-cbind(df,workvec)
+    names(df)<-df_names
+    wordcol<-wordcol-1
+  }
+  df
+}
+
+chapter.overlap<-function(lines){
+  words<-strsplit(lines," ")
+  line_length<-unlist(lapply(words,length))
+  firstwords<-replicate(length(lines),"")
+  for(n in 1:length(lines)){
+    firstwords[n]<-words[[n]][[1]]
+  }
+  secondwords<-replicate(length(lines),"")
+  for(n in 1:length(lines)){
+    if(1<line_length[n]){
+      secondwords[n]<-words[[n]][[2]]
+    }
+  }
+  linetable<-data.frame(row=1:length(lines),
+                        line=lines,
+                        firstword=firstwords,
+                        secondword=secondwords)
+  chapters<-name.chapters(lines)
+  chapstarts_1<-subset(linetable$row,linetable$line %in% chapters)
+  chapstarts_2<-subset(linetable$row,linetable$firstword %in% chapters)
+  return(subset(linetable$secondword,
+                linetable$row %in% chapstarts_2 &
+                  !(linetable$row %in% chapstarts_1)))
+}
+
+name.chapters<-function(lines
+  #lines_filepath="C:/Users/Josh/Documents/rmongodb.txt"
+  ){
+  #lines<-gsub("\"","\\\"",readLines(lines_filepath))
+  #lines<-readLines(lines_filepath)
+  #lines[as.integer(length(lines)
+                   #*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
+  #longframe<-data.frame(x=1:length(lines),line=lines)
+  Table_of_Contents<-subset(lines,grepl("\\. \\. \\.",lines))
   chapters<-gsub(" ","",gsub("(\\. )|9|8|7|6|5|4|3|2|1|0"," ",
-                              as.vector(subset(longframe$line,longframe$x %in% Table_of_Contents))))
+                              as.vector(subset(
+                                lines,lines %in% Table_of_Contents))))
+  return(chapters)
 }
 
 diffminutes<-function(row){
@@ -167,7 +503,11 @@ positions<-function(game=chessgame){
                       e1="wK",e2="wp_e",e7="bp_e",e8="bK",
                       f1="wB_f",f2="wp_f",f7="bp_f",f8="bB_f",
                       g1="wN_g",g2="wp_g",g7="bp_g",g8="gN_b",
-                      h1="wR_h",h2="wp_h",h7="bp_h",h8="bR_h")
+                      h1="wR_h",h2="wp_h",h7="bp_h",h8="bR_h",
+                      a3="",a4="",a5="",a6="",b3="",b3="",b4="",b5="",b6="",
+                      c3="",c4="",c5="",c6="",d3="",d4="",d5="",d6=""
+                      a3="",a4="",a5="",a6="",b3="",b4="",b5="",b6=""
+                      a3="",a4="",a5="",a6="",b3="",b4="",b5="",b6="")
   subset(game$pgn,grepl(square)
 }
 
@@ -323,6 +663,7 @@ DS.lecsummary<-function(summary,key,Time=Sys.time(),
       lectures[key,3]<-summary
       lectures[key,4]<-paste(Time)
       print(lectures[(key-1):(key+1),])
+      View(lectures[(key-1):(key+9),])
       write.csv(lectures,filepath,row.names=FALSE)
     }
   }
@@ -605,7 +946,7 @@ mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
   tail(read.csv(filepath),3)
 }
 
-read.definitions<-function(n,SKIP=1,workdir="C:/Users/Administrator/Documents"){
+read.definitions<-function(n,SKIP=1,workdir=getwd()){
   folderpath<-file.path(workdir,"FDIC")
   filename<-list.files(folderpath,"*\\.csv")[n]
   filepath<-file.path(folderpath,filename)
@@ -614,7 +955,7 @@ read.definitions<-function(n,SKIP=1,workdir="C:/Users/Administrator/Documents"){
     url<-"https://www2.fdic.gov/sdi/SDIAllDefinitions_CSV.zip"
     destfile<-file.path(workdir,"FDIC","SDIAllDefinitions_CSV.zip")
     download.file(url,destfile)
-    unzip(destfile,exdir=file.path(workdir,"FDIC"))
+    unzip(destfile,exdir=file.path(workdir,"FDIC","SDIAllDefinitions_CSV"))
     file.remove(destfile)
     filename<-list.files(folderpath,"*\\.csv")[n]
     filepath<-file.path(folderpath,filename)
@@ -624,8 +965,8 @@ read.definitions<-function(n,SKIP=1,workdir="C:/Users/Administrator/Documents"){
   return(data[,c(1,3,2,4,5)])
 }
 
-alldefinitions<-function(){
-  m<-length(list.files("C:/Users/Josh/Documents/FDIC/SDIAllDefinitions_CSV"))
+alldefinitions<-function(workdir=getwd()){
+  m<-length(list.files(file.path(workdir,"FDIC"),"*\\.csv"))
   data<-read.definitions(1)
   n<-1
   while(n<m){

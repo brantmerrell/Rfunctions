@@ -1,3 +1,4 @@
+
 FDIC.Y.varcompare<-function(year,variables){
   workframe<-FDICvar.quarter(year,quarter,variables[1])
 }
@@ -148,7 +149,7 @@ download.FDIC<-function(year,
   download.file(url=Url,destfile=Destfile)
   unzip(zipfile=Destfile,
         exdir=gsub("\\.zip","",Destfile))
-  print(gsub("\\.zip","",Destfile))
+  add.note(paste(gsub("\\.zip","",Destfile),"#autonote"))
   file.remove(Destfile)
 }
 

@@ -1,3 +1,15 @@
+mongoframe<-function(dataframe=data,
+                     db=acdb,
+                     collection,
+                     host="d2051750.mongolab.com:51750",
+                     username="TestUser",password="TestPassword"){
+  namespace <- paste(db, collection, sep=".")
+  for(doc in 1:nrow(dataframe)){
+    b<-mongo.bson.from.df(dataframe[doc,])
+    ok <- mongo.insert(mongo, namespace, b)
+  }
+}
+
 df<-read.csv(file.path(getwd(),"csv",list.files(file.path(getwd(),"CSV"),"*\\.csv")[1]))
 filename<-list.files(file.path(getwd(),"CSV"),"*\\.csv")[1]
 
@@ -20,7 +32,7 @@ mongostore.FDIC<-function(quarter=4,year=2014){
   library(RMongo)install.packages("RMongo")
 }
 
-FDIC.mongorow<-function(row,df=FDIC,dbN="local",h="localhost"){
+FDIC.mongorow<-function(row,df=data,dbN="acdb",h="localhost"){
   library(RMongo)
   #workdoc<-gsub("'","\\.",toJSON(df[row,]))
   workdoc<-gsub("'","\\'",paste('{"_id":',row,
