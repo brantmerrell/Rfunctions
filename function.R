@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 MongoDefinitions<-function(year,quarter){
   add.note(paste("begin MongoDefinitions",
                  year,
@@ -69,6 +70,9 @@ FBWords<-function(FBLink,FBProfile,FBComment,Date=paste(Sys.Date())){
   print(tail(read.csv(filepath),3))
 }
 
+=======
+<<<<<<< HEAD
+>>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
 linkgrid<-function(link1,link2="",link3="",link4="",link5="",Year=2015,Month="April",comment="",workdir="C:/Users/Josh/Documents"){
   filepath<-file.path(workdir,"CSV Personal/linkgrid.csv")
   df<-read.csv(filepath,colClasses="character")
@@ -337,6 +341,77 @@ name.chapters<-function(lines
                    #*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
   #longframe<-data.frame(x=1:length(lines),line=lines)
   Table_of_Contents<-subset(lines,grepl("\\. \\. \\.",lines))
+<<<<<<< HEAD
+=======
+=======
+list.files("C:/Users/Administrator/Documents/CSV")[(1:10)+(10*2)]
+vector<-as.character(read.csv("C:/Users/Administrator/Documents/CSV/gkg_PERSONS.csv")$x)
+vecsample<-function(vector,samplesize=5,add=0,method="letterparse"){
+  L<-length(vector)
+  if(class(vector)=="character" &
+       method=="letterparse"){
+    samplevec<-head(vector,samplesize)
+    #rm(l)
+    for(l in letters[1:26]){
+      lettersample<-vector[l==substr(vector,1,1)]
+      lettersample<-lettersample[
+        as.integer(length(lettersample)*c(1/(1:samplesize)))+add]
+      samplevec<-c(samplevec,lettersample)
+    }
+    #length(unique(printvec))
+    #length(printvec)
+    #subset(printvec,duplicated(printvec))
+    samplevec<-sort(unique(c(samplevec,tail(vector,samplesize))))
+  }
+  list(samplevec=samplevec,
+       arith=paste(L,"=",length(samplevec),"+",L-length(samplevec)),
+       ratio=paste(L,"=",length(samplevec),"*",as.integer(L/length(samplevec)))#,
+       #percentage=paste(round((length(samplevec)/L)*100,digits=2),"%",sep="")
+       )
+}
+
+update.PERSONS<-function(Date=Sys.Date()-1,project="gkg",command="return",
+                         workdir="C:/Users/Administrator/Documents"){
+  if(project=="gkg"){
+    df<-download.gdelt(Date,"gkg")
+    filepath<-file.path(workdir,"CSV","gkg_PERSONS.csv")
+  }
+  PRSNS<-levels(df$PERSONS)
+  rm(df)
+  PRSNS<-subset(PRSNS,PRSNS!="")
+  prsns<-subset(PRSNS,!grepl(";",PRSNS))
+  PRSNS<-subset(PRSNS,grepl(";",PRSNS))
+  workvec<-prsns
+  for(n in length(PRSNS)){
+    workvec<-unique(c(workvec,strsplit(PRSNS[n],";")[[1]]))
+  }
+  if(file.exists(filepath)){
+    workvec<-unique(c(workvec,read.csv(filepath,colClasses="character")))
+    print(filepath)
+  }
+  #write.csv(workvec,filepath,row.names=FALSE)
+  printvec<-c(head(workvec))
+  for(l in letters[1:26]){
+    lettersample<-workvec[l==substr(workvec,1,1)]
+    if(10<length(lettersample)){
+      lettersample<-lettersample[
+        as.integer(length(lettersample)*c(.1,.2,.3,.4,.5,.6,.7,.8,.9,1))]
+    }
+    printvec<-c(printvec,lettersample)
+  }
+  printvec<-unique(c(printvec,tail(workvec)))
+  write.csv(workvec,filepath)
+  print(printvec)
+}
+persons<-PERSONS()
+
+slice.lines<-function(lines){
+  lines<-gsub("\"","\\\"",readLines(filepath))
+  #lines[as.integer(length(lines)*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
+  longframe<-data.frame(x=1:length(lines),line=lines)
+  Table_of_Contents<-subset(df_lines,grepl("\\. \\. \\.",df$line))
+>>>>>>> 6d6f5e40b7857c2e2b261c3388a6b822de08e712
+>>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
   chapters<-gsub(" ","",gsub("(\\. )|9|8|7|6|5|4|3|2|1|0"," ",
                               as.vector(subset(
                                 lines,lines %in% Table_of_Contents))))
@@ -946,7 +1021,11 @@ mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
   tail(read.csv(filepath),3)
 }
 
+<<<<<<< HEAD
 read.definitions<-function(n,SKIP=1,workdir=getwd()){
+=======
+read.definitions<-function(n,SKIP=1,workdir="C:/Users/Josh/Documents"){
+>>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
   folderpath<-file.path(workdir,"FDIC")
   filename<-list.files(folderpath,"*\\.csv")[n]
   filepath<-file.path(folderpath,filename)
@@ -965,8 +1044,13 @@ read.definitions<-function(n,SKIP=1,workdir=getwd()){
   return(data[,c(1,3,2,4,5)])
 }
 
+<<<<<<< HEAD
 alldefinitions<-function(workdir=getwd()){
   m<-length(list.files(file.path(workdir,"FDIC"),"*\\.csv"))
+=======
+alldefinitions<-function(workdir="C:Users/Josh/Documents"){
+  m<-length(list.files(file.path(workdir,"FDIC/SDIAllDefinitions_CSV")))
+>>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
   data<-read.definitions(1)
   n<-1
   while(n<m){
