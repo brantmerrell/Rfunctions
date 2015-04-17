@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+
+
 MongoDefinitions<-function(year,quarter){
   add.note(paste("begin MongoDefinitions",
                  year,

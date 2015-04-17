@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 mongoframe<-function(dataframe=data,
                      db=acdb,
                      collection,
                      host="d2051750.mongolab.com:51750",
-=======
 mongoframe<-function(dataframe=data,db=acdb,collection,host="d2051750.mongolab.com:51750",
->>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
-=======
 mongoframe<-function(dataframe=data,db=acdb,collection,host="d2051750.mongolab.com:51750",
->>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
                      username="TestUser",password="TestPassword"){
   namespace <- paste(db, collection, sep=".")
   for(doc in 1:nrow(dataframe)){
