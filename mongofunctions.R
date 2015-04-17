@@ -1,14 +1,48 @@
-mongoframe<-function(dataframe=data,
-                     db=acdb,
-                     collection,
-                     host="d2051750.mongolab.com:51750",
-mongoframe<-function(dataframe=data,db=acdb,collection,host="d2051750.mongolab.com:51750",
-mongoframe<-function(dataframe=data,db=acdb,collection,host="d2051750.mongolab.com:51750",
-                     username="TestUser",password="TestPassword"){
+add.refFrame<-function(userN,passW,collec,dataB,hst,fileP,mostR,workdir=getwd()){
+  filepath<-file.path(workdir,"CSV Personal/refFrame.csv")
+  refFrame<-read.csv(filepath,colClasses="character")
+  refFrame<-rbind(refFrame,
+                  data.frame(username=userN,
+                             password=passW,
+                             filepath=fileP,
+                             database=dataB,
+                             collection=collec,
+                             host=hst,
+                             mostRecent=mostR))
+  write.csv(refFrame,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
+mongo.csv<-function(refRow,workdir=getwd()){
+  refFrame<-read.csv(file.path(workdir,"CSV Personal/refFrame.csv"),colClasses="character")
+  username<-refFrame$username[refRow]
+  password<-refFrame$password[refRow]
+  dataframe<-read.csv(refFrame$filepath[refRow])
+  db<-refFrame$database[refrow]
+  collection<-refFrame$collection[refRow]
+  host<-refFrame$host[refRow]
+  library(rmongodb)
   namespace <- paste(db, collection, sep=".")
   for(doc in 1:nrow(dataframe)){
-    b<-mongo.bson.from.df(dataframe[doc,])
+    mongo <- mongo.create(host=host , db=db, username=username, password=password)
+    b <- mongo.bson.from.df(dataframe[doc,])
     ok <- mongo.insert(mongo, namespace, b)
+    print(dataframe[doc,])
+  }
+}
+
+mongoframe<-function(username, password,
+                     dataframe=chesspgn,
+                     db="josh_chess",
+                     collection="chesspgn",
+                     host="ds049171.mongolab.com:49171"){
+  library(rmongodb)
+  namespace <- paste(db, collection, sep=".")
+  for(doc in 1:nrow(dataframe)){
+    mongo <- mongo.create(host=host , db=db, username=username, password=password)
+    b <- mongo.bson.from.df(dataframe[doc,])
+    ok <- mongo.insert(mongo, namespace, b)
+    print(dataframe[doc,])
   }
 }
 
