@@ -1,6 +1,297 @@
+# Author: Tony Breyal
+# Date: 2011-11-18
+# Modified: 2011-11-18
+# Description: Extracts all text from a webpage (aims to extract only the text you would see in a web browser)
+# Packages Used: RCurl, XML   
+# Blog Reference: Not published
+# Copyright (c) 2011, under the Creative Commons Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0) License
+# For more information see: https://creativecommons.org/licenses/by-nc/3.0/
+# All rights reserved.
+htmlToText <- function(input, ...) {
+  ###---PACKAGES ---###
+  require(RCurl)
+  require(XML)
+  ###--- LOCAL FUNCTIONS ---###
+  # Determine how to grab html for a single input element
+  evaluate_input <- function(input) {    
+    # if input is a .html file
+    if(file.exists(input)) {
+      char.vec <- readLines(input, warn = FALSE)
+      return(paste(char.vec, collapse = ""))
+    }  
+    # if input is html text
+    if(grepl("</html>", input, fixed = TRUE)) return(input)
+    
+    # if input is a URL, probably should use a regex here instead?
+    if(!grepl(" ", input)) {
+      # downolad SSL certificate in case of https problem
+      if(!file.exists("cacert.perm")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile="cacert.perm")
+      return(getURL(input, followlocation = TRUE, cainfo = "cacert.perm"))
+    }
+    # return NULL if none of the conditions above apply
+    return(NULL)
+  }
+  # convert HTML to plain text
+  convert_html_to_text <- function(html) {
+    doc <- htmlParse(html, asText = TRUE)
+    text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
+    return(text)
+  }
+  # format text vector into one character string
+  collapse_text <- function(txt) {
+    return(paste(txt, collapse = " "))
+  }
+  ###--- MAIN ---###
+  # STEP 1: Evaluate input
+  html.list <- lapply(input, evaluate_input)
+  # STEP 2: Extract text from HTML
+  text.list <- lapply(html.list, convert_html_to_text)
+  # STEP 3: Return text
+  text.vector <- sapply(text.list, collapse_text)
+  return(text.vector)
+}
 
+xmlNames<-function(rootNode){
+  length(rootNode)
+}
 
-MongoDefinitions<-function(year,quarter){
+urlFrame<-function(url,date=Sys.Date(),comment="",sep="\n",charMin=3){
+  text<-htmlToText(url)
+#   https://github.com/tonybreyal/Blog-Reference-Functions/blob/master/R/htmlToText/htmlToText.R
+  text<-unlist(strsplit(text,sep))
+  text<-gsub("[[:space:]]+"," ",text)
+  text<-gsub("^ | $","",text)
+  text<-text[!text==""]
+  text<-text[charMin<=nchar(text)]
+  data.frame(date=date,text=text,url=url,textId=1:length(text),comment=comment)
+}
+
+add.resumeData<-function(data.type,content,comment=""){
+  resumePath<-"./csv/resume.csv"
+  resume<-read.csv(resumePath,colClasses="character")
+  newFrame<-data.frame(data.type=data.type,
+                       content=content,
+                       comment=comment)
+  resume<-rbind(resume,newFrame)
+  write.csv(resume,resumePath,row.names=FALSE)
+  print(tail(read.csv(resumePath)))
+}
+View(resume)
+
+personFrame<-function(gkg,samplemax=1000){
+  date<-unique(gkg$DATE)
+  persons<-levels(gkg$PERSONS)
+  persons<-persons[!persons==""]
+  freq<-vector(mode="numeric",length=length(persons))
+  for(n in 1:length(persons)){
+    freq[n]<-sum(persons[n]==gkg$PERSONS)
+  }
+  persons<-data.frame(persons=persons,freq=freq)
+  write.csv(persons,"./csv/persons.csv",row.names=FALSE)
+  n<-1
+  while(samplemax<=sum(n<=persons$freq)){
+    n<-n+1
+  }
+  samplePersons<-persons[n<=persons$freq,]
+  gkgSample<-subset(gkg,gkg$PERSONS %in% samplePersons$persons)
+}
+
+gdeltSummary.day<-function(counts,gkg,events,charLimit=130){
+  countSummary<-cbind(file="gkg counts",dfSummary(counts,charLimit))
+  gkgSummary<-cbind(file="global knowledge graph",dfSummary(gkg,charLimit))
+  eventSummary<-cbind(file="events",dfSummary(events,charLimit))
+  gdeltSummary<-rbind(countSummary,gkgSummary,eventSummary)
+  gdeltSummary
+}
+gdelt_summ<-gdeltSummary.day(counts,gkg,events,100)
+gdelt_factors<-subset(gdelt_summ,gdelt_summ$class=="factor")
+gdelt_factors2<-subset(gdelt_factors,3<nchar(gdelt_factors$bottom))
+
+dfSummary<-function(DF,charLimit="none"){
+  workframe<-colSummary(1,DF,charLimit)
+  for(row in 2:ncol(DF)){
+    workframe<-rbind(workframe,colSummary(row,DF,charLimit))
+  }
+  workframe
+}
+
+colSummary<-function(col=1,DF=counts,charLimit="tweet"){
+  if(grepl("tweet",tolower(charLimit))){charLimit=130}
+  if(class(col) %in% c("numeric","integer")){col=colnames(DF)[col]}
+  if(class(DF[,col])=="factor"){
+    OBJECTS<-levels(DF[,col])
+  }
+  if(class(DF[,col]) %in% c("integer","numeric","character")){
+    OBJECTS<-(unique(DF[,col]))
+    OBJECTS<-OBJECTS[order(nchar(OBJECTS),OBJECTS)]
+  }
+  OBJECTS<-OBJECTS[!(OBJECTS==""|is.na(OBJECTS))]
+  if(class(charLimit) %in% c("numeric","integer")){
+    OBJECTS<-OBJECTS[nchar(OBJECTS)<=charLimit]
+  }
+  data.frame(variable=col,class=class(DF[,col]),count=length(OBJECTS),
+             bottom=OBJECTS[1],lower=OBJECTS[ceiling(length(OBJECTS)*0.25)],
+             center=OBJECTS[ceiling(length(OBJECTS)*0.5)],
+             upper=OBJECTS[ceiling(length(OBJECTS)*0.75)],
+             top=OBJECTS[length(OBJECTS)])
+}
+
+mySummary<-function(X){
+  if(class(X)=="character"){
+    if(file.exists(X)){
+      X<-readLines(X)
+    }
+    return(summary(X))
+  }
+  if(class(X)==list){
+    
+  }
+  
+}
+
+firstElement<-function(x){
+  x[1]
+}; 
+
+secondElement<-function(x){
+  x[2]
+}; 
+
+thirdElement<-function(x){
+  x[3]
+}; 
+
+folderLines<-function(path,pattern){
+  baseFrame<-fileFrame(path,pattern)
+  if(exists("workFrame")){rm(workFrame)}
+  for(n in baseFrame$fileId){
+    if(exists("workFrame")){
+      workFrame<-rbind(workFrame,
+                       data.frame(baseFrame[n,],lineFrame(as.character(baseFrame$filepath[n]))))
+    }else{
+      workFrame<-data.frame(baseFrame[n,],lineFrame(as.character(baseFrame$filepath[n])))
+    }
+  }
+  workFrame
+}
+
+lineFrame<-function(filepath){
+  data.frame(rowId=1:length(readLines(filepath,warn=FALSE)),
+             Line=readLines(filepath,warn=FALSE))
+}
+
+fileFrame<-function(path="./duke83.github.io",pattern="(html$)|(js$)|(css$)"){
+  data.frame(fileId=1:length(list.files(path=path,pattern=pattern,full.names=TRUE,recursive=TRUE)),
+             filepath=list.files(path=path,pattern=pattern,full.names=TRUE,recursive=TRUE))
+}
+
+fibonacci<-function(maximum=100,start=1){
+  n<-start
+  while(max(n)<maximum){
+    n<-c(n,sum(sort(n)[length(n)],sort(n)[length(n)-1]))
+  }
+  n
+}
+
+mongo.quarter<-function(Year, Quarter,fileIds="all",online=FALSE,
+                        username="TestUser",password="TestPassword",db="acdb",collection="fdicRaw",
+                        host="ds051750.mongolab.com:51750",namespace="acdb.fdicRaw"){
+  quarters<-data.frame(Q=c(1,2,3,4),
+                       month=c("March","June","September","December"),
+                       day=c(31,30,30,31),
+                       datecode=c("0331","0630","0930","1231"))
+  datecode<-paste(Year,
+                  as.character(subset(quarters$datecode,quarters$Q==Quarter)),
+                  sep="")
+  if(length(list.files("./Data",pattern=datecode))==0){
+    ifelse(online==TRUE,
+           download.FDIC(Year,Quarter,"./Data"),
+           stop("need online connection"))}
+  if(1<length(list.files("./Data",pattern=datecode))){
+    stop("what?")
+  }
+  if(online==FALSE){host<-"127.0.0.1"}
+  folder<-file.path("./Data",list.files("./Data",pattern=datecode)[1])
+  fileName<-list.files(folder,pattern="\\.csv")
+  fileFrame<-data.frame(year=Year, quarter=Quarter, filePath=file.path(folder,fileName), 
+                        fileName=fileName,
+                        fileId=1:length(fileName),
+                        username=username,password=password,db=db,collection=collection,
+                        host=host,namespace=namespace)
+  rm(folder,fileName,host,username,Year,Quarter)
+  write.csv(fileFrame,"temp.csv",row.names=FALSE)
+  fileFrame<-read.csv("temp.csv",colClasses="character")
+  library(rmongodb)
+  if(tolower(fileIds)=="all"){
+    fileIds<-1:nrow(fileFrame)
+  }
+  for(n in fileIds){
+    dataframe<-MongoClean(read.csv(fileFrame$filePath[n],colClasses="character"))
+    dataframe<-cbind(fileId=fileFrame$fileId[n],
+                     rowId=1:nrow(dataframe),
+                     file=fileFrame$fileName[n],
+                     year=fileFrame$year[n],
+                     quarter=fileFrame$quarter[n],
+                     dataframe)
+    write.csv(dataframe,"temp.csv",row.names=FALSE)
+    dataframe<-read.csv("temp.csv",colClasses="character")
+    for(doc in 1:nrow(dataframe)){
+      ifelse(online==TRUE,
+             mongo <- mongo.create(host=fileFrame$host[n], db=fileFrame$db[n], 
+                                   username=fileFrame$username[n], password=fileFrame$password[n]),
+             mongo <- mongo.create(db="acdb"))
+             b <- dataframe[doc,]
+             b <- mongo.bson.from.list(as.list(b))
+             ok <- mongo.insert(mongo, fileFrame$namespace[n], b)
+             print(b)
+    }
+  }
+}
+
+quarter.remove<-function(year,quarter,destfolder="C:/Users/Administrator/Documents/FDIC"){
+  quarters<-data.frame(Q=c(1,2,3,4),
+                       month=c("March","June","September","December"),
+                       day=c(31,30,30,31),
+                       datecode=c("0331","0630","0930","1231"))
+  datecode<-paste(year,
+                  as.character(subset(quarters$datecode,quarters$Q==quarter)),
+                  sep="")
+  delFile<-paste(destfolder,"/All_Reports_",datecode,sep="")
+  if(!file.exists(delFile)){
+    message("file doesn't exist")
+  }
+  unlink(delFile,force=TRUE,recursive=TRUE) 
+}
+
+export.notes<-function(filepath,query){
+  if(length(strsplit(getwd(),"/")[[1]])!=4
+     | !grepl("Documents",getwd())){
+    stop("relative filepath works from the 'Documents' workdir only")
+  }
+  if(grepl("./CSV Personal/notes.csv",filepath)){
+    stop("notes cannot export to itself")
+  }
+  notes<-read.csv("./CSV Personal/notes.csv",colClasses="character")
+  expnotes<-subset(notes,
+                   grepl(tolower(query),tolower(notes$note))
+                   | grepl(query,notes$time))
+  notes<-subset(notes,
+                !grepl(tolower(query),tolower(notes$note))
+                & !grepl(query,notes$time))
+  if(file.exists(filepath)){
+    expnotes<-unique(rbind(read.csv(filepath,colClasses="character"),
+                           expnotes))
+  }
+  write.csv(expnotes,filepath,row.names=FALSE)
+  write.csv(notes,"./CSV Personal/notes.csv",row.names=FALSE)
+  list(note=list(dim=dim(notes),
+                 tail=tail(notes)),
+       expnote=list(dim=dim(expnotes),
+                    tail=tail(expnotes,3),
+                    path=filepath))
+}
+
+MongoDefinitions<-function(year,quarter=3){
   add.note(paste("begin MongoDefinitions",
                  year,
                  quarter))
@@ -27,10 +318,134 @@ MongoDefinitions<-function(year,quarter){
     mongo <- mongo.create(host=host , db=db, username=username, password=password)
     ok <- mongo.insert(mongo, namespace, b)
   }
+  quarter.remove(year,quarter)
   add.note(paste("FDIC Definitions for",
                  year,
                  quarter,
                  "in mongo - close MongoDefinitions() function #autonote"))
+}
+
+mongoframe<-function(username, password,
+                     dataframe=chesspgn,
+                     db="josh_chess",
+                     collection="chesspgn",
+                     host="ds049171.mongolab.com:49171"){
+  library(rmongodb)
+  namespace <- paste(db, collection, sep=".")
+  for(doc in 1:nrow(dataframe)){
+    mongo <- mongo.create(host=host , db=db, username=username, password=password)
+    b <- mongo.bson.from.df(dataframe[doc,])
+    ok <- mongo.insert(mongo, namespace, b)
+    print(dataframe[doc,])
+  }
+}
+
+mongo.csv<-function(refRow,workdir=getwd(),readtype=1){
+  filepath<-file.path(workdir,"CSV Personal/refFrame.csv")
+  refFrame<-(read.csv(filepath,colClasses="character"))
+  username<-refFrame$username[refRow]
+  password<-refFrame$password[refRow]
+  db<-refFrame$database[refRow]
+  collection<-refFrame$collection[refRow])
+  host<-refFrame$host[refRow]
+  namespace <- paste(db, collection, sep=".")
+  library(rmongodb)
+  if(tolower(readtype)=="csv"){
+    dataframe<-MongoClean(read.csv(refFrame$filepath[refRow],colClasses="character"))
+    filename<-unlist(strsplit(refFrame$filepath[refRow],"/"))
+    filename<-filename[length(filename)]
+  }
+  if(tolower(readtype)=="delim"){
+    dataframe<-MongoClean(read.delim(refFrame$filepath[refRow],colClasses="character"))
+    filename<-unlist(strsplit(refFrame$filepath[refRow],"/"))
+    filename<-filename[length(filename)]
+  }
+  if(tolower(readtype) %in% c("link","fdic")){
+    download.file(url=refFrame$filepath[refRow],destfile="./data/temp.csv.zip")
+    unzip(zipfile="./data/temp.csv.zip",
+          exdir="./data/temp.csv")
+    dataframe<-MongoClean(read.csv("./data/temp.csv"))
+    if(tolower(readtype)=="fdic")
+    filename<-unlist(strsplit(refFrame$filepath[refRow],"/"))
+  }
+  for(doc in 1:nrow(dataframe)){
+    mongo <- mongo.create(host=host , db=db, username=username, password=password)
+    b <- mongo.bson.from.df(cbind(file=filename,dataframe[doc,]))
+    if(!mongo.is.connected(mongo)){
+      mongo.reconnect(mongo)
+    }
+    ok <- mongo.insert(mongo, namespace, b)
+    print(dataframe[doc,])
+  }
+  refFrame$mostRecent<-paste(Sys.Date())
+  write.csv(refFrame,filepath,row.names=FALSE)
+  print(read.csv(filepath)[refRow,])
+}
+
+add.refFrame<-function(userN,passW,collec,dataB,hst,fileP,mostR,workdir=getwd()){
+  filepath<-file.path(workdir,"CSV Personal/refFrame.csv")
+  refFrame<-read.csv(filepath,colClasses="character")
+  refFrame<-rbind(refFrame,
+                  data.frame(username=userN,
+                             password=passW,
+                             filepath=fileP,
+                             database=dataB,
+                             collection=collec,
+                             host=hst,
+                             mostRecent=mostR))
+  write.csv(refFrame,filepath,row.names=FALSE)
+  print(tail(read.csv(filepath),3))
+}
+
+MongoClean<-function(object){
+  troublechars<-read.csv("./CSV/troublechars.csv",colClasses="character")
+  if(class(object)=="data.frame"){
+    for(Trow in 1:nrow(troublechars)){
+      names(object)<-gsub(troublechars$symbol[Trow],
+                          troublechars$substitute[Trow],
+                          names(object))
+      for(Tcol in 1:ncol(object)){
+        object[,Tcol]<-gsub(troublechars$symbol[Trow],
+                            troublechars$substitute[Trow],
+                            object[,Tcol])
+      }
+    }
+  }
+  if(class(object)=="list"){
+    message("haven't gotten around to writing listclean")
+  }
+  if(class(object) %in% c("character","vector")){
+    for(Trow in 1:nrow(troublechars)){
+      object<-gsub(troublechars$symbol[Trow],
+                   troublechars$substitute[Trow],
+                   object)
+    }
+  }
+  object
+}
+
+
+celltrim<-function(String){
+  if(100<nchar(String)){
+    lineCount<-1
+    while(100<(nchar(String)/lineCount)){
+      lineCount<-lineCount+1
+    }
+    divTarget<-nchar(String)/lineCount
+    while(length(divTarget)<lineCount){
+      divTarget<-c(divTarget,max(divTarget)+min(divTarget))
+    }
+    findspace<-function(Target){
+      while(!strsplit(String,"")[[1]][Target]==" "){
+        Target<-Target-1
+      }
+      Target
+    }
+    divTarget<-unlist(lapply(divTarget,findspace))
+    linePaste<-function(...){
+      paste(...,sep="\n")
+    }
+  }
 }
 
 export.notes<-function(filepath,query){
@@ -74,7 +489,15 @@ FBWords<-function(FBLink,FBProfile,FBComment,Date=paste(Sys.Date())){
 =======
 <<<<<<< HEAD
 >>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
-linkgrid<-function(link1,link2="",link3="",link4="",link5="",Year=2015,Month="April",comment="",workdir="C:/Users/Josh/Documents"){
+linkgrid<-function(link1,
+                   link2="",
+                   link3="",
+                   link4="",
+                   link5="",
+                   Year=2015,
+                   Month="April",
+                   comment="",
+                   workdir="C:/Users/Josh/Documents"){
   filepath<-file.path(workdir,"CSV Personal/linkgrid.csv")
   df<-read.csv(filepath,colClasses="character")
   newrow<-data.frame(link1,link2,link3,link4,link5,Year,Month,comment)
@@ -84,7 +507,7 @@ linkgrid<-function(link1,link2="",link3="",link4="",link5="",Year=2015,Month="Ap
   print(tail(read.csv(filepath)))
 }
 
-review.note<-function(reviewnote,row,Time=Sys.time(),filepath="CSV/gulp.js.csv",
+review.note<-function(reviewnote,row,Time=Sys.time(),filepath="CSV Personal/regexnotes.csv",
                         command="find",workdir="C:/Users/Josh/Documents"){
   if(!grepl("Documents",filepath)){
     filepath<-file.path(workdir,filepath)
@@ -187,10 +610,9 @@ getFB<-function(info="Friends",Range=c(500,5000)){
   }
   lines
 }
-?range
 
-
-Descriptions<-function(DescLine=1,lines_filepath="C:/Users/Josh/Documents/rmongodb.txt",split=TRUE){
+Descriptions<-function(DescLine=1,
+                       lines_filepath="C:/Users/Josh/Documents/rmongodb.txt",split=TRUE){
   lines<-readLines(lines_filepath)
   lineframe<-data.frame(row=1:length(lines),line=lines)
   Descriptions<-sort(unique(lines[(subset(lineframe$row,lineframe$line=="Description")+DescLine)]))
@@ -282,9 +704,6 @@ postchap<-function(lines,postkey){
   postchap<-subset(df[,1],df$line==postkey)
   df[postchap-1,1]
 }
-
-dim(df[postchap-1,c(1,2)])
-
 
 wordtable<-function(lines){
   worklines<-gsub("(\\. \\. \\. \\.)","\\.",lines)
@@ -488,10 +907,10 @@ FUN<-function(funline){
 }
 df<-data.frame(FUN=rmongodb,Desc="",Usage="",args="",Details="")
 
-download.gdelt<-function(date=(Sys.Date()-2),project="counts",
-                         workdir="C:/Users/Administrator/Documents"){
+download.gdelt<-function(date=(Sys.Date()-1),PROJECT="gkg",
+                         workdir=getwd()){
   datestamp<-gsub("-","",date)
-  if(grepl("event",tolower(project))){
+  if(grepl("event",tolower(PROJECT))){
     project<-"events"
     url<-paste("http://data.gdeltproject.org/events/",datestamp,".export.CSV.zip",sep="")
     if("2013-04-01"<date){
@@ -508,28 +927,26 @@ download.gdelt<-function(date=(Sys.Date()-2),project="counts",
     }
     Header<-FALSE
   }
-  if(grepl("count",tolower(project))){
+  if(grepl("count",tolower(PROJECT))){
     project<-"gkgcounts"
     url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkgcounts.csv.zip",sep="")
     Header<-TRUE
   }
-  if(grepl("gkg",tolower(project)) & !grepl("count",tolower(project))){
+  if(grepl("gkg",tolower(PROJECT)) & !grepl("count",tolower(PROJECT))){
     project<-"gkg"
     url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkg.csv.zip",sep="")
     Header<-TRUE
   }
-  dir.create(file.path(workdir,project),showWarnings=FALSE)  
+  dir.create(file.path(workdir,project),showWarnings=FALSE)
   folderpath<-file.path(workdir,project,"export.csv")
-  filepath<-paste(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")),sep="/")
-  if(!grepl(datestamp,filepath)){
-    destfile<-file.path(workdir,project,"export.csv.zip",sep="")
-    download.file(url,destfile)
-    dir.create(folderpath,showWarnings=FALSE)
-    unzip(destfile,exdir=folderpath)
-    filepath<-paste(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")),sep="/")
-  }
+  destfile<-file.path(workdir,project,"export.csv.zip")
+  download.file(url,destfile)
+  dir.create(folderpath,showWarnings=FALSE)
+  unzip(destfile,exdir=folderpath)
+  filepath<-file.path(folderpath, list.files(folderpath,c(datestamp,"*\\.csv")))
   df<-read.delim(filepath,header=Header)
   if(project=="events"){names(df)<-columns}
+  print(filepath)
   View(df)
   return(df)
 }
@@ -730,14 +1147,15 @@ chesslink<-function(links){
 }
 
 DS.lecsummary<-function(summary,key,Time=Sys.time(),
-                        command="modify",workdir="C:/Users/Josh/Documents"){
+                        command="find",workdir=getwd(),
+                        inputCol=5,inputColTime=6){
   filepath<-file.path(workdir,"CSV/DSLectures.csv")
   lectures<-read.csv(filepath,colClasses="character")
   if(class(key) %in% c("numeric","integer")){
     print(lectures[key,])
     if(command=="modify"){
-      lectures[key,3]<-summary
-      lectures[key,4]<-paste(Time)
+      lectures[key,inputCol]<-summary
+      lectures[key,inputColTime]<-paste(Time)
       print(lectures[(key-1):(key+1),])
       View(lectures[(key-1):(key+9),])
       write.csv(lectures,filepath,row.names=FALSE)
@@ -1592,8 +2010,16 @@ finddoc<-function(keyword){
                 docname="notes2"))
   }
   if(tolower(keyword) %in% c('coursera','coursera.csv','coursera.note','coursera notes','coursera note')){
-    return(filepath="C:/Users/Josh/Documents/CSV Personal/coursera.csv",
-           docname="coursera")
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/coursera.csv",
+                docname="coursera"))
+  }
+  if(tolower(keyword) %in% c("ds","dslec","dslectures")){
+    return(list(filepath="C:/Users/Josh/Documents/CSV/DSLectures.csv",
+                docname="DSLectures"))
+  }
+  if(tolower(keyword) %in% c("regex")){
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/regexnotes.csv",
+                docname="regexnotes"))
   }
 }
 
