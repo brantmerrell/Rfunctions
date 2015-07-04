@@ -263,7 +263,7 @@ quarter.remove<-function(year,quarter,destfolder="C:/Users/Administrator/Documen
   unlink(delFile,force=TRUE,recursive=TRUE) 
 }
 
-export.notes<-function(filepath,query){
+export.notes<-function(filepath,pattern){
   if(length(strsplit(getwd(),"/")[[1]])!=4
      | !grepl("Documents",getwd())){
     stop("relative filepath works from the 'Documents' workdir only")
@@ -273,11 +273,11 @@ export.notes<-function(filepath,query){
   }
   notes<-read.csv("./CSV Personal/notes.csv",colClasses="character")
   expnotes<-subset(notes,
-                   grepl(tolower(query),tolower(notes$note))
-                   | grepl(query,notes$time))
+                   grepl(tolower(pattern),tolower(notes$note))
+                   | grepl(pattern,notes$time))
   notes<-subset(notes,
-                !grepl(tolower(query),tolower(notes$note))
-                & !grepl(query,notes$time))
+                !grepl(tolower(pattern),tolower(notes$note))
+                & !grepl(pattern,notes$time))
   if(file.exists(filepath)){
     expnotes<-unique(rbind(read.csv(filepath,colClasses="character"),
                            expnotes))
@@ -2021,6 +2021,10 @@ finddoc<-function(keyword){
     return(list(filepath="C:/Users/Josh/Documents/CSV Personal/regexnotes.csv",
                 docname="regexnotes"))
   }
+  if(grepl("[Oo][Bb][Jj][Ee][Cc][Tt]",keyword)){
+    return(list(filepath="./CSV Personal/paper.csv",
+                docname="objects"))
+  }
 }
 
 cell.modify<-function(Var, row, col, mod){
@@ -2147,14 +2151,16 @@ rm.paper<-function(paper,comment,time=Sys.time()){
   print(tail(read.csv("C:/Users/Josh/Documents/CSV Personal/rmpaper.csv"),3))
 }
 
-add.object<-function(object,location,comment="",time=Sys.time()){
-  objects<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv"))
-  Y<-as.matrix(data.frame(object,location,time,comment))
-  objects<-rbind(X,Y)
+add.object<-function(object,location,comment="",time=Sys.time(),material="",utility=""){
+  objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",colClasses="character")
+  Y<-data.frame(object=object,location=location,time=time,
+                comment=comment,material=material,utility=utility)
+  objects<-rbind(objects,Y)
   write.csv(objects,"C:/Users/Josh/Documents/CSV Personal/paper.csv",row.names=FALSE)
   print(tail(objects,3))
 }
-
+?read.csv
+colnames(objects)
 add.note<-function(note,Time=Sys.time()){
   notes<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
   obs<-as.matrix(data.frame(note,Time))
