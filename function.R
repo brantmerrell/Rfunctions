@@ -1,3 +1,49 @@
+frequency<-function(vec){
+  wl<-replicate(length(unique(vec)),NA)
+  for(n in 1:length(wl)){wl[n]<-sum(vec==sort(unique(vec)[n]))}; names(wl)<-sort(unique(vec))
+  add.note("frequency(vec) #logFunction"); return(wl)
+}
+
+gdelt.temp<-function(DATE="2015-06-01",PROJECT="gkg"){
+  datestamp<-gsub("-","",DATE)
+  if(grepl("event",tolower(PROJECT))){
+    project<-"events"
+    url<-paste("http://data.gdeltproject.org/events/",datestamp,".export.CSV.zip",sep="")
+    if("2013-04-01"<DATE){
+      columns<-colnames(
+        read.delim(
+          textConnection(
+            readLines("http://gdeltproject.org/data/lookups/CSV.header.dailyupdates.txt"))))
+    }
+    if(DATE<"2013-04-01"){
+      names(df)<-colnames(
+        read.delim(
+          textConnection(
+            readLines("http://gdeltproject.org/data/lookups/CSV.header.historical.txt"))))
+    }
+    Header<-FALSE
+  }
+  if(grepl("count",tolower(PROJECT))){
+    project<-"gkgcounts"
+    url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkgcounts.csv.zip",sep="")
+    Header<-TRUE
+  }
+  if(grepl("gkg",tolower(PROJECT)) & !grepl("count",tolower(PROJECT))){
+    project<-"gkg"
+    url<-paste("http://data.gdeltproject.org/gkg/",datestamp,".gkg.csv.zip",sep="")
+    Header<-TRUE
+  }
+  download.file(url,destfile=("temp.zip"))
+  dir.create("temp",showWarnings=FALSE)
+  unzip("temp.zip",exdir="temp")
+  df<-read.delim(paste("temp/",datestamp,".gkg.csv",sep=""),header=Header)
+  file.remove(list.files("temp",full.names=TRUE))
+  if(project=="events"){names(df)<-columns}
+  return(df)
+  print(summary(df))
+}
+
+
 # Author: Tony Breyal
 # Date: 2011-11-18
 # Modified: 2011-11-18
@@ -2159,8 +2205,7 @@ add.object<-function(object,location,comment="",time=Sys.time(),material="",util
   write.csv(objects,"C:/Users/Josh/Documents/CSV Personal/paper.csv",row.names=FALSE)
   print(tail(objects,3))
 }
-?read.csv
-colnames(objects)
+
 add.note<-function(note,Time=Sys.time()){
   notes<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
   obs<-as.matrix(data.frame(note,Time))
