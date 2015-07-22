@@ -1,5 +1,4 @@
-corr<-function(directory, threshold=0){
-  setwd("C:/Users/Josh/Documents/CSV")
+corr<-function(directory="specdata", threshold=0){
   setwd(directory)
   nob<-function(n){
     nrow(
@@ -14,7 +13,7 @@ corr<-function(directory, threshold=0){
     sulfate<-as.matrix(subset(read.csv(getElement(Sys.glob("*csv"),n))$sulfate,
                               !is.na(read.csv(getElement(Sys.glob("*csv"),n))$nitrate) &
                                 !is.na(read.csv(getElement(Sys.glob("*csv"),n))$sulfate)))
-  return(cor(sulfate,nitrate))
+    return(cor(sulfate,nitrate))
   }
   nobs<-data.frame(fle=as.matrix(1:length(Sys.glob("*csv"))),
                    nob=as.matrix(lapply(1:length(Sys.glob("*csv")), nob)),

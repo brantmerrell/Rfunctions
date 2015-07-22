@@ -1,14 +1,9 @@
-complete<-function(directory, id){
+complete <- function(directory="specdata", id = 1:332) {  
   reset<-getwd()
-  setwd(directory)
-  read<-function(id){getElement(list.files(), id)} 
-  files<-lapply(id, read)
-  nob<-function(id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
+  nobs <- function(id) {
+    path <- file.path(directory, paste(sprintf("%03d", as.numeric(id)), ".csv", sep=""))
+    return (sum(complete.cases(read.csv(path))))
   }
-  data.frame(id, nobs=as.matrix(lapply(id, nob)))
+  return (data.frame(id=id, nobs=sapply(id, nobs)))
   setwd(reset)
 }
