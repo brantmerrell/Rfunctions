@@ -1192,18 +1192,18 @@ chesslink<-function(links){
   print(tail(read.csv(filepath),3))
 }
 
-DS.lecsummary<-function(summary,key,Time=Sys.time(),
-                        command="find",workdir=getwd(),
-                        inputCol=5,inputColTime=6){
-  filepath<-file.path(workdir,"CSV/DSLectures.csv")
+DS.lecsummary<-function(Summary,Row,Column,Time=Sys.time(),Command="find"){
+  filepath<-finddoc("dslec")$filepath
   lectures<-read.csv(filepath,colClasses="character")
-  if(class(key) %in% c("numeric","integer")){
-    print(lectures[key,])
-    if(command=="modify"){
-      lectures[key,inputCol]<-summary
-      lectures[key,inputColTime]<-paste(Time)
-      print(lectures[(key-1):(key+1),])
-      View(lectures[(key-1):(key+9),])
+  if(class(Column)=="character"){timeColumn<-paste(Column,"Time",sep="")}
+  if(class(Column)=="numeric"){timeColumn<-column+1}
+  if(class(Row) %in% c("numeric","integer")){
+    print(lectures[Row,])
+    if(Command=="modify"){
+      lectures[Row,Column]<-summary
+      lectures[Row,timeColumn]<-paste(Time)
+      print(lectures[(Row-1):(Row+1),])
+      View(lectures[(Row-1):(Row+9),])
       write.csv(lectures,filepath,row.names=FALSE)
     }
   }
@@ -2059,7 +2059,7 @@ finddoc<-function(keyword){
     return(list(filepath="C:/Users/Josh/Documents/CSV Personal/coursera.csv",
                 docname="coursera"))
   }
-  if(tolower(keyword) %in% c("ds","dslec","dslectures")){
+  if(grepl("^[Dd][Ss]\\.?[Ll]",keyword)){
     return(list(filepath="C:/Users/Josh/Documents/CSV/DSLectures.csv",
                 docname="DSLectures"))
   }

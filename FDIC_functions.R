@@ -1,3 +1,61 @@
+convertQuarter<-function(n){
+  QF<-expand.grid(years=1992:2015,quarter=1:4)
+  QF<-QF[-which(QF[,"years"]==1992 & QF[,"quarter"] %in% c(1,2,3)),]
+  QF<-QF[-which(QF[,"years"]==2015 & QF[,"quarter"] %in% c(2,3,4)),]
+  year<-QF[n,'years']
+  quarter<-QF[n,'quarter']
+  quarters<-data.frame(Q=c(1,2,3,4),
+                       month=c("March","June","September","December"),
+                       day=c(31,30,30,31),
+                       datecode=c("0331","0630","0930","1231"))
+  datecode<-paste(year,
+                  as.character(subset(quarters$datecode,quarters$Q==quarter)),
+                  sep="")
+  Url<-paste("https://www2.fdic.gov/sdi/Resource/AllReps/All_Reports_",
+             datecode,
+             ".zip",
+             sep="")
+  Destfile<-paste("fdic stg1","/All_Reports_",datecode,".zip",sep="")
+  download.file(url=Url,destfile=Destfile)
+  unzip(zipfile=Destfile,
+        exdir="fdic stg2")
+  file.remove(list.files("fdic stg1",full.names=T))
+  convertDF<-function(DF){
+    convertVar<-function(Var){
+      if(class(Var) %in% c("numeric","integer")){Var<-colnames(DF)[Var]}
+      valueVector<-as.vector(DF[,Var])
+      certVector<-as.vector(DF[,"cert"])
+      dateVector<-strptime(DF[,"repdte"],format="%m/%d/%Y")
+      key<-paste(Var,certVector,dateVector,sep="_")
+      data.frame(key=as.character(key),value=as.character(DF[,Var]))
+    }
+    AA<-convertVar(1)
+    for(m in 2:ncol(DF)){
+      AA<-rbind(AA,convertVar(m))
+    }
+    AA
+  }
+  for(File in list.files("fdic stg2",pattern="\\.csv$",full.names=T)){
+    print(c(File,paste(Sys.time())))
+    if(exists("DF")){rm(DF)}
+    if(exists("DF2")){rm(DF2)}
+    DF<-read.csv(File)
+    DF2<-convertDF(DF)
+    write.csv(DF2,gsub("fdic stg2","fdic stg3",File))
+    print(DF2[seq(1,nrow(DF2),length.out=5),])
+    file.remove(File)
+    print(paste(Sys.time()))
+  }
+  file.remove(list.files("fdic stg2",full.names=T))
+}
+
+
+convertCell<-function(Row,Column,DF){
+  if(class(Column) %in% c("numeric","integer")){Column<-colnames(DF)[Column]}
+  key<-paste(Column,DF[Row,"cert"],strptime(DF[Row,"repdte"],format="%m/%d/%Y"),sep="_")
+  data.frame(key=key,value=DF[Row,Column])
+}
+
 
 FDIC.Y.varcompare<-function(year,variables){
   workframe<-FDICvar.quarter(year,quarter,variables[1])
