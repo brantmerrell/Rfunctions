@@ -1,7 +1,355 @@
+costPattern<-"\\$"; roomPattern<-"\\d BR"; bathPattern<-"\\d BA"; 
+SqFtPattern<-"\n +\\d+\n"; breakPattern<-"Deposit/Fees"
+startPattern<-" +\\d Beds"
+breaks<-grep(breakPattern,text.vector2)
+dist<-breaks[2:length(breaks)]-breaks[(1:length(breaks))-1]
+start<-max(grep(startPattern,text.vector2))
+text.vector2[start+3]
+
+
+aptDetails<-function(link=as.character(complexes[1,2])){
+  if(grepl("^/",link)){link<-paste("www.apartmentfinder.com",link,sep="")}
+  text.vector<-htmlToText(link)[[1]] # chr [1:1111]
+#   html.vector<-readLines(link) # error: cannot open con . . . 
+  text.vector2<-text.vector[grep("[[:alnum:]]",text.vector)]
+  costs<-grep("\\$",text.vector2)
+  rooms<-grep("\\d B(R|A)",text.vector2)
+}
+
+aptLinks<-function(Page,State="Texas",City="Dallas"){
+  URL<-paste("http://www.apartmentfinder.com/",State,"/",City,"-Apartments/Page",Page,sep="")
+  html.vector<-readLines(URL)
+  links<-grep("href=\"/Texas/Dallas-Apartments/(\\w+-){2,}",html.vector) # int [1:18]
+  apts<-unlist(strsplit(html.vector[links],"</?|>"),length)
+  apts<-apts[grepl("[[:alpha:]]",apts)]
+  links<-apts[grep("href=.+Texas",apts)]
+  apts<-unlist(strsplit(links,"/"))
+  apts<-apts[grepl("\\w+-",apts) & apts!="Dallas-Apartments"]
+  apts<-gsub("-"," ",apts)
+  apts<-gsub("[/\"]","",apts)
+  links<-gsub("(a href=\")|\"","",links)
+  TEST<-!grepl("=",apts) & !grepl("=",links)
+  unique(data.frame(apartment=apts[TEST],link=links[TEST]))
+}
+
+
+indeedSearch<-function(Page=10,What="data science",Where="Washington, DC"){
+  What<-gsub(" ","+",What)
+  Where<-gsub(",","%2C",Where)
+  Where<-gsub(" ","+",Where)
+  Start<-(Page-1)*10
+  URL<-paste("http://www.indeed.com/jobs?q=",What,"&l=",Where,"&start=",Start,sep="")
+  webPage<-htmlToText(URL)[[1]] # chr [1:933]
+  webPage<-webPage[grepl("[[:alpha:]]",webPage)] # chr [1:347]
+  grep("Jobs \\d+ to \\d+ of \\d+(,\\d+)?$",webPage)
+  grep("Upload your resume",webPage)[2]
+  Start<-grep("Let employers find you",webPage) # 21L
+  Stop<-grep("Get email updates",webPage) # 323L
+  webPage<-webPage[Start:Stop] # chr [1:303]
+  locations<-grep("^[[:alpha:]]+, (MD|VA|DC)",webPage) # int [1:13]
+  reviews<-grep("\\d reviews",webPage) # int [1:9]
+  companies<-grep("\n +\\w",webPage) # int [1:16]
+  cities<-reviews+1 # int [1:9]
+  webPage[reviews+8]
+  #   descriptions<-which(50<nchar(webPage)) # int [1:23]
+  titles<-cities-3
+  titlesText<-webPage[titles]
+  while(0<sum(grepl("^ ",webPage[titles]))){
+    incompletes<-grep("^ ",webPage[titles])
+    titlesText[incompletes]=paste(webPage[titles[incompletes]-1],titlesText[incompletes])
+    titles[incompletes]<-titles[incompletes]-1
+  }
+  data.frame(title=titlesText,company=webPage[reviews-1],city=webPage[reviews+1])
+}
+
+
+coursesCompile<-function(compilePattern=Extensions[9]){
+  FROM<-list.files("courses",pattern=compilePattern,full.names=T,recursive=T)
+  TO<-gsub("/","_",FROM)
+  TO<-gsub("courses_courses_","",TO)
+  if(!file.exists("courseraFiles")){dir.create("courseraFiles")}
+  DIR<-file.path("courseraFiles",gsub("\\$","",compilePattern))
+  if(!file.exists(DIR)){dir.create(DIR)}
+  TO<-file.path(DIR,TO)
+  file.copy(FROM,TO)
+  print(summary(TO))
+}
+
+linkPGN<-function(id=5002,type="echess",
+                  testPattern="PopExplorerBoard"){
+  if(type=="echess"){
+    Url<-"http://www.chess.com/echess/game?id="
+    Url<-paste(Url,id,sep="")
+    workVec<-readLines(Url)
+    if(length(workVec)==798){stop("game aborted")}
+    workVec<-workVec[grep(testPattern,workVec)]
+    if(length(workVec)!=0){
+      workPattern<-'\\d\\.[KQRNB]?[[:lower:]]\\d+'
+      workVec<-workVec[grep(workPattern,workVec)]
+      workVec<-strsplit(workVec,"\\(|\\)|;")[[1]]
+      workVec<-workVec[grep(workPattern,workVec)]
+      workVec<-strsplit(workVec,"\\+")[[1]]
+      blkMoves<-seq(2,length(workVec),2)
+      workVec[blkMoves]<-paste(seq(along=blkMoves),
+                               workVec[blkMoves],sep="...")
+      return(workVec)
+    }
+  }
+  if(type=="livechess"){
+    stop("I can't extract this")
+    Url<-paste("http://www.chess.com/echess/download_pgn?lid=",id,sep="")
+    download.file(Url,"temp.pgn")
+    workVec<-readLines("temp.pgn")
+  }
+}
+Url<-"http://www.chess.com/games/view?id=820428#"
+tempZip <- tempfile()
+download.file(Url, tempZip, method="internal")
+?download.file
+
+# test chess.com game ID
+testId<-function(id=1000,type="correspondence"){
+  if(type=="correspondence"){
+    Url<-"http://www.chess.com/echess/game?id="
+    Url<-paste(Url,id,sep="")
+    L<-length(readLines(Url))
+    if(L==1059){return(T)}
+    if(L==798){return(F)}
+    if(!(L %in% c(798,1059))){return(NA)}
+  }
+  if(type=="live"){
+    Url<-"http://www.chess.com/livechess/game?id="
+    Url<-paste(Url,id,sep="")
+    L<-length(readLines(Url))
+    if(L==1008){return(T)}
+    if(L==798){return(F)}
+    if(!(L %in% c(798,1008))){return(NA)}
+  }
+}
+
+# induced from: dboLeaders.R
+debatePage<-function(Page){
+  Url<-paste("http://www.debate.org/debates/?page=",floor(Page),",&order=2&sort=1",sep="")
+  workVec<-htmlToText(Url)[[1]]
+  workVec<-workVec[grep("[[:alpha:]]",workVec)]
+  charLarge<-which(100<nchar(workVec))
+  data.frame(Debate=workVec[charLarge-1],Status=workVec[charLarge+1],Comments=workVec[charLarge+2],
+             Updated=workVec[charLarge+3],Description=workVec[charLarge])
+}
+
+
+# induced from: dboLeaders.R
+dboFilter<-function(DF=dboLeaders,filterColumn="Ideology",filterPattern=""){
+  print(filterPattern)
+  DF<-DF[grep(filterPattern,DF[,filterColumn]),]
+  DF[seq(1,nrow(DF),length.out=101),]
+  percents<-cbind(quantile(DF$Debates,probs=seq(0,1,.01)),
+                  quantile(DF$Won,probs=seq(0,1,.01)),
+                  quantile(DF$Lost,probs=seq(0,1,.01)),
+                  quantile(DF$Tied,probs=seq(0,1,.01)),
+                  quantile(DF$Win.Ratio,probs=seq(0,1,.01)),
+                  quantile(DF$Percentile1,probs=seq(0,1,.01)),
+                  quantile(DF$Elo1,probs=seq(0,1,.01)))
+  percents<-data.frame(percents)
+  colnames(percents)<-c("Debates","Won","Lost","Tied","Win.Ratio","Percentile","Elo")
+  DF
+}
+
+# induced from: dboLeaders.R
+leaderPage<-function(Page){
+  Url<-paste("http://www.debate.org/people/leaders/?page=",Page,"&order=21&sort=1",sep="")
+  workVec<-htmlToText(Url)[[1]]
+  n<-grep("Debates:",workVec)
+  DF<-data.frame(Debates=workVec[n+1], Percentile2=workVec[n+5], Elo2=workVec[n+7], Ideology=workVec[n+9],
+                 Party=workVec[n+11], Online=workVec[n+13], Member=workVec[n+14],Won=workVec[n+18],
+                 Lost=workVec[n+20], Tied=workVec[n+22], Win.Ratio=workVec[n+24],Percentile1=workVec[n+26],
+                 Elo1=workVec[n+28])
+  DF
+}
+
+
+readAny<-function(File){
+  FALSES<-0
+  if(grepl("(\\.txt$)|(\\.csv$)",File)){
+    Sample<-readLines(File)[1:2]
+    readMethod<-function(S){
+      writeLines(S,"temp.txt")
+      samples<-list(table=read.table("temp.txt"),
+                    csv=read.csv("temp.txt"),
+                    csv2=read.csv2("temp.txt"),
+                    delim=read.delim("temp.txt"),
+                    delim2=read.delim2("temp.txt"))
+      samples<-lapply(samples,ncol)
+      method<-names(which(samples==max(unlist(samples))))
+      if(1<length(method)){message("inconclusive")}
+      else(return(method))
+    }
+    method<-readMethod(Sample)
+    if(method=="table"){Sample<-read.table(File)}
+    if(method=="csv"){Sample<-read.csv(File)}
+    if(method=="csv2"){Sample<-read.csv2(File)}
+    if(method=="delim"){Sample<-read.delim(File)}
+    if(method=="delim2"){Sample<-read.delim2(File)}
+  }else(FALSES<-FALSES+1)
+  ifelse(grepl("\\.xlsx?$",File),
+         Sample<-read.xlsx(File,1),
+         FALSES<-FALSES+1)
+  if(FALSES==2){
+    Sample<-readLines(File)
+  }
+  Sample
+}
+
+Trees<-function(training=TRAIN[sample(nrow(TRAIN),size=100),],
+                testing=TRAIN[sample(nrow(TRAIN),size=20),],
+                p=0.75,predCol="classe",threshold=0.9,pcaComp=5){
+  modFit<-train(predCol~.,method="rpart",data=training)
+  predict(modFit,newdata=testing)
+}
+
+Impute<-function(training=TRAIN[sample(nrow(TRAIN),size=100),],
+                         testing=TRAIN[sample(nrow(TRAIN),size=20),],
+                         p=0.75,predCol="classe",threshold=0.9,pcaComp=5){
+  colClasses<-class(training[,1]) # "integer"
+  for(n in 2:160){colClasses<-c(colClasses,class(training[,n]))} # chr [1:160]
+  Inputs<-which(colClasses %in% c("numeric","integer")) # int [1:123]
+  M<-abs(cor(training[,Inputs]))
+  diag(M)<-0
+  Inputs<-dimnames(which(M>threshold,arr.ind=T))[[1]]
+  prComp<-prcomp(training[,Inputs])
+  MVCol<-function(COL,DF=training){
+    preObj<-preProcess(DF[,Inputs],method="knnImpute")
+    predCol<-predict(preObj,DF[,Inputs])[,COL]
+    predCol
+  }
+  Impute<-MVCol(Inputs[1])
+  for(II in Inputs[-1]){
+    Impute<-cbind(Impute,MVCol(II))
+  }
+  Impute<-data.frame(Impute)
+  names(Impute)<-Inputs
+  Impute
+}
+
+getMeditate<-function(To=Sys.time(),
+                      span=86400){
+  From<-as.POSIXlt(To)-span
+  filePath<-list.files("CSV Personal","allNotes.csv",full.names=T)
+  DF<-read.csv(filePath);rm(filePath)
+  DF<-DF[grep("meditate",DF[,"note"]),]
+  DF<-DF[From<=as.vector(DF[,"Time"]) & as.vector(DF[,"Time"])<To,]
+  INT<-grep("^[Ii]nterrupt",DF[,"note"])
+  if(0<length(INT)){DF<-DF[-c(INT,INT-1),]}
+  STR<-grep("^[Ss]tart",DF[,"note"])
+  STP<-grep("^[Ss]top",DF[,"note"])
+  if(length(STR)<length(STP)){STP<-STP[-1]}
+  if(length(STP)<length(STR)){STR<-STR[-length(STR)]}
+  DF<-data.frame(Start=DF[STR,"Time"],Stop=DF[STP,"Time"],
+                 RESP=as.numeric(gsub("[[:alpha:]]| |[[:punct:]]","",as.vector(DF[STP,"note"]))))
+  DF<-cbind(DF,floor(as.numeric(difftime(DF[,"Stop"],DF[,"Start"],units="secs"))))
+  names(DF)<-c("start","stop","resp","secs")
+  DF
+}
+
+cell.modify("note",3871,1,"stop meditate (144) #schedule")
+summary(getMeditate(From=Sys.Date())[,3])
+sum(getMeditate(From=Sys.Date()-1,To=Sys.Date(),Units="secs")[,4])/(60*60)*2
+sum(getMeditate(From=Sys.Date()-2,To=Sys.Date()-1)[,4])/(60*60)*2
+sum(getMeditate(From=Sys.Date()-3,To=Sys.Date()-2)[,4])/(60*60)*2
+
+search<-function(searchPat,DF,Col,Split="(\\.)|(\n)"){
+  DF<-DF[grep(searchPat,DF[,Col]),]
+  for(n in 1:nrow(DF)){
+    Vec<-unlist(strsplit(DF[n,Col],Split))
+    Vec<-Vec[grepl(searchPat,Vec)]
+    class(DF[,Col])<-"character"
+    DF[n,Col]<-paste(Vec,collapse=" \n ")
+  }
+  DF
+}
+
 frequency<-function(vec){
   wl<-replicate(length(unique(vec)),NA)
   for(n in 1:length(wl)){wl[n]<-sum(vec==sort(unique(vec)[n]))}; names(wl)<-sort(unique(vec))
   add.note("frequency(vec) #logFunction"); return(wl)
+}
+
+gdpPlot<-function(Dates=seq(1980,2014,1),
+                  topCount=6,
+                  justNations=T,
+                  Colors=Colors<-c("darkgreen","black","deepskyblue","seagreen","red","midnightblue"),
+                  Pch=list(6,5,7,3,2,"*"),
+                  JPEG="data/ny.gdp.mktp.cd_Indicator_en_csv_v2/temp.jpg"){
+  jpeg(JPEG)
+  plot(x=GDP(Dates,"World")$year,
+       y=as.numeric(gsub("%","",GDP(Dates,"World")$percent)),
+       type="l", main="Wealth of Nations", sub="National GDP / World GDP",
+       xlab="year", ylab="percentage", col="white", ylim=c(0,50))
+  DF<-GDP(Dates,"")
+  nationMelt<-function(nation){
+    data.frame(nation,
+               mean=mean(as.numeric(gsub("\\$","",DF[DF$nation==nation,"National GDP"]))))
+  }
+  dfMelt<-nationMelt(levels(DF$nation)[1])
+  for(n in 2:length(levels(DF$nation))){
+    dfMelt<-rbind(dfMelt,nationMelt(levels(DF$nation)[n]))
+  }
+  dfMelt<-dfMelt[order(dfMelt$mean,na.last=FALSE),]
+  if(justNations){
+    dfMelt<-dfMelt[!grepl("World| income|members|America|Asia|Euro",dfMelt$nation),]
+  }
+  Nations<-as.character(tail(dfMelt$nation,topCount))
+  for(n in 1:length(Nations)){
+    DF<-GDP(Dates,Nations[n])
+    lines(x=DF$year,y=as.numeric(gsub("%","",DF$percent)),type="l",col=Colors[n],pch=Pch[[n]])
+  }
+  DF<-GDP(Dates,Nations[n])
+  lines(x=DF$year,y=as.numeric(gsub("%","",DF$percent)),type="p",col=Colors[n],pch=Pch[[n]])
+  legend("topleft",legend=Nations[1:2],fill=Colors[1:2],col=Colors[1:2],plot=T)
+  legend("top",legend=Nations[3:4],fill=Colors[3:4],col=Colors[3:4],plot=T)
+  legend("topright",legend=Nations[5:6],fill=Colors[5:6],col=Colors[5:6],plot=T)
+  dev.off()
+}
+
+GDP<-function(year,nation){
+  if(!exists('GDPs')){
+    if(!file.exists("data")){dir.create("data")}
+    folderPattern<-"ny.gdp.mktp.cd_Indicator_en_csv_v2$"
+    list.files("data","ny.gdp.mktp.cd_Indicator_en_csv_v2")
+    if(length(list.files("data",folderPattern))==0){
+      if(length(list.files("data",gsub("\\$",".zip",folderPattern)))==0){
+        download.file("http://api.worldbank.org/v2/en/indicator/ny.gdp.mktp.cd?downloadformat=csv",
+                      destfile=file.path("data","ny.gdp.mktp.cd_Indicator_en_csv_v2.zip"), 
+                      mode="wb")
+      }
+      unzip(zipfile=file.path("data","ny.gdp.mktp.cd_Indicator_en_csv_v2.zip"),
+            exdir=file.path("data","ny.gdp.mktp.cd_Indicator_en_csv_v2"))
+    }
+    folder<-list.files("data","ny.gdp.mktp.cd_Indicator_en_csv_v2$",full.names=T)
+    GDPs<-read.csv(list.files(folder,"^ny",full.names=T),skip=3)
+    GDPs<-GDPs[,colnames(GDPs)[!grepl("Indicator",colnames(GDPs))]]
+  }
+  ifelse(!nation %in% GDPs[,"Country.Name"],
+         nationRows<-grep(nation,GDPs[,"Country.Name"]),
+         nationRows<-which(GDPs[,"Country.Name"]==nation))
+  year<-colnames(GDPs)[grep(paste(year,collapse="|"),colnames(GDPs))]
+  world<-which(GDPs[,"Country.Name"]=="World")
+  world<-as.vector(GDPs[world,year])
+  nation<-as.vector(GDPs[nationRows,"Country.Name"])
+  DF<-cbind(expand.grid(nation,year),NA,NA,NA)
+  names(DF)<-c("nation","year","National GDP","World GDP","percent")
+  for(n in 1:nrow(DF)){
+    DF[n,"National GDP"]<-round(GDPs[which(GDPs[,"Country.Name"]==as.vector(DF[n,"nation"])),
+                                     as.vector(DF[n,"year"])],2)
+    DF[n,"World GDP"]<-world[DF[n,"year"]]
+    DF[n,"percent"]<-DF[n,"National GDP"]/DF[n,"World GDP"]
+  }
+  DF<-DF[!is.na(DF[,"National GDP"]),]
+  DF[,"year"]<-gsub("X","",DF[,"year"])
+  DF[,"National GDP"]<-paste("$",signif(DF[,"National GDP"],2),sep="")
+  DF[,"World GDP"]<-paste("$",signif(DF[,"World GDP"],2),sep="")
+  DF[,"percent"]<-paste(round(100*DF[,"percent"],2),"%",sep="")
+  DF
 }
 
 gdelt.temp<-function(DATE="2015-06-01",PROJECT="gkg"){
@@ -53,40 +401,40 @@ gdelt.temp<-function(DATE="2015-06-01",PROJECT="gkg"){
 # Copyright (c) 2011, under the Creative Commons Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0) License
 # For more information see: https://creativecommons.org/licenses/by-nc/3.0/
 # All rights reserved.
+###--- LOCAL FUNCTIONS ---###
+# Determine how to grab html for a single input element
+evaluate_input <- function(input) {    
+  # if input is a .html file
+  if(file.exists(input)) {
+    char.vec <- readLines(input, warn = FALSE)
+    return(paste(char.vec, collapse = ""))
+  }  
+  # if input is html text
+  if(grepl("</html>", input, fixed = TRUE)) return(input)
+  
+  # if input is a URL, probably should use a regex here instead?
+  if(!grepl(" ", input)) {
+    # downolad SSL certificate in case of https problem
+    if(!file.exists("cacert.perm")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile="cacert.perm")
+    return(getURL(input, followlocation = TRUE, cainfo = "cacert.perm"))
+  }
+  # return NULL if none of the conditions above apply
+  return(NULL)
+}
+# convert HTML to plain text
+convert_html_to_text <- function(html) {
+  doc <- htmlParse(html, asText = TRUE)
+  text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
+  return(text)
+}
+# format text vector into one character string
+# collapse_text <- function(txt) {
+#   return(paste(txt, collapse = " "))
+# }
 htmlToText <- function(input, ...) {
   ###---PACKAGES ---###
   require(RCurl)
   require(XML)
-  ###--- LOCAL FUNCTIONS ---###
-  # Determine how to grab html for a single input element
-  evaluate_input <- function(input) {    
-    # if input is a .html file
-    if(file.exists(input)) {
-      char.vec <- readLines(input, warn = FALSE)
-      return(paste(char.vec, collapse = ""))
-    }  
-    # if input is html text
-    if(grepl("</html>", input, fixed = TRUE)) return(input)
-    
-    # if input is a URL, probably should use a regex here instead?
-    if(!grepl(" ", input)) {
-      # downolad SSL certificate in case of https problem
-      if(!file.exists("cacert.perm")) download.file(url="http://curl.haxx.se/ca/cacert.pem", destfile="cacert.perm")
-      return(getURL(input, followlocation = TRUE, cainfo = "cacert.perm"))
-    }
-    # return NULL if none of the conditions above apply
-    return(NULL)
-  }
-  # convert HTML to plain text
-  convert_html_to_text <- function(html) {
-    doc <- htmlParse(html, asText = TRUE)
-    text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
-    return(text)
-  }
-  # format text vector into one character string
-  collapse_text <- function(txt) {
-    return(paste(txt, collapse = " "))
-  }
   ###--- MAIN ---###
   # STEP 1: Evaluate input
   html.list <- lapply(input, evaluate_input)
@@ -94,7 +442,7 @@ htmlToText <- function(input, ...) {
   text.list <- lapply(html.list, convert_html_to_text)
   # STEP 3: Return text
   text.vector <- sapply(text.list, collapse_text)
-  return(text.vector)
+  return(text.list)#(text.vector)
 }
 
 xmlNames<-function(rootNode){
@@ -547,7 +895,8 @@ linkgrid<-function(link1,
   filepath<-file.path(workdir,"CSV Personal/linkgrid.csv")
   df<-read.csv(filepath,colClasses="character")
   newrow<-data.frame(link1,link2,link3,link4,link5,Year,Month,comment)
-#   newrow<-data.frame(link1="https://www.facebook.com/tennis.lilly/posts/10206463047873954",link2="https://www.facebook.com/tennis.lilly",link3="",link4="",link5="",Year=2015,Month="April",comment="")
+#   newrow<-data.frame(link1="https://www.facebook.com/tennis.lilly/posts/10206463047873954",
+#     link2="https://www.facebook.com/tennis.lilly",link3="",link4="",link5="",Year=2015,Month="April",comment="")
   df<-unique(rbind(df,newrow))
   write.csv(df,filepath,row.names=FALSE)
   print(tail(read.csv(filepath)))
@@ -1196,7 +1545,7 @@ DS.lecsummary<-function(Summary,Row,Column,Time=Sys.time(),Command="find"){
   filepath<-finddoc("dslec")$filepath
   lectures<-read.csv(filepath,colClasses="character")
   if(class(Column)=="character"){timeColumn<-paste(Column,"Time",sep="")}
-  if(class(Column)=="numeric"){timeColumn<-column+1}
+  if(class(Column)=="numeric"){timeColumn<-Column+1}
   if(class(Row) %in% c("numeric","integer")){
     print(lectures[Row,])
     if(Command=="modify"){
@@ -2051,6 +2400,10 @@ finddoc<-function(keyword){
     return(list(filepath="C:/Users/Josh/Documents/CSV Personal/notes.csv",
                 docname="notes"))
   }
+  if(grepl("^[Aa]ll[Nn]ote",keyword)){
+    return(list(filepath="C:/Users/Josh/Documents/CSV Personal/allNotes.csv",
+                docname="allNotes"))
+  }
   if(tolower(keyword) %in% c('sorted notes','note2','notes2','notes2.csv')){
     return(list(filepath="C:/Users/Josh/Documents/CSV Personal/notes2.csv",
                 docname="notes2"))
@@ -2207,10 +2560,13 @@ add.object<-function(object,location,comment="",time=Sys.time(),material="",util
 }
 
 add.note<-function(note,Time=Sys.time()){
-  notes<-as.matrix(read.csv("C:/Users/Josh/Documents/CSV Personal/notes.csv",colClasses="character"))
+  ifelse(grepl("#schedule",note),
+         filePath<-"C:/Users/Josh/Documents/CSV Personal/allNotes.csv",
+         filePath<-"C:/Users/Josh/Documents/CSV Personal/notes.csv")
+  notes<-as.matrix(read.csv(filePath,colClasses="character"))
   obs<-as.matrix(data.frame(note,Time))
   notes<-rbind(notes,obs)
-  write.csv(notes,"C:/Users/Josh/Documents/CSV Personal/notes.csv",row.names=FALSE)
+  write.csv(notes,filePath,row.names=FALSE)
   print(tail(notes,3))
 }
 
@@ -2934,4 +3290,18 @@ pollutantmean<-function(directory, pollutant, id){
 pollutantmean("specdata", "sulfate", 5)
 ## successful
 
-
+squareColor<-function(square,game_pgn){
+  if(grepl(blackPattern,position[game_pgn,square])){
+    squareColor<-blackPattern
+  }
+  if(grepl(whitePattern,position[game_pgn,square])){
+    squareColor<-whitePattern
+  }
+  if(!(grepl(paste("(",whitePattern,")",
+                   "(",blackPattern,")",
+                   sep="|"),
+             position[game_pgn,square]))){
+    squareColor<-NA
+  }
+  squareColor
+}
