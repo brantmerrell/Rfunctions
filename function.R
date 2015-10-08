@@ -1,19 +1,36 @@
-costPattern<-"\\$"; roomPattern<-"\\d BR"; bathPattern<-"\\d BA"; 
-SqFtPattern<-"\n +\\d+\n"; breakPattern<-"Deposit/Fees"
-startPattern<-" +\\d Beds"
-breaks<-grep(breakPattern,text.vector2)
-dist<-breaks[2:length(breaks)]-breaks[(1:length(breaks))-1]
-start<-max(grep(startPattern,text.vector2))
-text.vector2[start+3]
+levRandom<-function(DF,Fac=facRandom){
+  L<-length(levels(DF[,Fac]))
+  n<-abs(rnorm(1,L/2,L/2))
+  while(L<n | n<0.5){n<-rnorm(1,L/2,L/2)}
+  levels(DF[,Fac])[round(n)]
+}
 
+colRandom<-function(DF,targetClass=c("numeric","integer")){
+  for(n in 1:ncol(DF)){
+    ifelse(n==1,dfClasses<-class(DF[,n]),dfClasses<-c(dfClasses,class(DF[,n])))
+  }
+  L<-(sum(dfClasses %in% targetClass))
+  n<-abs(rnorm(1,L/2,L/2))
+  while(round(n)==0 | L<n){n<-abs(rnorm(1,L/2,L/2))}
+  n<-which(dfClasses %in% targetClass)[round(n)]
+  colnames(DF)[n]
+}
 
 aptDetails<-function(link=as.character(complexes[1,2])){
   if(grepl("^/",link)){link<-paste("www.apartmentfinder.com",link,sep="")}
   text.vector<-htmlToText(link)[[1]] # chr [1:1111]
-#   html.vector<-readLines(link) # error: cannot open con . . . 
+  #   html.vector<-readLines(link) # error: cannot open con . . . 
   text.vector2<-text.vector[grep("[[:alnum:]]",text.vector)]
-  costs<-grep("\\$",text.vector2)
-  rooms<-grep("\\d B(R|A)",text.vector2)
+  costPattern<-"\\$"; roomPattern<-"\\d BR"; bathPattern<-"\\d BA"; 
+  SqFtPattern<-"\n +\\d+\n"; breakPattern<-"Deposit/Fees"
+  startPattern<-" +\\d Beds"
+  breaks<-grep(breakPattern,text.vector2)
+  dist<-breaks[2:length(breaks)]-breaks[(1:length(breaks))-1]
+  Start<-max(grep(startPattern,text.vector2))
+  text.vector2[start+3]
+  SqFt<-grep(SqFtPattern,text.vector2); Cost<-grep(costPattern,text.vector2)
+  SqFt<-SqFt[Start<=SqFt]; Cost<-Cost[Start<=Cost]; 
+  data.frame(Square.Feet=text.vector2[SqFt], Cost=text.vector2[Cost])
 }
 
 aptLinks<-function(Page,State="Texas",City="Dallas"){
@@ -102,10 +119,6 @@ linkPGN<-function(id=5002,type="echess",
     workVec<-readLines("temp.pgn")
   }
 }
-Url<-"http://www.chess.com/games/view?id=820428#"
-tempZip <- tempfile()
-download.file(Url, tempZip, method="internal")
-?download.file
 
 # test chess.com game ID
 testId<-function(id=1000,type="correspondence"){
@@ -136,7 +149,6 @@ debatePage<-function(Page){
   data.frame(Debate=workVec[charLarge-1],Status=workVec[charLarge+1],Comments=workVec[charLarge+2],
              Updated=workVec[charLarge+3],Description=workVec[charLarge])
 }
-
 
 # induced from: dboLeaders.R
 dboFilter<-function(DF=dboLeaders,filterColumn="Ideology",filterPattern=""){
@@ -250,12 +262,6 @@ getMeditate<-function(To=Sys.time(),
   names(DF)<-c("start","stop","resp","secs")
   DF
 }
-
-cell.modify("note",3871,1,"stop meditate (144) #schedule")
-summary(getMeditate(From=Sys.Date())[,3])
-sum(getMeditate(From=Sys.Date()-1,To=Sys.Date(),Units="secs")[,4])/(60*60)*2
-sum(getMeditate(From=Sys.Date()-2,To=Sys.Date()-1)[,4])/(60*60)*2
-sum(getMeditate(From=Sys.Date()-3,To=Sys.Date()-2)[,4])/(60*60)*2
 
 search<-function(searchPat,DF,Col,Split="(\\.)|(\n)"){
   DF<-DF[grep(searchPat,DF[,Col]),]
@@ -390,8 +396,6 @@ gdelt.temp<-function(DATE="2015-06-01",PROJECT="gkg"){
   return(df)
   print(summary(df))
 }
-
-
 # Author: Tony Breyal
 # Date: 2011-11-18
 # Modified: 2011-11-18
@@ -470,7 +474,6 @@ add.resumeData<-function(data.type,content,comment=""){
   write.csv(resume,resumePath,row.names=FALSE)
   print(tail(read.csv(resumePath)))
 }
-View(resume)
 
 personFrame<-function(gkg,samplemax=1000){
   date<-unique(gkg$DATE)
@@ -497,9 +500,6 @@ gdeltSummary.day<-function(counts,gkg,events,charLimit=130){
   gdeltSummary<-rbind(countSummary,gkgSummary,eventSummary)
   gdeltSummary
 }
-gdelt_summ<-gdeltSummary.day(counts,gkg,events,100)
-gdelt_factors<-subset(gdelt_summ,gdelt_summ$class=="factor")
-gdelt_factors2<-subset(gdelt_factors,3<nchar(gdelt_factors$bottom))
 
 dfSummary<-function(DF,charLimit="none"){
   workframe<-colSummary(1,DF,charLimit)
@@ -740,7 +740,7 @@ mongo.csv<-function(refRow,workdir=getwd(),readtype=1){
   username<-refFrame$username[refRow]
   password<-refFrame$password[refRow]
   db<-refFrame$database[refRow]
-  collection<-refFrame$collection[refRow])
+  collection<-refFrame$collection[refRow]
   host<-refFrame$host[refRow]
   namespace <- paste(db, collection, sep=".")
   library(rmongodb)
@@ -817,7 +817,6 @@ MongoClean<-function(object){
   }
   object
 }
-
 
 celltrim<-function(String){
   if(100<nchar(String)){
@@ -992,7 +991,7 @@ getFB<-function(info="Friends",Range=c(500,5000)){
     lines<-subset(lines,min(Range)<nchar(lines) 
                   & nchar(lines)<max(Range))
   }
-  if(info="wall"){
+  if(info=="wall"){
     lines<-
       readLines(
         file.path("C:/Users/Josh/Documents/Data/Facebook/html",
@@ -1000,8 +999,7 @@ getFB<-function(info="Friends",Range=c(500,5000)){
         )
         #,header=TRUE
         ,warn=FALSE
-      )#)
-    )
+      )
   }
   lines
 }
@@ -1156,34 +1154,36 @@ name.chapters<-function(lines
                    #*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
   #longframe<-data.frame(x=1:length(lines),line=lines)
   Table_of_Contents<-subset(lines,grepl("\\. \\. \\.",lines))
+  list.files("C:/Users/Administrator/Documents/CSV")[(1:10)+(10*2)]
+  vector<-as.character(read.csv("C:/Users/Administrator/Documents/CSV/gkg_PERSONS.csv")$x)
+  vecsample<-function(vector,samplesize=5,add=0,method="letterparse"){
+    L<-length(vector)
+    if(class(vector)=="character" &
+         method=="letterparse"){
+      samplevec<-head(vector,samplesize)
+      #rm(l)
+      for(l in letters[1:26]){
+        lettersample<-vector[l==substr(vector,1,1)]
+        lettersample<-lettersample[
+          as.integer(length(lettersample)*c(1/(1:samplesize)))+add]
+        samplevec<-c(samplevec,lettersample)
+      }
+      #length(unique(printvec))
+      #length(printvec)
+      #subset(printvec,duplicated(printvec))
+      samplevec<-sort(unique(c(samplevec,tail(vector,samplesize))))
+    }
+    list(samplevec=samplevec,
+         arith=paste(L,"=",length(samplevec),"+",L-length(samplevec)),
+         ratio=paste(L,"=",length(samplevec),"*",as.integer(L/length(samplevec)))#,
+         #percentage=paste(round((length(samplevec)/L)*100,digits=2),"%",sep="")
+    )
+  }
+}
+
 <<<<<<< HEAD
 =======
 =======
-list.files("C:/Users/Administrator/Documents/CSV")[(1:10)+(10*2)]
-vector<-as.character(read.csv("C:/Users/Administrator/Documents/CSV/gkg_PERSONS.csv")$x)
-vecsample<-function(vector,samplesize=5,add=0,method="letterparse"){
-  L<-length(vector)
-  if(class(vector)=="character" &
-       method=="letterparse"){
-    samplevec<-head(vector,samplesize)
-    #rm(l)
-    for(l in letters[1:26]){
-      lettersample<-vector[l==substr(vector,1,1)]
-      lettersample<-lettersample[
-        as.integer(length(lettersample)*c(1/(1:samplesize)))+add]
-      samplevec<-c(samplevec,lettersample)
-    }
-    #length(unique(printvec))
-    #length(printvec)
-    #subset(printvec,duplicated(printvec))
-    samplevec<-sort(unique(c(samplevec,tail(vector,samplesize))))
-  }
-  list(samplevec=samplevec,
-       arith=paste(L,"=",length(samplevec),"+",L-length(samplevec)),
-       ratio=paste(L,"=",length(samplevec),"*",as.integer(L/length(samplevec)))#,
-       #percentage=paste(round((length(samplevec)/L)*100,digits=2),"%",sep="")
-       )
-}
 
 update.PERSONS<-function(Date=Sys.Date()-1,project="gkg",command="return",
                          workdir="C:/Users/Administrator/Documents"){
@@ -1218,20 +1218,20 @@ update.PERSONS<-function(Date=Sys.Date()-1,project="gkg",command="return",
   write.csv(workvec,filepath)
   print(printvec)
 }
-persons<-PERSONS()
 
 slice.lines<-function(lines){
   lines<-gsub("\"","\\\"",readLines(filepath))
   #lines[as.integer(length(lines)*c(.5,.1,.15,.2,.25,.3,.35,.4,.45,.50,.55,.6,.65,.7,.75,.8,.85,.9,.95,1))]
   longframe<-data.frame(x=1:length(lines),line=lines)
   Table_of_Contents<-subset(df_lines,grepl("\\. \\. \\.",df$line))
->>>>>>> 6d6f5e40b7857c2e2b261c3388a6b822de08e712
->>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
   chapters<-gsub(" ","",gsub("(\\. )|9|8|7|6|5|4|3|2|1|0"," ",
-                              as.vector(subset(
-                                lines,lines %in% Table_of_Contents))))
+                             as.vector(subset(
+                               lines,lines %in% Table_of_Contents))))
   return(chapters)
 }
+
+>>>>>>> 6d6f5e40b7857c2e2b261c3388a6b822de08e712
+>>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
 
 diffminutes<-function(row){
   if(row<nrow(Today)){
@@ -1300,7 +1300,6 @@ rmongodb.frame<-function(Function,Text,command="automate"){
 FUN<-function(funline){
   unique(c(rmongodb,gsub("0|1|2|3|4|5|6|7|8|9|(\\. )|( )","",funline)))
 }
-df<-data.frame(FUN=rmongodb,Desc="",Usage="",args="",Details="")
 
 download.gdelt<-function(date=(Sys.Date()-1),PROJECT="gkg",
                          workdir=getwd()){
@@ -1379,25 +1378,6 @@ tolink<-function(ids,command="return"){
     }
   }
 }
-chesspgn<-read.csv(paste("./chess/",list.files("./chess",".csv")[4],sep=""))
-
-positions<-function(game=chessgame){
-  pieces<-c(wR_a="a1",wp_a="a2",bp_a="a7",bR_a="a8",
-            wN_b=)
-  squares<-data.frame(a1="wR_a",a2="wp_a",a7="bp_a",a8="bR_a",
-                      b1="wN_b",b2="wp_b",b7="bp_b",b8="bN_b",
-                      c1="wB_c",c2="wp_c",c7="bp_c",c8="bB_c",
-                      d1="wQ",d2="wp_d",d7="bp_d",d8="bQ",
-                      e1="wK",e2="wp_e",e7="bp_e",e8="bK",
-                      f1="wB_f",f2="wp_f",f7="bp_f",f8="bB_f",
-                      g1="wN_g",g2="wp_g",g7="bp_g",g8="gN_b",
-                      h1="wR_h",h2="wp_h",h7="bp_h",h8="bR_h",
-                      a3="",a4="",a5="",a6="",b3="",b3="",b4="",b5="",b6="",
-                      c3="",c4="",c5="",c6="",d3="",d4="",d5="",d6=""
-                      a3="",a4="",a5="",a6="",b3="",b4="",b5="",b6=""
-                      a3="",a4="",a5="",a6="",b3="",b4="",b5="",b6="")
-  subset(game$pgn,grepl(square)
-}
 
 ratings<-function(metachess="default"){
   if(metachess=="default"){
@@ -1471,7 +1451,6 @@ logchess<-function(command="write"){
                columns=ncol(chesslogs)))
   }
 }
-colnames(chesslinks)
 
 linkconvert<-function(ids){
   for(id in ids){
@@ -1557,7 +1536,6 @@ DS.lecsummary<-function(Summary,Row,Column,Time=Sys.time(),Command="find"){
     }
   }
 }
-#lecsummary(summary="",key=55,command="find")
 
 coursemap<-function(workdir="C:/Users/Josh/Documents"){
   coursepath<-file.path(workdir,"Courses/Courses")
@@ -1586,11 +1564,8 @@ newsdata<-function(newslinks){
       day<-read.table(textConnection(newslink),sep="/")$V6
       
     }
-  }
-  
+  }  
 }
-
-newslink<-function(links){}
 
 musiclink<-function(links){
   if(FALSE %in% grepl("pandora.com",links)){
@@ -1740,31 +1715,12 @@ retrieve<-function(country,category="Personnel"){
   }
 }
 
-request(){
-  East_Asia<-subset(data,data$Country %in% c("China","North Korea","South Korea","Vietnam","Japan"))
-  East_Asia<-East_Asia[order(East_Asia$Date),]
-  Date<-as.numeric(East_Asia$Date)
-  Personnel<-as.numeric(East_Asia$Number)
-  #China<-subset(data,data$Country=="China")
-  #China<-China[order(China$Date),]
-  #Date<-as.numeric(China$Date)
-  #Personnel<-as.numeric(China$Number)
-  barplot(c(Date,Personnel),)
-  xyplot(Number ~ Date | Country, data=East_Asia, layout =c(5,1))
-  lines()
-}
-plot(China$Date,China$Number,"l")
-
 number<-function(row,frame=personnel_total){
   n<-gsub(",","",frame$Amount[row])
   if(grepl(" million",n)==TRUE){
     return(as.numeric(gsub(" million","",n))*1000000)
   }else(return(n))
 }
-
-nationmaster_personnel<-function(){}
-download.file()
-
 
 add.fitness<-function(activity,unit,measure,count,limit,Time=Sys.time(),comment=NA,
                       workdir="C:/Users/Josh/Documents"){
@@ -1826,7 +1782,6 @@ monthlyfinance<-function(year,month,category,amount,percentage){
   print(tail(read.csv(filepath)))
 }
 
-
 mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
   filepath<-"C:/Users/Josh/Documents/CSV Personal/Mongo.DB.csv"
   data<-read.csv(filepath,colClasses="character")
@@ -1836,10 +1791,11 @@ mongo.note<-function(lecnumber,mongonote,Time=Sys.time()){
 }
 
 <<<<<<< HEAD
-read.definitions<-function(n,SKIP=1,workdir=getwd()){
+
 =======
-read.definitions<-function(n,SKIP=1,workdir="C:/Users/Josh/Documents"){
+
 >>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
+read.definitions<-function(n,SKIP=1,workdir=getwd()){
   folderpath<-file.path(workdir,"FDIC")
   filename<-list.files(folderpath,"*\\.csv")[n]
   filepath<-file.path(folderpath,filename)
@@ -1859,12 +1815,10 @@ read.definitions<-function(n,SKIP=1,workdir="C:/Users/Josh/Documents"){
 }
 
 <<<<<<< HEAD
+=======
+  >>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd  
 alldefinitions<-function(workdir=getwd()){
   m<-length(list.files(file.path(workdir,"FDIC"),"*\\.csv"))
-=======
-alldefinitions<-function(workdir="C:Users/Josh/Documents"){
-  m<-length(list.files(file.path(workdir,"FDIC/SDIAllDefinitions_CSV")))
->>>>>>> d2a3c3a10dc56c8adc5cd1281333de604cc56fbd
   data<-read.definitions(1)
   n<-1
   while(n<m){
@@ -1896,7 +1850,6 @@ ranksfiles_jpeg<-function(id){
   barranks(id)
   dev.off()
 }
-
 
 barranks<-function(id_OR_df){
   total<-function(file){
@@ -2066,7 +2019,6 @@ read.meta<-function(games,Workdir=getwd()){
   }
   workframe
 }
-
 
 completelivemoves<-function(incomplete_ID_live){
   id<-incomplete_ID_live
@@ -2294,8 +2246,6 @@ properties.pgn<-function(pgn){
                     y=ycoor(pgn),
                     sq=sqcoor(pgn)))
 }
-## 
-
 
 completeID<-function(ID){
   sample1<-sort(as.numeric(subset(chesspgn$move,chesspgn$ID==ID & chesspgn$color=="white")))
@@ -2525,7 +2475,6 @@ view.material<-function(n){
   subset(objects[,1],objects[,6]==selection)
 }
 
-lapply(1:length(unique(objects$object)),view.object)
 view.object<-function(n){
   objects<-read.csv("C:/Users/Josh/Documents/CSV Personal/paper.csv",colClasses="character")
   selection<-sort(unique(objects$object)[n])
@@ -2589,10 +2538,6 @@ variables.csv<-function(folder){
              variable=as.matrix(unlist(lapply(1:length(Sys.glob("*csv")),varnames))))
 }
 
-colnames(read.csv(list.files()[n],row.names = NULL))
-
-variables<-as.vector(read.csv("C:/Users/Josh/Documents/CSV/variables.csv")[,1])
-quarterpath<-"C:/Users/Josh/Documents/All_Reports/All_Reports_19921231"
 var.deficit<-function(variables,quarterpath){
   folder.variables<-function(quarterpath){
     varnames<-function(n){
@@ -2604,8 +2549,6 @@ var.deficit<-function(variables,quarterpath){
   return(c(deficit.variables=subset(variables,!(variables %in% qvariables))))
 }
 
-directories<-c("C:/Users/Josh/Documents/All_Reports_20140630",
-               "C:/Users/Josh/Documents/All_Reports/All_Reports_19921231")
 var.masterlist<-function(directories){
   folder.variables<-function(quarterpath){
     varnames<-function(n){
@@ -2615,11 +2558,7 @@ var.masterlist<-function(directories){
   }
   return(unique(unlist(lapply(directories,folder.variables))))
 }
-variables<-var.masterlist(directories)
-write.csv(variables,"variables.csv",row.names=FALSE)
 
-quarterpath1<-"C:/Users/Josh/Documents/All_Reports_20140930"
-quarterpath2<-"C:/Users/Josh/Documents/All_Reports_20140630"
 var.added<-function(quarterpath1,quarterpath2){
   folder.variables<-function(quarterpath){
     varnames<-function(n){
@@ -2631,6 +2570,7 @@ var.added<-function(quarterpath1,quarterpath2){
   quarter2<-folder.variables(quarterpath2)
   return(subset(quarter2,!(quarter2[1:2] %in% quarter1)))
 }
+
 var.subtracted<-function(quarterpath1,quarterpath2){
   resetwd<-getwd()
   folder.variables<-function(quarterpath){
@@ -2752,8 +2692,6 @@ readcsv<-function(n){
     read.csv(n)
   }
 }
-m<-2
-n<-1
 
 pollutantmean<-function(directory, pollutant, id=1:332){
   setwd(directory)
@@ -2822,11 +2760,11 @@ read.pollutant<-function(n){
 }
 
 list.pollutant<-function(n){
-  if (pollutant=="sulfate"){
+  if(pollutant=="sulfate"){
     selection<-as.numeric(
       as.character(
         read.csv(
-          getElement(Sys.glob("*csv"),n))$sulfate)
+          getElement(Sys.glob("*csv"),n))$sulfate))
     subset.pollutant<-subset(selection, !is.na(selection))
   }
 }
@@ -2836,10 +2774,10 @@ read.pollutants<-function(id){
 }
 
 read.pollutant<-function(n){
-  if (pollutant=="sulfate"){
+  if(pollutant=="sulfate"){
     selection<-read.csv(getElement(Sys.glob("*csv"),n))$sulfate
   }
-  if (pollutant=="nitrate"){
+  if(pollutant=="nitrate"){
     selection<-read.csv(getElement(Sys.glob("*csv"),n))$nitrate
   }
   print(selection)
@@ -2895,13 +2833,15 @@ splitandframe<-function(m,n){
   data.frame(Au=subset(Author, m==unique(m)[n]), 
              Org=subset(Organization, m==unique(m)[n]), 
              Dt=subset(Date, m==unique(m)[n]), 
-             Frm=subset(From, m==unique(m)[n]))}
+             Frm=subset(From, m==unique(m)[n]))
+}
 
 splitandframe<-function(column,n){
   data.frame(Author=subset(Author, column==unique(column)[n]), 
              Organization=subset(Organization, column==unique(column)[n]), 
              Date=subset(Date, column==unique(column)[n]), 
-             From=subset(From, column==unique(column)[n]))}
+             From=subset(From, column==unique(column)[n]))
+}
 
 effectivesplit<-function(n){
   Author<-as.matrix(read.csv("articles.txt")$Author)
@@ -2911,7 +2851,8 @@ effectivesplit<-function(n){
   data.frame(Author=subset(Author, From==unique(From)[n]), 
              Organization=subset(Organization, From==unique(From)[n]), 
              Date=subset(Date, From==unique(From)[n]), 
-             From=subset(From, From==unique(From)[n]))}
+             From=subset(From, From==unique(From)[n]))
+}
 
 corr<-function(directory, threshold){
   setwd(directory)
@@ -2932,8 +2873,7 @@ corr<-function(directory, threshold){
   thresh<-as.matrix(subset(data.frame(list.files(), completes), completes>=threshold))
   lapply(thresh, corrsingle)
 }
-threshold<-1000
-setwd("C:\\Users\\Josh\\Documents\\CSV\\Specdata")
+
 ## 'threshold' is a numeric vector of length 1 indicating the
 ## number of completely observed observations (on all
 ## variables) required to compute the correlation between
@@ -2947,12 +2887,7 @@ threshsubset<-function(directory, threshold){
   completes<-as.matrix(lapply(list.files(),complete))
   subset(data.frame(list.files(), completes), completes>=threshold)
 }
-threshold<-1000
-threshsubset("specdata", 400)
-# Error in object[[name, exact = TRUE]] : subscript out of bounds 
-#@"2014-10-23 23:02:18 CDT"
 
-setwd("C:\\Users\\Josh\\Documents\\CSV")
 corrsingle<-function(directory, id){  
   setwd(directory)
   file<-read.csv(getElement(list.files(), id))
@@ -2962,28 +2897,17 @@ corrsingle<-function(directory, id){
       !is.na(getElement(file,3)))
   cor(complete[,2], complete[,3])
 }
-id<-2
-corrsingle("C:\\Users\\Josh\\Documents\\CSV\\specdata", 1) # -0.2225526
-corrsingle("specdata", 2) # -0.01895754
-corrsingle("specdata", 3) # -0.1405125
-#@"2014-10-23 22:20:05 CDT"
 
 testquotes<-function(document){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
   tail(read.csv(document, quote="",row.names=NULL, stringsAsFactors=FALSE))
 }
-testquotes("quotes.txt")
 
 testcsv<-function(document,n){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
   tail(read.csv(document, row.names=NULL), n)
 }
-testcsv("subset.txt")
-testcsv("subseterrors.txt")
-testcsv("articles.txt", 20)
-testcsv("coursera tasks.txt", 34)
 
-#@"2014-10-20 12:16:20 CDT"
 complete<-function(directory, id){
   setwd("C:\\Users\\Josh\\Documents\\CSV")
   setwd(directory)
@@ -2998,297 +2922,7 @@ complete<-function(directory, id){
   data.frame(id, nobs=as.matrix(lapply(id, nob)))
 }
 
-#@"2014-10-19 18:48:15 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  read<-function(id){getElement(list.files(), id)}
-  files<-lapply(id, read)
-  nob<-function(id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  lapply(files, nob)
-}
-complete("specdata", 2)
-# Err subscript out of bounds
-
-#@"2014-10-19 17:57:50 CDT"
 read<-function(id){read.csv(getElement(list.files(), id))}
-
-#@"2014-10-19 17:38:08 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nobs<-function(directory, id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)),
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) &
-         !is.na(read.csv(getElement(list.files(), id))$nitrate))) 
-  }
-  for (n in id) {
-    rslt <-  nob(directory, n)
-    print(nob (directory, n))
-  }
-  data.frame(id, nobs=as.matrix(lapply(id, nobs)))
-}
-complete("specdata", 1) # [1] 117 WARNING
-complete("specdata", 1:2) # Err 
-complete("specdata", c(1,2))
-
-#@"2014-10-19 17:12:18 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nobs<-function(directory, id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  for (n in id) {
-    rslt <-  nob(directory, n)
-    print(nob (directory, n))
-  }
-  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
-}
-complete("specdata", c(1,2))
-
-  cbind(id, nobs)
-}
-nobs(2)
-complete(2)
-id<-2
-
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nob<-function(directory, id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  for (n in id) {
-    rslt <-  nob(directory, n)
-    print(nob (directory, n))
-  }
-  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
-}
-complete("specdata", c(1,2))
-
-#@"2014-10-18 23:56:04 CDT"
-multiples<-function(id, n){
-  data.frame(id,n)
-}
-multiples(c(1,3,5), c(2,4,6))
-## successful
-
-#@"2014-10-18 23:44:52 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nob<-function(directory, id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  for (n in id) {
-    nobs <-  nob(directory, n)
-    print(c(id,nobs (directory, n)))
-  }
-  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
-}
-complete("specdata", c(1,2))
-# Err subscript out of bounds
-
-#@"2014-10-18 23:23:15 CDT"
-complete<-function(id){
-  nobs<-nrow(subset(read.csv(getElement(list.files(),id)),
-              !is.na(read.csv(getElement(list.files(),id))$sulfate) &
-                !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  frame<-data.frame(id,nobs)
-  for (n in id) {
-    rslt <- nrow(subset(read.csv(getElement(list.files(),n)),
-                        !is.na(read.csv(getElement(list.files(),n))$sulfate) &
-                          !is.na(read.csv(getElement(list.files(),n))$nitrate)))
-    frame<-data.frame(n,rslt)
-  }
-  print(frame)
-}
-## complete(integer) works, complete(vector) doesn't
-
-
-#@"2014-10-18 23:15:51 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  for (n in id) {
-    rslt <- nrow(subset(read.csv(getElement(list.files(),n)),
-                        !is.na(read.csv(getElement(list.files(),n))$sulfate) & 
-                          !is.na(read.csv(getElement(list.files(), n))$nitrate)))
-    
-  }
-  data.frame(id,rslt)
-}
-complete("specdata", c(1,2))
-#  1 1041
-#  2 1041
-## unsuccessful
-
-#@"2014-10-18 23:07:37 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nob<-function(id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  for (n in id) {
-    rslt <-  nob(n)
-    
-#     print(nob (directory, n))
-    data.frame(nob,id)
-  }
-  #  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
-}
-complete("specdata", c(1,2))
-# Err cannot coerce class function to data frame
-
-#@"2014-10-15 22:15:09 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nob<-function(directory, id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-      !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  for (n in id) {
-   rslt <-  nob(directory, n)
-   print(nob (directory, n))
-  }
-#  data.frame(id = as.vector(id), nobs = as.vector(nob(directory, id)))
-}
-complete("specdata", c(1,2))
-
-#@"2014-10-15 21:11:03 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nobs<-nrow(subset(
-    read.csv(getElement(list.files(), id)), 
-    !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-      !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  data.frame(id, nobs)
-}
-complete("specdata", 1)
-## correct
-complete("specdata", c(2, 4, 8, 10, 12))
-## Err selects more than 1 element
-
-#@"2014-10-15 20:52:33 CDT"
-nobs<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nrow(subset(
-    read.csv(getElement(list.files(), id)), 
-    !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-      !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-}
-# passes id = 1, 2, 4, 8, 10, 12, 30, 29, 28, 27, 26, 25, 3
-# still needs to print data frame
-
-#@"2014-10-15 18:36:41 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nrow(
-    subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate)
-    )
-  )
-}
-complete("specdata", 1)
-# [1] 15747
-# should be 117
-
-#@"2014-10-15 18:09:35 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  nrow(
-    subset(
-      read.csv(getElement(list.files(), id)), 
-      is.na(read.csv(getElement(list.files(), id))$sulfate)
-      )
-    )
-}
-complete("specdata", 1)
-# [1] 40509
-# should be 117
-
-#@"2014-10-15 08:48:45 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents")
-  setwd(directory)
-  nrow(subset(read.csv(getElement(list.files(), id)), sulfate !="NA"))
-}
-complete("specdata", 1)
-#   [1] 15747
-## should be 117
-
-#@"2014-10-15 08:38:07 CDT"
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents")
-  setwd(directory)
-  nrow(subset(read.csv(getElement(list.files(), id))), sulfate!="NA")
-}
-complete("specdata", 1)
-#   Err unused argument (sulfate!="NA")
-
-#@"2014-10-15 08:34:33 CDT"
-nobs<-function(id){nrow(subset(read.csv(getElement(list.files(), id)), sulfate!="NA"))}
-nobs(1)
-#   [1] 15747
-## incorrect
-# [1] 117 after correcting CSV, thus correct
-nobs(2)
-#   [1] 1041
-## correct
-
-#@"2014-10-15 08:26:50 CDT"
-nobs<-function(id){
-  nrow(
-    subset(
-      data.frame(
-        read.csv(
-          getElement(
-            list.files(), id
-          )
-        )
-      ), 
-      sulfate != "NA"))}
-nobs(2)
-#   [1] 1041
-
-
-#@"2014-10-15 07:58:19 CDT"
-pollutantmean<-function(directory, pollutant, id){
-  setwd("C:\\Users\\Josh\\Documents")
-  setwd(directory)
-  doc<-read.csv(getElement(list.files(), id))
-  getElement(doc, pollutant)
-}
-pollutantmean("specdata", "sulfate", 5)
-## successful
 
 squareColor<-function(square,game_pgn){
   if(grepl(blackPattern,position[game_pgn,square])){
