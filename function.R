@@ -1,3 +1,294 @@
+corr<-function(directory, threshold){
+  complete<-function(File){
+    DF<-read.csv(File)
+    sum(is.na(DF[,2]) & is.na(DF[,3]))
+  }
+  #   corrsingle<-function(n){
+  #     DF<-read.csv(list.files(directory,full.names=T)[n])
+  #     DF<-DF[!is.na(DF[,2]) & !is.na(DF[,3])]
+  #     cor(DF[,2], DF[,3])
+  #   }
+  completes<-unlist(lapply(list.files(directory,full.names=T), complete))
+  DF<-data.frame(File=list.files(directory), completes=completes)
+  DF[completes>=threshold]
+}
+
+generate.Time<-function(tmPattern="%A"){
+  Times<-""
+  if(grepl("%A",tmPattern)){
+    Times<-c(Times,"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+  }
+  if(grepl("%B",tmPattern)){
+    Times<-c(Times,"January","February","March","April","May","June",
+             "July","August","September","October","November","December")
+  }
+  Times[!Times==""]
+}
+
+chromeTidy<-function(chromeFile){
+  Days<-generate.Time("%A")
+  Months<-generate.Time("%B")
+  DatePattern<-paste("^(",paste(Days,collapse="|"),"), (",
+                     paste(Months,collapse="|"),") \\d, \\d{4}( \\(Cont.\\))?$",sep="")
+  chrome <- readLines(chromeFile)
+  chrome <- chrome[grepl("[[:alnum:]]",chrome)]
+  dateStart <- grep(DatePattern,chrome)
+  dateStop <- c(dateStart[-1],length(chrome))-1
+  Dates <- paste(strptime(chrome[grep(DatePattern,chrome)],"%A, %B %d, %Y"))
+  Times <- grep("^\\d{1,2}:\\d{2} [AP]M$", chrome)
+  for(n in 1:length(Times)){
+    X <- Times[n]
+    chrome[Times[n]] <- paste(Dates[which(dateStart<=X & X<=dateStop)],chrome[Times[n]])
+  }
+  data.frame(Time=chrome[Times],
+             Link=paste(chrome[Times+1],chrome[Times+2], sep="\n"))
+}
+
+complete <- function(directory, id){
+  nob<-function(id){
+    DF<-read.csv(list.files(directory,full.names=T),as.numeric(id))
+    sum(!is.na(DF$sulfate) & !is.na(DF$nitrate))
+  }
+  data.frame(id, nobs=unlist(lapply(id, nob)))
+}
+
+getArticle<-function(URL, keywords=NULL){
+  require(RCurl)
+  require(XML)
+  Source <- unlist(strsplit(URL,"/"))
+  Source <- Source[grepl("[[:alpha:]]", Source) & !grepl("http:", Source)][1]
+  wordcount <- function(str) { # Author: Adam Bradley?
+    sapply(gregexpr("\\b\\W+\\b", str, perl=TRUE), function(x) sum(x>0) ) + 1 
+  }
+  Html <- lapply(URL, evaluate_input)[[1]] # Author: Tony Breyal
+  Text <- htmlParse(Html, asText = TRUE)
+  xmlPattern<-paste("//text()", "[not(ancestor::script)]", 
+                    "[not(ancestor::style)]",
+                    "[not(ancestor::noscript)]", 
+                    "[not(ancestor::form)]", 
+                    sep="") # Author: Tony Breyal
+  Text <- xpathSApply(Text, xmlPattern, xmlValue)  
+  Text <- Text[grepl("[[:alpha:]]",Text)]
+  Text<-data.frame(Text,Wordcount=wordcount(Text),rawLine=1:length(Text))
+  prediction1 <- !grepl("\r|\n|\t",Text$Text) # 
+  prediction2 <- median(Text$Wordcount) < Text$Wordcount
+  if(length(keywords)==0){
+    keywords <- strsplit(as.character(Text[1,"Text"]),"[[:punct:]]|[[:space:]]")[[1]]
+    keywords <- keywords[grep("[[:alpha:]]",keywords)]
+    keywords <- keywords[median(nchar(keywords)) < nchar(keywords)]
+  }
+  prediction3 <- grepl(pattern = paste(keywords,collapse="|"), x=Text$Text)
+  Text[prediction1 & prediction2 & prediction3,]
+}
+
+# untested:
+transcriptFrame<-function(transcript, 
+                          speakerPattern="[[:upper:]]:",
+                          rmPattern="Play Video",
+                          rmRange=-1:1,
+                          Split="sentence"){ 
+                          # transcript is a character vector
+  transcript<-transcript[grepl("[[:alpha:]]+",transcript)]
+  transcriptWords<-unlist(strsplit(transcript," "))
+  speakers<-transcriptWords[grepl(speakerPattern,transcriptWords)]
+  l.out<-ifelse(20<length(speakers), 20, length(speakers))
+  speakerTest<-list(speakers[seq(1,length(speakers),length.out=l.out)],unique(speakers))
+  speakerPattern<-paste(unique(speakers),collapse="|")
+  transcriptRange<-grep(speakerPattern,transcript)
+  transcript<-transcript[min(transcriptRange):max(transcriptRange)]
+  for(n in seq(along=rmRange)){
+    Int<-grep(rmPattern, transcript)+rmRange[n]
+    rmInt<-ifelse(n==1,Int,c(rmInt,Int))
+  }
+  transcript<-transcript[-rmInt]
+  transcriptString<-paste(debate,collapse=" ")
+  transcriptParagraphs<-strsplit(transcriptString,paste(speakers,collapse="|"))[[1]]
+  transcriptParagraphs<-transcriptParagraphs[grepl("[[:alpha:]]",transcriptParagraphs)]
+  rmPattern<-"\\([[:upper:]]+\\)"
+  transcriptParagraphs<-gsub(rmPattern,"",transcriptParagraphs)
+  transcript<-data.frame(Speaker=gsub(":","",speakers),Text=transcriptParagraphs,
+                         stringsAsFactors = F)
+  if(tolower(Split)=="sentence"){
+    splitPattern<-"(?<=[[:lower:] ]{3}[\\.\\?]) "
+    for(n in 1:nrow(transcript)){
+      ext<-data.frame(Speaker=transcript[n,"Speaker"], 
+                      Sentence=strsplit(as.character(transcript[n,"Text"]),enterPattern,
+                                         perl=T)[[1]], 
+                      stringsAsFactors = F)
+      ifelse(n==1, debateExt<-ext, debateExt<-rbind(debateExt,ext))
+    }
+  }
+  transcript
+}
+
+measureSeq<-function(numberVec){
+  first<-numberVec[-1] 
+  second<-numberVec[-length(numberVec)]
+  cbind(first,second,first-second)
+}
+
+
+lookThrough<-function(Vector,n,interval=5){
+  Sequence<-(1:interval)+interval*n
+  Vector<-Vector[Sequence]
+  paste(Sequence,Vector)
+}
+
+dboProfile<-function(dboProfile="16kadams"){
+  if(!grepl("debate.org",dboProfile)){dboProfile<-file.path("www.debate.org",dboProfile)}
+  dboProfile<-htmlToText(dboProfile)[[1]]
+  dboProfile<-dboProfile[grepl("[[:alnum:]]",dboProfile)]
+  Name=gsub(" \\| Debate.org$","",dboProfile[1])
+  Online=dboProfile[grep("^Online:$",dboProfile)[1]+1]
+  Real.Name=dboProfile[grep("^Name:$",dboProfile)[1]+1]
+  Updated=dboProfile[grep("^Updated:$",dboProfile)[1]+1]
+  Gender=dboProfile[grep("^Gender:$",dboProfile)[1]+1]
+  Joined=dboProfile[grep("^Joined:$",dboProfile)[1]+1]
+  Birthday=dboProfile[grep("^Birthday:$",dboProfile)[1]+1]
+  # lookThrough(dboProfile,5,20)
+  President=dboProfile[grep("^President:$",dboProfile)[1]+1]
+  Email=dboProfile[grep("^Email:$",dboProfile)[1]+1]
+  info<-grep("^[[:alpha:]][[:lower:]]+:$",dboProfile)
+  data.frame(dboProfile[info],
+             dboProfile[info+1])
+  issues<-grep("^(Pro|Con|Und|N/O|N/S)$",dboProfile)
+  bigIssues<-data.frame(Issue=dboProfile[issues-1],
+                        Stance=dboProfile[issues],
+                        Comment=dboProfile[issues+2],
+                        stringsAsFactors = FALSE)
+  comPattern<-paste(bigIssues$Issue,collapse="|")
+  comPattern<-paste(comPattern,"Opinions",sep="|")
+  comPattern<-paste("^(",comPattern,")$",sep="")
+  for(n in 1:nrow(bigIssues)){
+    if(grepl(comPattern,bigIssues[n,"Comment"])){
+      bigIssues[n,"Comment"]<-""
+  }}
+  
+}
+
+dboDebate<-function(orgDebate="Should-We-Keep-The-Electoral-College", Page=1){
+  if(!grepl("debates/",orgDebate)){
+    orgDebate<-file.path("debates",gsub(" ","-",orgDebate))
+  }
+  if(!grepl("www.debate.org/",orgDebate)){
+    orgDebate<-paste("www.debate.org",gsub(" ","-",orgDebate),sep="/")
+  }
+  if(!grepl("/\\d$",orgDebate)){
+    orgDebate<-file.path(orgDebate, Page)
+  }
+  debate<-htmlToText(orgDebate)[[1]]
+  # sum(grepl("[[:alnum:]]",debate))
+  debate<-debate[grepl("[[:alnum:]]",debate)]
+  # debate[seq(1,length(debate),length.out=20)]
+  # debate[grep("^Debate Rounds$",debate)[1]+8]
+  meta<-data.frame(Topic=gsub("Debate Topic: | \\| Debate.org$","",debate[1]),
+                   Instigator=debate[grep("^The Instigator$",debate)[1]+3],
+                   Con=debate[grep("^Con$",debate)[1]+2],
+                   Pro=debate[grep("^Pro$",debate)[1]+2],
+                   Winning=debate[grep("^Winning$",debate)[1]-1],
+                   Rounds=as.numeric(gsub(" |[[:punct:]]","",
+                                          debate[grep("^Debate Rounds$",debate)[1]+1])),
+                   Comments=as.numeric(gsub(" |[[:punct:]]","",
+                                            debate[grep("^Comments$",debate)[1]+1])),
+                   Votes=as.numeric(gsub(" |[[:punct:]]","",
+                                            debate[grep("^Votes$",debate)[1]+1])),
+                   Voting.Style=debate[grep("^Voting Style:$",debate)[1]+1],
+                   Point.System=debate[grep("^Point System:$",debate)[1]+1],
+                   Started=paste(strptime(debate[grep("^Started:$",debate)[1]+1], "%m/%d/%Y")),
+                   Category=debate[grep("^Category:$",debate)[1]+1],
+                   Updated=debate[grep("^Updated:$",debate)[1]+1],
+                   Status=debate[grep("^Status:$",debate)[1]+1],
+                   Viewed=debate[grep("^Viewed:$",debate)[1]+1],
+                   Number=debate[grep("^Debate No:$",debate)[1]+1], 
+                   Link=orgDebate)
+  # debateRange<-(grep("^Votes$",debate)[1]+3):grep("^Report this Argument$",debate)[meta$Rounds*2]
+  # rm(debateRange)
+  enterPattern<-"(?<=[[:lower:] ]{3}[;,\\.]) "
+  debate<-gsub(enterPattern," \n", debate, perl=T)
+  roundEnds<-grep("^Report this Argument$",debate)
+  roundStarts<-c(grep("^Votes$",debate)[1]+3,
+                 grep("^Report this Argument$",debate)[1:(meta$Rounds*2)]+1)
+  roundStarts<-roundStarts[1:(meta$Rounds*2)]
+  # rounds<-vector("list",meta$Rounds*2) ; rm(rounds)
+  dbFrame<-data.frame(position=debate[roundStarts[1]], 
+                      round=1,
+                      text=debate[(roundStarts[1]+1):(roundEnds[1]-1)])
+  # View(dbFrame)
+  for(n in 1:(meta$Rounds*2)){
+    Round<-ifelse(n %in% seq(1,meta$Rounds*2,2),ceiling(n/2),n/2)
+    DF<-data.frame(Position=debate[roundStarts[n]], 
+                   Round,text=debate[(roundStarts[n]+1):(roundEnds[n]-1)])
+    ifelse(n==1,
+           dbFrame<-DF, 
+           dbFrame<-rbind(dbFrame,DF))
+  }
+  dbFrame$text<-gsub("^\r(\n)?","",dbFrame$text)
+  list(debate=dbFrame,meta=meta)
+}
+
+parseComment<-function(comments=Comments[[161]]){
+  commenters<-which(comments %in% members$x)
+  endcomments<-grep(datePattern,comments)
+  DF<-data.frame(commenters,comment="",Time=endcomments, stringsAsFactors=F)
+  for(n in 1:nrow(DF)){
+    btwns<-(as.numeric(DF[n,"commenters"])+1):(as.numeric(DF[n,"Time"])-1)
+    DF[n,"comment"]<-paste(comments[btwns],collapse=" \n")
+    DF[n,"commenters"]<-comments[commenters[n]]
+    DF[n,"Time"]<-comments[endcomments[n]]
+  }
+  DF
+}
+
+FBcomments<-function(workVec){
+  personPattern<-paste("^\\(",paste(members$x, collapse="|"),"\\)",sep="")
+  searchPattern<-paste(personPattern,"($| shared .+(link|photo)$)",sep="")
+  seen<-grep("^Seen by", workVec)
+  postVec<-vector("list",length(seen))
+  for(n in rev(seq(along=seen))){
+    m<-seen[n]+1
+    # o<-seen[n]
+    # if(grepl("^Like.+Comment$",workVec[m-1])){workOpt<-workVec[m-1]}
+    while(!(workVec[m]=="Write a comment...") & m<length(workVec)){m<-m+1}
+    postVec[[n]]<-workVec[(seen[n]:m)]
+    # datePattern<-"August"
+    # commenters<-which(postVec[[n]] %in% members$x)
+    # commList<-vector("list",length(commenters)-1)
+    # if(1<length(commList)){
+      # for(o in 1:length(commenters)){
+        # p<-commenters[o]+1
+        # while(!(p %in% commenters) & p<max(commenters)){p<-p+1}
+        # commList[[o]]<-postVec[[n]][commenters[o]:(p-1)]
+      # }
+    # }
+  }
+  postVec
+}
+
+FBposts<-function(workVec){
+  personPattern<-paste("^\\(",paste(members$x, collapse="|"),"\\)",sep="")
+  searchPattern<-paste(personPattern,"($| shared .+(link|photo)$)",sep="")
+  seen<-grep("^Seen by", workVec)
+  postVec<-vector("list",length(seen))
+  for(n in rev(seq(along=seen))){
+    m<-seen[n]
+    # o<-seen[n]
+    # if(grepl("^Like.+Comment$",workVec[m-1])){workOpt<-workVec[m-1]}
+    while(!grepl(searchPattern, workVec[m]) & 0<m){m<-m-1}
+    postVec[[n]]<-paste(workVec[m:(seen[n]+1)], collapse=" \n")
+  }
+  unlist(postVec)
+}
+
+properties<-function(link=as.character(complexes[1,2])){
+  if(!grepl("apartmentfinder.com",link)){
+    link<-paste("www.apartmentfinder.com",
+                link, sep="")
+  }
+  text.vector<-htmlToText(link)[[1]]
+  text.vector<-text.vector[grepl("[[:alnum:]]")]
+  prices<-
+}
+
 levRandom<-function(DF,Fac=facRandom){
   L<-length(levels(DF[,Fac]))
   n<-abs(rnorm(1,L/2,L/2))
@@ -23,20 +314,22 @@ aptDetails<-function(link=as.character(complexes[1,2])){
   text.vector2<-text.vector[grep("[[:alnum:]]",text.vector)]
   costPattern<-"\\$"; roomPattern<-"\\d BR"; bathPattern<-"\\d BA"; 
   SqFtPattern<-"\n +\\d+\n"; breakPattern<-"Deposit/Fees"
-  startPattern<-" +\\d Beds"
-  breaks<-grep(breakPattern,text.vector2)
-  dist<-breaks[2:length(breaks)]-breaks[(1:length(breaks))-1]
-  Start<-max(grep(startPattern,text.vector2))
-  text.vector2[start+3]
+  #   startPattern<-" +\\d Beds"
+  #   breaks<-grep(breakPattern,text.vector2) 
+  #   dist<-breaks[2:length(breaks)]-breaks[(1:length(breaks))-1]
+  #   Start<-max(grep(startPattern,text.vector2))
+  #   text.vector2[start+3]
   SqFt<-grep(SqFtPattern,text.vector2); Cost<-grep(costPattern,text.vector2)
   SqFt<-SqFt[Start<=SqFt]; Cost<-Cost[Start<=Cost]; 
   data.frame(Square.Feet=text.vector2[SqFt], Cost=text.vector2[Cost])
 }
 
-aptLinks<-function(Page,State="Texas",City="Dallas"){
+aptLinks<-function(Page=1,State="Texas",City="Dallas"){
   URL<-paste("http://www.apartmentfinder.com/",State,"/",City,"-Apartments/Page",Page,sep="")
   html.vector<-readLines(URL)
-  links<-grep("href=\"/Texas/Dallas-Apartments/(\\w+-){2,}",html.vector) # int [1:18]
+  #   text.vector<-htmlToText(URL)
+  links<-grep("href=\"/Texas/Dallas-Apartments/(\\w+-){2,}",
+              html.vector) # int [1:18]
   apts<-unlist(strsplit(html.vector[links],"</?|>"),length)
   apts<-apts[grepl("[[:alpha:]]",apts)]
   links<-apts[grep("href=.+Texas",apts)]
@@ -141,7 +434,7 @@ testId<-function(id=1000,type="correspondence"){
 }
 
 # induced from: dboLeaders.R
-debatePage<-function(Page){
+dboDebates<-function(Page){
   Url<-paste("http://www.debate.org/debates/?page=",floor(Page),",&order=2&sort=1",sep="")
   workVec<-htmlToText(Url)[[1]]
   workVec<-workVec[grep("[[:alpha:]]",workVec)]
@@ -168,7 +461,7 @@ dboFilter<-function(DF=dboLeaders,filterColumn="Ideology",filterPattern=""){
 }
 
 # induced from: dboLeaders.R
-leaderPage<-function(Page){
+dboMembers<-function(Page){
   Url<-paste("http://www.debate.org/people/leaders/?page=",Page,"&order=21&sort=1",sep="")
   workVec<-htmlToText(Url)[[1]]
   n<-grep("Debates:",workVec)
@@ -317,7 +610,7 @@ gdpPlot<-function(Dates=seq(1980,2014,1),
   dev.off()
 }
 
-GDP<-function(year,nation){
+GDP<-function(year,nation,numClasses="character"){
   if(!exists('GDPs')){
     if(!file.exists("data")){dir.create("data")}
     folderPattern<-"ny.gdp.mktp.cd_Indicator_en_csv_v2$"
@@ -358,7 +651,7 @@ GDP<-function(year,nation){
   DF
 }
 
-gdelt.temp<-function(DATE="2015-06-01",PROJECT="gkg"){
+gdelt.temp<-function(DATE=Sys.Date()-1,PROJECT="gkg"){
   datestamp<-gsub("-","",DATE)
   if(grepl("event",tolower(PROJECT))){
     project<-"events"
@@ -445,7 +738,7 @@ htmlToText <- function(input, ...) {
   # STEP 2: Extract text from HTML
   text.list <- lapply(html.list, convert_html_to_text)
   # STEP 3: Return text
-  text.vector <- sapply(text.list, collapse_text)
+  #   text.vector <- sapply(text.list, collapse_text)
   return(text.list)#(text.vector)
 }
 
@@ -2783,159 +3076,3 @@ read.pollutant<-function(n){
   print(selection)
 }
 
-countfrom<-function(n){sum(From==unique(From)[n])}
-
-stateset<-function(State){subset(medgrid,medgrid[,2]==State)}#"2014-10-27 16:53:22 CDT"
-
-medvariables<-function(n){getElement(colnames(read.csv("outcome-of-care-measures.csv")), n)}
-
-alllinks<-function(){
-  resetwd<-getwd()
-  setwd("C:/Users/Josh/Documents/CSV")
-  Author<-as.matrix(read.csv("articles.csv")$Author)
-  Date<-as.matrix(read.csv("articles.csv")$Date)
-  Organization<-as.matrix(read.csv("articles.csv")$Organization)
-  From<-as.matrix(read.csv("articles.csv")$From)
-  articlegrid<-data.frame(Author, Date, Organization, From)
-  as.matrix(
-    lapply(
-      unique(
-        articlegrid$From), 
-      manylinks)
-  )
-  print()
-  setwd(resetwd)
-}
-
-manylinksnum<-function(){getElement(manylinks(1),2)}
-
-manylinks<-function(n){
-  setwd("C:/Users/Josh/Documents/CSV")
-  Author<-as.matrix(read.csv("articles.txt")$Author)
-  Date<-as.matrix(read.csv("articles.txt")$Date)
-  Organization<-as.matrix(read.csv("articles.txt")$Organization)
-  From<-as.matrix(read.csv("articles.txt")$From)
-  articlegrid<-data.frame(Author, Date, Organization, From)
-  data.frame(From=unique(From)[n],
-             Links=sum(
-               articlegrid$From==unique(
-                 articlegrid$From)[n]
-               )
-             )
-}
-
-splitandframe<-function(m,n){
-  setwd("C:/Users/Josh/Documents/CSV")
-  Author<-as.matrix(read.csv("articles.txt")$Author)
-  Date<-as.matrix(read.csv("articles.txt")$Date)
-  Organization<-as.matrix(read.csv("articles.txt")$Organization)
-  From<-as.matrix(read.csv("articles.txt")$From)
-  data.frame(Au=subset(Author, m==unique(m)[n]), 
-             Org=subset(Organization, m==unique(m)[n]), 
-             Dt=subset(Date, m==unique(m)[n]), 
-             Frm=subset(From, m==unique(m)[n]))
-}
-
-splitandframe<-function(column,n){
-  data.frame(Author=subset(Author, column==unique(column)[n]), 
-             Organization=subset(Organization, column==unique(column)[n]), 
-             Date=subset(Date, column==unique(column)[n]), 
-             From=subset(From, column==unique(column)[n]))
-}
-
-effectivesplit<-function(n){
-  Author<-as.matrix(read.csv("articles.txt")$Author)
-  Date<-as.matrix(read.csv("articles.txt")$Date)
-  Organization<-as.matrix(read.csv("articles.txt")$Organization)
-  From<-as.matrix(read.csv("articles.txt")$From)
-  data.frame(Author=subset(Author, From==unique(From)[n]), 
-             Organization=subset(Organization, From==unique(From)[n]), 
-             Date=subset(Date, From==unique(From)[n]), 
-             From=subset(From, From==unique(From)[n]))
-}
-
-corr<-function(directory, threshold){
-  setwd(directory)
-  complete<-function(file){nrow(subset(
-    read.csv(file),
-    is.na(getElement(read.csv(file), 2)) &
-    is.na(getElement(read.csv(file), 3))))}
-  complete("001.csv")
-  corrsingle<-function(n){
-    file<-read.csv(getElement(list.files(), n))
-    complete<-subset(
-      file, 
-      !is.na(getElement(file, 2)) & 
-        !is.na(getElement(file,3)))
-    cor(complete[,2], complete[,3])
-  }
-  completes<-as.matrix(lapply(list.files(), complete))
-  thresh<-as.matrix(subset(data.frame(list.files(), completes), completes>=threshold))
-  lapply(thresh, corrsingle)
-}
-
-## 'threshold' is a numeric vector of length 1 indicating the
-## number of completely observed observations (on all
-## variables) required to compute the correlation between
-## nitrate and sulfate; the default is 0
-threshsubset<-function(directory, threshold){
-  setwd(directory)
-  complete<-function(file){nrow(subset(
-    read.csv(file), 
-    !is.na(getElement(read.csv(file), 2)) & 
-      !is.na(getElement(read.csv(file), 3))))}
-  completes<-as.matrix(lapply(list.files(),complete))
-  subset(data.frame(list.files(), completes), completes>=threshold)
-}
-
-corrsingle<-function(directory, id){  
-  setwd(directory)
-  file<-read.csv(getElement(list.files(), id))
-  complete<-subset(
-    file, 
-    !is.na(getElement(file, 2)) & 
-      !is.na(getElement(file,3)))
-  cor(complete[,2], complete[,3])
-}
-
-testquotes<-function(document){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  tail(read.csv(document, quote="",row.names=NULL, stringsAsFactors=FALSE))
-}
-
-testcsv<-function(document,n){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  tail(read.csv(document, row.names=NULL), n)
-}
-
-complete<-function(directory, id){
-  setwd("C:\\Users\\Josh\\Documents\\CSV")
-  setwd(directory)
-  read<-function(id){getElement(list.files(), id)} 
-  files<-lapply(id, read)
-  nob<-function(id){
-    nrow(subset(
-      read.csv(getElement(list.files(), id)), 
-      !is.na(read.csv(getElement(list.files(), id))$sulfate) & 
-        !is.na(read.csv(getElement(list.files(), id))$nitrate)))
-  }
-  data.frame(id, nobs=as.matrix(lapply(id, nob)))
-}
-
-read<-function(id){read.csv(getElement(list.files(), id))}
-
-squareColor<-function(square,game_pgn){
-  if(grepl(blackPattern,position[game_pgn,square])){
-    squareColor<-blackPattern
-  }
-  if(grepl(whitePattern,position[game_pgn,square])){
-    squareColor<-whitePattern
-  }
-  if(!(grepl(paste("(",whitePattern,")",
-                   "(",blackPattern,")",
-                   sep="|"),
-             position[game_pgn,square]))){
-    squareColor<-NA
-  }
-  squareColor
-}
