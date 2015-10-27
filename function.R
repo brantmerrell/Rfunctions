@@ -1,3 +1,5 @@
+
+
 corr<-function(directory, threshold){
   complete<-function(File){
     DF<-read.csv(File)
@@ -2986,6 +2988,11 @@ readcsv<-function(n){
   }
 }
 
+pollutantmean <- function(directory, pollutant, id=1:332){
+  DF <- list.files(directory, "\\d{3}\\.csv$", full.names=T)
+  DF <- lapply(DF, read.csv)
+  DF <-
+}
 pollutantmean<-function(directory, pollutant, id=1:332){
   setwd(directory)
   count.nitrate<-function(n){
@@ -3019,60 +3026,3 @@ pollutantmean<-function(directory, pollutant, id=1:332){
     print(mean.nitrate)
   }
 }
-
-sum.sulfate<-function(id){
-  sum(read.csv(getElement(Sys.glob("*csv"),id))$sulfate, na.rm=TRUE)
-}
-
-sum.nitrate<-function(id){
-  sum(read.csv(getElement(Sys.glob("*csv"),id))$nitrate, na.rm=TRUE)
-}
-
-count.sulfate<-function(id){
-  sulfate<-read.csv(getElement(Sys.glob("*csv"),id))$sulfate
-  length(subset(sulfate,
-                !is.na(sulfate)))
-}
-
-count.nitrate<-function(id){
-  nitrate<-read.csv(getElement(Sys.glob("*csv"),id))$nitrate
-  length(subset(nitrate,
-         !is.na(nitrate)))
-}
-
-read.pollutant<-function(n){
-  if (pollutant=="sulfate"){
-    selection<-subset(read.csv(getElement(Sys.glob("*csv"),n))$sulfate,
-                      !is.na(read.csv(getElement(Sys.glob("*csv"),n))$sulfate))
-  }
-  if (pollutant=="nitrate"){
-    selection<-subset(read.csv(getElement(Sys.glob("*csv"),n))$nitrate,
-                      !is.na(read.csv(getElement(Sys.glob("*csv"),n))))
-  }
-  return(selection)
-}
-
-list.pollutant<-function(n){
-  if(pollutant=="sulfate"){
-    selection<-as.numeric(
-      as.character(
-        read.csv(
-          getElement(Sys.glob("*csv"),n))$sulfate))
-    subset.pollutant<-subset(selection, !is.na(selection))
-  }
-}
-
-read.pollutants<-function(id){
-  lapply(id, read.pollutant)
-}
-
-read.pollutant<-function(n){
-  if(pollutant=="sulfate"){
-    selection<-read.csv(getElement(Sys.glob("*csv"),n))$sulfate
-  }
-  if(pollutant=="nitrate"){
-    selection<-read.csv(getElement(Sys.glob("*csv"),n))$nitrate
-  }
-  print(selection)
-}
-
