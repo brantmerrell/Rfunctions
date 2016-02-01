@@ -730,6 +730,7 @@ convert_html_to_text <- function(html) {
 # collapse_text <- function(txt) {
 #   return(paste(txt, collapse = " "))
 # }
+install.packages("XML")
 htmlToText <- function(input, ...) {
   ###---PACKAGES ---###
   require(RCurl)
@@ -2803,10 +2804,19 @@ add.object<-function(object,location,comment="",time=Sys.time(),material="",util
   print(tail(objects,3))
 }
 
+search.note<-function(notePattern="#schedule",timePattern="^2016-01"){
+  ifelse(grepl("#schedule",notePattern),
+         filePath<-"C:/Users/Kent/Documents/Josh/CSV Personal/allNotes.csv",
+         filePath<-"C:/Users/Kent/Documents/Josh/CSV Personal/notes.csv")
+  notes <- as.matrix(read.csv(filePath),colClasses="character")
+  filter <- grepl(notePattern,notes[,1]) & grepl(timePattern,notes[,2])
+  notes[filter,]
+}
+
 add.note<-function(note,Time=Sys.time()){
   ifelse(grepl("#schedule",note),
-         filePath<-"C:/Users/Josh/Documents/CSV Personal/allNotes.csv",
-         filePath<-"C:/Users/Josh/Documents/CSV Personal/notes.csv")
+         filePath<-"C:/Users/Kent/Documents/Josh/CSV Personal/allNotes.csv",
+         filePath<-"C:/Users/Kent/Documents/Josh/CSV Personal/notes.csv")
   notes<-as.matrix(read.csv(filePath,colClasses="character"))
   obs<-as.matrix(data.frame(note,Time))
   notes<-rbind(notes,obs)
