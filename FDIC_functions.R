@@ -1,3 +1,42 @@
+quarterID<-function(year,quarter){
+  qMonthDays<-c("0331","0630","0930","1231")
+  paste(year,qMonthDays[quarter],sep = "")
+}
+
+projectQuarterFrame<-function(year,
+                              quarter,
+                              projectVars=c("cert","asset","numemp",
+                                            "rbc1rwaj","RBCT2","rbcrwaj","RWAJT"),
+                              destfolder = "C:/Users/Kent/Documents/FDIC"){
+  fdicFolder<-destfolder
+  download.FDIC(year,quarter,fdicFolder)
+  quarterMonths<-c("03","06","09","12")
+  quarterID<-paste(year,quarterMonths[quarter],sep="")
+  quarterPattern<-paste(year,quarterMonths[quarter],".+\\.csv$",sep="")
+  fdicFiles<-list.files(fdicFolder,quarterPattern,recursive = T, full.names = T)
+  rm(projectFiles)
+  for(File in fdicFiles){
+    ColNames<-colnames(read.csv(File,nrows = 3))
+    ColNames<-ColNames[which(ColNames %in% projectVars)]
+    if(1<length(ColNames)){
+      ifelse(exists("projectFiles"), 
+             projectFiles<-c(projectFiles,File),
+             projectFiles<-File)
+    }
+  }
+  DF1<-read.csv(projectFiles[1])
+  DFColumns<-which(colnames(DF1) %in% projectVars)
+  DF1<-DF1[,DFColumns]
+  DF2<-read.csv(projectFiles[2])
+  DFColumns<-which(colnames(DF2) %in% projectVars)
+  DF2<-DF2[,DFColumns]
+  DF<-data.frame(cbind(DF1,DF2))
+  DF<-DF[,-grep("^cert.1$",colnames(DF))]
+  row.names(DF)<-paste(quarterID,as.character(DF$cert),sep="_")
+  DF<-cbind(DF,quarter=quarterID)
+  return(DF)
+}
+
 convertQuarter<-function(n){
   QF<-expand.grid(years=1992:2015,quarter=1:4)
   QF<-QF[-which(QF[,"years"]==1992 & QF[,"quarter"] %in% c(1,2,3)),]
@@ -188,7 +227,7 @@ FDIC.quartershape<-function(Year,Quarter,Control_var=c("cert")){
 
 download.FDIC<-function(year,
                         quarter,
-                        destfolder="C:/Users/Administrator/Documents/FDIC"){
+                        destfolder="C:/Users/Kent/Documents/FDIC"){
   if(!file.exists(destfolder)){
     file.create(destfolder)
   }
@@ -207,7 +246,7 @@ download.FDIC<-function(year,
   download.file(url=Url,destfile=Destfile)
   unzip(zipfile=Destfile,
         exdir=gsub("\\.zip","",Destfile))
-  add.note(paste(gsub("\\.zip","",Destfile),"#autonote"))
+  # add.note(paste(gsub("\\.zip","",Destfile),"#autonote"))
   file.remove(Destfile)
 }
 
